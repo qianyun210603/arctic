@@ -3,6 +3,7 @@ import logging
 from collections import defaultdict
 from itertools import groupby
 
+import pandas as pd
 import pymongo
 from bson.binary import Binary
 from pandas import DataFrame, Series
@@ -405,7 +406,7 @@ class ChunkStore(object):
     def __update(self, sym, item, metadata=None, combine_method=None, chunk_range=None, audit=None):
         '''
         helper method used by update and append since they very closely
-        resemble eachother. Really differ only by the combine method.
+        resemble each other. Really differ only by the combine method.
         append will combine existing date with new data (within a chunk),
         whereas update will replace existing data with new data (within a
         chunk).
@@ -562,6 +563,8 @@ class ChunkStore(object):
             if len(CHUNKER_MAP[sym[CHUNKER]].filter(item, chunk_range)) == 0:
                 raise Exception('Range must be inclusive of data')
             self.__update(sym, item, metadata=metadata, combine_method=self.serializer.combine, chunk_range=chunk_range, audit=audit)
+        elif upsert:
+            self.__update(sym, item, metadata=metadata, combine_method=lambda old, new: new.combine_first(old), chunk_range=chunk_range, audit=audit)
         else:
             self.__update(sym, item, metadata=metadata, combine_method=lambda old, new: new, chunk_range=chunk_range, audit=audit)
 
