@@ -165,7 +165,30 @@ class MetadataStore(BSONStore):
             res = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
         return res['metadata'] if res is not None else None
 
-    def write_history(self, collection):
+    @mongo_retry
+    def get_last_update_time(self, symbol, as_of=None):
+        """
+        Return last update time of current metadata saved for `symbol`
+
+        Parameters
+        ----------
+        symbol : `str`
+            symbol name for the item
+        as_of : `datetime.datetime`
+            return entry valid at given time
+
+        Returns
+        -------
+        `datetime.datetime`
+        """
+        if as_of is not None:
+            res = self.find_one({'symbol': symbol, 'start_time': {'$lte': as_of}},
+                                sort=[('start_time', pymongo.DESCENDING)])
+        else:
+            res = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
+        return res.get('last_update', res['start_time']) if res is not None else None
+
+    def write_history(self, collection, last_update=None):
         """
         Manually overwrite entire metadata history for symbols in `collection`
 
@@ -177,6 +200,8 @@ class MetadataStore(BSONStore):
             Example:
                 [pandas.DataFrame({'symbol': [{}]}, [datetime.datetime.utcnow()])]
         """
+        if last_update is None:
+            last_update = dt.utcnow()
         documents = []
         for dataframe in collection:
             if len(dataframe.columns) != 1:
@@ -186,18 +211,18 @@ class MetadataStore(BSONStore):
             entries = dataframe[symbol].values
             if self.has_symbol(symbol):
                 self.purge(symbol)
-            doc = {'symbol': symbol, 'metadata': entries[0], 'start_time': times[0]}
+            doc = {'symbol': symbol, 'metadata': entries[0], 'start_time': times[0], 'last_update': last_update}
             for metadata, start_time in zip(entries[1:], times[1:]):
                 if metadata == doc['metadata']:
                     continue
                 doc['end_time'] = start_time
                 documents.append(doc)
-                doc = {'symbol': symbol, 'metadata': metadata, 'start_time': start_time}
+                doc = {'symbol': symbol, 'metadata': metadata, 'start_time': start_time, 'last_update': last_update}
             documents.append(doc)
 
         self.insert_many(documents)
 
-    def append(self, symbol, metadata, start_time=None):
+    def append(self, symbol, metadata, start_time=None, last_update=None):
         """
         Update metadata entry for `symbol`
 
@@ -213,25 +238,31 @@ class MetadataStore(BSONStore):
         """
         if start_time is None:
             start_time = dt.utcnow()
+        if last_update is None:
+            last_update = dt.utcnow()
         old_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
         if old_metadata is not None:
             if old_metadata['start_time'] >= start_time:
                 raise ValueError('start_time={} is earlier than the last metadata @{}'.format(start_time,
                                                                                               old_metadata['start_time']))
             if old_metadata['metadata'] == metadata:
+                old_metadata['last_update'] = last_update
+                self.find_one_and_update({'symbol': symbol, 'start_time': old_metadata['start_time']},
+                                         {'$set': {'end_time': start_time}},
+                                         sort=[('start_time', pymongo.DESCENDING)])
                 return old_metadata
         elif metadata is None:
             return
 
         self.find_one_and_update({'symbol': symbol}, {'$set': {'end_time': start_time}},
                                  sort=[('start_time', pymongo.DESCENDING)])
-        document = {'_id': bson.ObjectId(), 'symbol': symbol, 'metadata': metadata, 'start_time': start_time}
+        document = {'_id': bson.ObjectId(), 'symbol': symbol, 'metadata': metadata, 'start_time': start_time, 'last_update': last_update}
         mongo_retry(self.insert_one)(document)
 
         logger.debug('Finished writing metadata for %s', symbol)
         return document
 
-    def prepend(self, symbol, metadata, start_time=None):
+    def prepend(self, symbol, metadata, start_time=None, last_update=None):
         """
         Prepend a metadata entry for `symbol`
 
@@ -249,21 +280,24 @@ class MetadataStore(BSONStore):
             return
         if start_time is None:
             start_time = dt.min
+        if last_update is None:
+            last_update = dt.utcnow()
         old_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.ASCENDING)])
         if old_metadata is not None:
             if old_metadata['start_time'] <= start_time:
                 raise ValueError('start_time={} is later than the first metadata @{}'.format(start_time,
                                                                                              old_metadata['start_time']))
             if old_metadata['metadata'] == metadata:
-                self.find_one_and_update({'symbol': symbol}, {'$set': {'start_time': start_time}},
+                self.find_one_and_update({'symbol': symbol}, {'$set': {'start_time': start_time, "last_update": last_update}},
                                          sort=[('start_time', pymongo.ASCENDING)])
                 old_metadata['start_time'] = start_time
+                old_metadata['last_update'] = last_update
                 return old_metadata
             end_time = old_metadata.get('start_time')
         else:
             end_time = None
 
-        document = {'_id': bson.ObjectId(), 'symbol': symbol, 'metadata': metadata, 'start_time': start_time}
+        document = {'_id': bson.ObjectId(), 'symbol': symbol, 'metadata': metadata, 'start_time': start_time, "last_update": last_update}
         if end_time is not None:
             document['end_time'] = end_time
         mongo_retry(self.insert_one)(document)
@@ -306,3 +340,12 @@ class MetadataStore(BSONStore):
         """
         logger.warning("Deleting entire metadata history for %r from %r" % (symbol, self._arctic_lib.get_name()))
         self.delete_many({'symbol': symbol})
+
+    def amend(self, symbol, new_metadata, start_time=None, last_update=None):
+        if last_update is None:
+            last_update = dt.utcnow()
+        set_dict = {"metadata": new_metadata, 'last_update': last_update}
+        if start_time is not None:
+            return self.find_one_and_update({'symbol': symbol, 'start_time': start_time}, {"$set": set_dict})
+        else:
+            return self.find_one_and_update({'symbol': symbol}, {"$set": set_dict}, sort=[('start_time', pymongo.DESCENDING)])

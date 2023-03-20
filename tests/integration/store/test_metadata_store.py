@@ -33,7 +33,7 @@ def integrity_check(ms_lib, symbol):
         if item['metadata'] == metadata:
             raise ValueError('consecutive duplicate metadata')
         metadata = item['metadata']
-    assert start_time == None, 'end_time of the last entry should be unset'
+    assert start_time is None, 'end_time of the last entry should be unset'
 
 
 def test_pickle(ms_lib):
@@ -64,7 +64,7 @@ def test_read_history(ms_lib):
 
 
 def test_read(ms_lib):
-    assert ms_lib.read(symbol1) == None
+    assert ms_lib.read(symbol1) is None
 
     ms_lib.append(symbol1, metadata1, start_time1)
     assert ms_lib.read(symbol1) == metadata1
@@ -151,3 +151,15 @@ def test_purge(ms_lib):
     ms_lib.purge(symbol1)
 
     assert not ms_lib.has_symbol(symbol1)
+
+
+def test_amend(ms_lib):
+    import pandas as pd
+    ret1 = ms_lib.append(symbol1, metadata1, pd.Timestamp(start_time1).tz_localize('UTC'))
+    ret2 = ms_lib.append(symbol1, metadata2, pd.Timestamp(start_time2).tz_localize('UTC'))
+    print(ms_lib.read_history(symbol1))
+    ret3 = ms_lib.amend(symbol1, metadata1)
+    ret4 = ms_lib.amend(symbol1, metadata2, pd.Timestamp(start_time1).tz_localize('UTC'))
+    print(ret3)
+    print(ret4)
+    print(ms_lib.read_history(symbol1))
