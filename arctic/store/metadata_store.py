@@ -245,7 +245,7 @@ class MetadataStore(BSONStore):
             if old_metadata['metadata'] == metadata:
                 old_metadata['last_update'] = last_update
                 self.find_one_and_update({'symbol': symbol, 'start_time': old_metadata['start_time']},
-                                         {'$set': {'end_time': start_time}},
+                                         {'$set': {'last_update': last_update}},
                                          sort=[('start_time', pymongo.DESCENDING)])
                 return old_metadata
 
