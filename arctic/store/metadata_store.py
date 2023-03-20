@@ -242,15 +242,16 @@ class MetadataStore(BSONStore):
             last_update = dt.utcnow()
         old_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
         if old_metadata is not None:
-            if old_metadata['start_time'] >= start_time:
-                raise ValueError('start_time={} is earlier than the last metadata @{}'.format(start_time,
-                                                                                              old_metadata['start_time']))
             if old_metadata['metadata'] == metadata:
                 old_metadata['last_update'] = last_update
                 self.find_one_and_update({'symbol': symbol, 'start_time': old_metadata['start_time']},
                                          {'$set': {'end_time': start_time}},
                                          sort=[('start_time', pymongo.DESCENDING)])
                 return old_metadata
+
+            if old_metadata['start_time'] >= start_time:
+                raise ValueError('start_time={} is earlier than the last metadata @{}'.format(start_time,
+                                                                                              old_metadata['start_time']))
         elif metadata is None:
             return
 
