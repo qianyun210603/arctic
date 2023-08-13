@@ -3,11 +3,11 @@ import logging
 from collections import defaultdict
 from itertools import groupby
 
-import pandas as pd
 import pymongo
 from bson.binary import Binary
 from pandas import DataFrame, Series
 from pymongo.errors import OperationFailure
+from typing import Dict, Union
 
 from .date_chunker import DateChunker, START, END
 from .passthrough_chunker import PassthroughChunker
@@ -106,7 +106,8 @@ class ChunkStore(object):
     def __repr__(self):
         return str(self)
 
-    def _checksum(self, fields, data):
+    @staticmethod
+    def _checksum(fields, data):
         """
         Checksum the passed in dictionary
         """
@@ -130,7 +131,7 @@ class ChunkStore(object):
             dict to store in the audit log
         """
         if chunk_range is not None:
-            sym = self._get_symbol_info(symbol)
+            sym: Dict = self._get_symbol_info(symbol)
             # read out chunks that fall within the range and filter out
             # data within the range
             df = self.read(symbol, chunk_range=chunk_range, filter_data=False)
@@ -185,7 +186,7 @@ class ChunkStore(object):
             return symbols
         return [x for x in symbols if partial_match in x]
 
-    def _get_symbol_info(self, symbol):
+    def _get_symbol_info(self, symbol) -> Union[Dict, list]:
         if isinstance(symbol, list):
             return list(self._symbols.find({SYMBOL: {'$in': symbol}}))
         return self._symbols.find_one({SYMBOL: symbol})
@@ -334,14 +335,9 @@ class ChunkStore(object):
         self._arctic_lib.check_quota()
 
         previous_shas = []
-        doc = {}
         meta = {}
-
-        doc[SYMBOL] = symbol
-        doc[LEN] = len(item)
-        doc[SERIALIZER] = self.serializer.TYPE
-        doc[CHUNKER] = chunker.TYPE
-        doc[USERMETA] = metadata
+        doc = {SYMBOL: symbol, LEN: len(item), SERIALIZER: self.serializer.TYPE, CHUNKER: chunker.TYPE,
+               USERMETA: metadata}
 
         sym = self._get_symbol_info(symbol)
         if sym:
@@ -360,11 +356,13 @@ class ChunkStore(object):
             meta = data[METADATA]
 
             for i in range(int(len(data[DATA]) / MAX_CHUNK_SIZE + 1)):
-                chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE])}
-                chunk[SEGMENT] = i
-                chunk[START] = meta[START] = start
-                chunk[END] = meta[END] = end
-                chunk[SYMBOL] = meta[SYMBOL] = symbol
+                chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE]), SEGMENT: i,
+                         START: start, END: end, SYMBOL: symbol}
+                # chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE])}
+                # chunk[SEGMENT] = i
+                # chunk[START] = meta[START] = start
+                # chunk[END] = meta[END] = end
+                # chunk[SYMBOL] = meta[SYMBOL] = symbol
                 dates = [chunker.chunk_to_str(start), chunker.chunk_to_str(end), str(chunk[SEGMENT]).encode('ascii')]
                 chunk[SHA] = self._checksum(dates, chunk[DATA])
 
@@ -380,7 +378,7 @@ class ChunkStore(object):
                                                   SEGMENT: chunk[SEGMENT]},
                                                  {'$set': chunk}, upsert=True))
                 else:
-                    # already exists, dont need to update in mongo
+                    # already exists, don't need to update in mongo
                     previous_shas.remove(chunk[SHA])
 
         if ops:
@@ -403,14 +401,14 @@ class ChunkStore(object):
             audit['chunks'] = chunk_count
             self._audit.insert_one(audit)
 
-    def __update(self, sym, item, metadata=None, combine_method=None, chunk_range=None, audit=None):
-        '''
+    def __update(self, sym: Dict, item, metadata=None, combine_method=None, chunk_range=None, audit=None):
+        """
         helper method used by update and append since they very closely
         resemble each other. Really differ only by the combine method.
         append will combine existing date with new data (within a chunk),
         whereas update will replace existing data with new data (within a
         chunk).
-        '''
+        """
         if not isinstance(item, (DataFrame, Series)):
             raise Exception("Can only chunk DataFrames and Series")
 
@@ -460,11 +458,13 @@ class ChunkStore(object):
                                               SEGMENT: {'$gte': chunk_count}})
 
             for i in range(chunk_count):
-                chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE])}
-                chunk[SEGMENT] = i
-                chunk[START] = start
-                chunk[END] = end
-                chunk[SYMBOL] = symbol
+                # chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE])}
+                # chunk[SEGMENT] = i
+                # chunk[START] = start
+                # chunk[END] = end
+                # chunk[SYMBOL] = symbol
+                chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE]), SEGMENT: i,
+                         START: start, END: end, SYMBOL: symbol}
                 dates = [chunker.chunk_to_str(start), chunker.chunk_to_str(end), str(chunk[SEGMENT]).encode('ascii')]
                 sha = self._checksum(dates, data[DATA])
                 chunk[SHA] = sha
@@ -581,21 +581,16 @@ class ChunkStore(object):
         -------
         dictionary
         """
-        sym = self._get_symbol_info(symbol)
+        sym: Dict = self._get_symbol_info(symbol)
         if not sym:
             raise NoDataFoundException("Symbol does not exist.")
-        ret = {}
-        ret['chunk_count'] = sym[CHUNK_COUNT]
-        ret['len'] = sym[LEN]
-        ret['appended_rows'] = sym[APPEND_COUNT]
-        ret['metadata'] = sym[METADATA] if METADATA in sym else None
-        ret['chunker'] = sym[CHUNKER]
-        ret['chunk_size'] = sym[CHUNK_SIZE] if CHUNK_SIZE in sym else 0
-        ret['serializer'] = sym[SERIALIZER]
+        ret = {'chunk_count': sym[CHUNK_COUNT], 'len': sym[LEN], 'appended_rows': sym[APPEND_COUNT],
+               'metadata': sym[METADATA] if METADATA in sym else None, 'chunker': sym[CHUNKER],
+               'chunk_size': sym[CHUNK_SIZE] if CHUNK_SIZE in sym else 0, 'serializer': sym[SERIALIZER]}
         return ret
 
     def read_metadata(self, symbol):
-        '''
+        """
         Reads user defined metadata out for the given symbol
 
         Parameters
@@ -606,7 +601,7 @@ class ChunkStore(object):
         Returns
         -------
         ?
-        '''
+        """
         sym = self._get_symbol_info(symbol)
         if not sym:
             raise NoDataFoundException("Symbol does not exist.")
@@ -614,7 +609,7 @@ class ChunkStore(object):
         return x[USERMETA] if USERMETA in x else None
 
     def write_metadata(self, symbol, metadata):
-        '''
+        """
         writes user defined metadata for the given symbol
 
         Parameters
@@ -623,7 +618,7 @@ class ChunkStore(object):
             symbol for the given item in the DB
         metadata: ?
             metadata to write
-        '''
+        """
         sym = self._get_symbol_info(symbol)
         if not sym:
             raise NoDataFoundException("Symbol does not exist.")
