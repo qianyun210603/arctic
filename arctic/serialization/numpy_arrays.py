@@ -8,21 +8,8 @@ from bson import Binary, SON
 from .._compression import compress, decompress, compress_array
 from ._serializer import Serializer
 
-try:
-    from pandas.api.types import infer_dtype
-except ImportError:
-    from pandas.lib import infer_dtype
-
-try:
-    # pandas >= 0.23.0
-    from pandas._libs.writers import max_len_string_array
-except ImportError:
-    try:
-        # pandas [0.20.0, 0.22.x]
-        from pandas._libs.lib import max_len_string_array
-    except ImportError:
-        # pandas <=  0.19.x
-        from pandas.lib import max_len_string_array
+from pandas.api.types import infer_dtype
+from pandas._libs.writers import max_len_string_array
 
 if int(pd.__version__.split('.')[1]) > 22:
     from functools import partial
@@ -63,8 +50,7 @@ class FrameConverter(object):
         if a.dtype != 'object':
             return a, None
 
-        # We can't infer the type of an empty array, so just
-        # assume strings
+        # We can't infer the type of empty array, so just assume strings
         if len(a) == 0:
             return a.astype('U1'), None
 
