@@ -204,8 +204,7 @@ class FrametoArraySerializer(Serializer):
             if index:
                 columns = columns[:]
                 columns.extend(meta[INDEX])
-            if len(columns) > len(set(columns)):
-                raise Exception("Duplicate columns specified, cannot de-serialize")
+            columns = list(dict.fromkeys(columns))
 
         if not isinstance(data, list):
             df = self.converter.objify(data, columns)
