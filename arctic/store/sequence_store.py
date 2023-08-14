@@ -136,9 +136,9 @@ class SequenceStore(BSONStore):
         `datetime.datetime`
         """
         res = self.find_one({"symbol": symbol})
-        return res.get("last_update", res["start_time"]) if res is not None else None
+        return res.get("last_update") if res is not None else None
 
-    def write(self, symbol, metadata, last_update=None):
+    def write(self, symbol, metadata, last_update=None, overwrite=True):
         """
         Update metadata entry for `symbol`
 
@@ -150,6 +150,8 @@ class SequenceStore(BSONStore):
             to be persisted
         last_update : `datetime.datetime`
             last update time
+        overwrite: `bool`
+            whether to overwrite existing metadata
         """
         if last_update is None:
             last_update = dt.utcnow()
@@ -159,8 +161,14 @@ class SequenceStore(BSONStore):
                 old_metadata["last_update"] = last_update
                 self.find_one_and_update({"symbol": symbol}, {"$set": {"last_update": last_update}})
                 return old_metadata
+            elif overwrite:
+                return self.find_one_and_update(
+                    {"symbol": symbol}, {"$set": {"metadata": metadata, "last_update": last_update}}
+                )
+            else:
+                raise ValueError("conflict data")
         elif metadata is None:
-            return
+            return None
 
         document = {"_id": bson.ObjectId(), "symbol": symbol, "metadata": metadata, "last_update": last_update}
         mongo_retry(self.insert_one)(document)
@@ -172,12 +180,12 @@ class SequenceStore(BSONStore):
         if last_update is None:
             last_update = dt.utcnow()
         if isinstance(new_element, list):
-            self.find_one_and_update(
+            return self.find_one_and_update(
                 {"symbol": symbol},
                 {"$push": {"metadata": {"$each": new_element}}, "$set": {"last_update": last_update}},
             )
         else:
-            self.find_one_and_update(
+            return self.find_one_and_update(
                 {"symbol": symbol}, {"$push": {"metadata": new_element}, "$set": {"last_update": last_update}}
             )
 
