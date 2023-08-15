@@ -360,9 +360,9 @@ class ChunkStore(object):
                          START: start, END: end, SYMBOL: symbol}
                 # chunk = {DATA: Binary(data[DATA][i * MAX_CHUNK_SIZE: (i + 1) * MAX_CHUNK_SIZE])}
                 # chunk[SEGMENT] = i
-                # chunk[START] = meta[START] = start
-                # chunk[END] = meta[END] = end
-                # chunk[SYMBOL] = meta[SYMBOL] = symbol
+                meta[START] = start
+                meta[END] = end
+                meta[SYMBOL] = symbol
                 dates = [chunker.chunk_to_str(start), chunker.chunk_to_str(end), str(chunk[SEGMENT]).encode('ascii')]
                 chunk[SHA] = self._checksum(dates, chunk[DATA])
 
