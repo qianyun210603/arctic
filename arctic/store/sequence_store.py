@@ -266,3 +266,16 @@ class SequenceStore(BSONStore):
             symbol name to delete
         """
         self.delete_one({"symbol": symbol})
+
+    @mongo_retry
+    def rename(self, from_symbol, to_symbol):
+        """
+
+        Args:
+            from_symbol:
+            to_symbol:
+
+        Returns:
+
+        """
+        self.update_many({"symbol": from_symbol}, {"$set": {"symbol": to_symbol}})
