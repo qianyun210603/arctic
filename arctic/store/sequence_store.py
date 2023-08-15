@@ -279,3 +279,25 @@ class SequenceStore(BSONStore):
 
         """
         self.update_many({"symbol": from_symbol}, {"$set": {"symbol": to_symbol}})
+
+    def get_nth_element(self, symbol, n):
+        """
+        Get nth metadata of `symbol`
+
+        Parameters
+        ----------
+        symbol : `str`
+            symbol name to delete
+        n : `int`
+            index of metadata
+
+        Returns
+        -------
+        nth metadata
+        """
+        pipline = [
+            {"$match": {"symbol": symbol}},
+            {"$project": {"metadata": {"$arrayElemAt": ["$metadata", n]}}},
+        ]
+        agg_res = self.aggregate(pipline).next()
+        return agg_res.get("metadata", None)
