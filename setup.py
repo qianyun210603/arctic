@@ -58,10 +58,10 @@ class PyTest(TestCommand):
 
 setup(
     name="arctic",
-    version="1.81.2.dev0",
+    version="1.81.2.dev1",
     author="Man AHL Technology",
     author_email="arctic@man.com",
-    description=("AHL Research Versioned TimeSeries and Tick store"),
+    description="AHL Research Versioned TimeSeries and Tick store",
     license="GPL",
     keywords=["ahl", "keyvalue", "tickstore", "mongo", "timeseries", ],
     url="https://github.com/man-group/arctic",

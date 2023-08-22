@@ -189,71 +189,16 @@ class SequenceStore(BSONStore):
                 {"symbol": symbol}, {"$push": {"metadata": new_element}, "$set": {"last_update": last_update}}
             )
 
-    #
-    # def prepend(self, symbol, metadata, last_update=None):
-    #     """
-    #     Prepend a metadata entry for `symbol`
-    #
-    #     Parameters
-    #     ----------
-    #     symbol : `str`
-    #         symbol name for the item
-    #     metadata : `dict`
-    #         to be persisted
-    #     start_time : `datetime.datetime`
-    #         when metadata becomes effective
-    #         Default: datetime.datetime.min
-    #     """
-    #     if metadata is None:
-    #         return
-    #     if start_time is None:
-    #         start_time = dt.min
-    #     if last_update is None:
-    #         last_update = dt.utcnow()
-    #     old_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.ASCENDING)])
-    #     if old_metadata is not None:
-    #         if old_metadata['start_time'] <= start_time:
-    #             raise ValueError('start_time={} is later than the first metadata @{}'.format(start_time,
-    #                                                                                          old_metadata['start_time']))
-    #         if old_metadata['metadata'] == metadata:
-    #             self.find_one_and_update({'symbol': symbol}, {'$set': {'start_time': start_time, "last_update": last_update}},
-    #                                      sort=[('start_time', pymongo.ASCENDING)])
-    #             old_metadata['start_time'] = start_time
-    #             old_metadata['last_update'] = last_update
-    #             return old_metadata
-    #         end_time = old_metadata.get('start_time')
-    #     else:
-    #         end_time = None
-    #
-    #     document = {'_id': bson.ObjectId(), 'symbol': symbol, 'metadata': metadata, 'start_time': start_time, "last_update": last_update}
-    #     if end_time is not None:
-    #         document['end_time'] = end_time
-    #     mongo_retry(self.insert_one)(document)
-    #
-    #     logger.debug('Finished writing metadata for %s', symbol)
-    #     return document
+    def remove(self, symbol, value):
+        self.update_one({"symbol": symbol}, {"$pull": {"metadata": value}})
 
-    # def pop(self, symbol):
-    #     """
-    #     Delete current metadata of `symbol`
-    #
-    #     Parameters
-    #     ----------
-    #     symbol : `str`
-    #         symbol name to delete
-    #
-    #     Returns
-    #     -------
-    #     Deleted metadata
-    #     """
-    #     last_metadata = self.find_one({'symbol': symbol})
-    #     if last_metadata is None:
-    #         raise NoDataFoundException('No metadata found for symbol {}'.format(symbol))
-    #
-    #     self.find_one_and_delete({'symbol': symbol})
-    #     mongo_retry(self.find_one_and_update)({'symbol': symbol})
-    #
-    #     return last_metadata
+    def insert(self, symbol, index, value, last_update=None):
+        if last_update is None:
+            last_update = dt.utcnow()
+        return self.find_one_and_update(
+            {"symbol": symbol},
+            {"$push": {"metadata": {"$each": [value], "$position": index}}, "$set": {"last_update": last_update}},
+        )
 
     @mongo_retry
     def delete(self, symbol):
@@ -267,7 +212,6 @@ class SequenceStore(BSONStore):
         """
         self.delete_one({"symbol": symbol})
 
-    @mongo_retry
     def rename(self, from_symbol, to_symbol):
         """
 
@@ -280,7 +224,8 @@ class SequenceStore(BSONStore):
         """
         self.update_many({"symbol": from_symbol}, {"$set": {"symbol": to_symbol}})
 
-    def get_nth_element(self, symbol, n):
+    @mongo_retry
+    def get_nth_element(self, symbol, index):
         """
         Get nth metadata of `symbol`
 
@@ -297,7 +242,16 @@ class SequenceStore(BSONStore):
         """
         pipline = [
             {"$match": {"symbol": symbol}},
-            {"$project": {"metadata": {"$arrayElemAt": ["$metadata", n]}}},
+            {"$project": {"metadata": {"$arrayElemAt": ["$metadata", index]}}},
         ]
         agg_res = self.aggregate(pipline).next()
         return agg_res.get("metadata", None)
+
+    def get_slice_values(self, symbol: str, start: int, num: int):
+        return self.find_one(
+            {"symbol": symbol},
+            {"metadata": {"$slice": [start, num]}}
+        ).get("metadata", [])
+
+    def set_nth_element(self, symbol: str, index: int, value):
+        return self.find_one_and_update({"symbol": symbol}, {"$set": {f"metadata.{index}": value}})
