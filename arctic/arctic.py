@@ -165,6 +165,12 @@ class Arctic(object):
             if self.__conn is None:
                 host = get_mongodb_uri(self.mongo_host)
                 logger.info("Connecting to mongo: {0} ({1})".format(self.mongo_host, host))
+
+                # Get the auth details for the admin database
+                auth = get_auth(self.mongo_host, self._application_name, "admin")
+                if auth:
+                    self._pymongo_kwargs.update({"username": auth.user, "password": auth.password})
+
                 self.__conn = pymongo.MongoClient(
                     host=host,
                     maxPoolSize=self._MAX_CONNS,
@@ -175,11 +181,6 @@ class Arctic(object):
                 )
                 self._adminDB = self.__conn.admin
                 self._cache = Cache(self.__conn)
-
-                # Authenticate against admin for the user
-                auth = get_auth(self.mongo_host, self._application_name, "admin")
-                if auth:
-                    authenticate(self._adminDB, auth.user, auth.password)
 
                 # Accessing _conn is synchronous. The new PyMongo driver may be lazier than the previous.
                 # Force a connection.
@@ -536,14 +537,12 @@ class ArcticLibraryBinding(object):
         database_name, library = self._parse_db_lib(library)
         self.library = library
         self.database_name = database_name
-        self._auth(self.arctic._conn[self.database_name])
 
     @property
     def _db(self):
         with self._lock:
             arctic_conn = self.arctic._conn
             if arctic_conn is not self._curr_conn:
-                self._auth(arctic_conn[self.database_name])  # trigger re-authentication if Arctic has been reset
                 self._curr_conn = arctic_conn
         return self.arctic._conn[self.database_name]
 
@@ -568,20 +567,6 @@ class ArcticLibraryBinding(object):
 
     def __setstate__(self, state):
         return ArcticLibraryBinding.__init__(self, state["arctic"], state["library"])
-
-    @mongo_retry
-    def _auth(self, database):
-        # Get .mongopass details here
-        if not hasattr(self.arctic, "mongo_host"):
-            return
-
-        auth = get_auth(self.arctic.mongo_host, self.arctic._application_name, database.name)
-        if auth:
-            authenticate(database, auth.user, auth.password)
-
-    def reset_auth(self):
-        logger.debug("reset_auth() %s" % self)
-        self._auth(self._db)
 
     def get_name(self):
         return self._db.name + "." + self._library_coll.name

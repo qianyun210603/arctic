@@ -58,7 +58,7 @@ class PyTest(TestCommand):
 
 setup(
     name="arctic",
-    version="1.81.2.dev1",
+    version="1.81.2.dev2",
     author="Man AHL Technology",
     author_email="arctic@man.com",
     description="AHL Research Versioned TimeSeries and Tick store",
@@ -78,7 +78,7 @@ setup(
                       "mockextras",
                       "pandas",
                       "numpy",
-                      "pymongo>=3.6.0",
+                      "pymongo>=4.0.0",
                       "pytz",
                       "tzlocal",
                       "lz4",
@@ -110,10 +110,10 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: Implementation :: CPython",
         "Operating System :: POSIX",
         "Operating System :: MacOS",
