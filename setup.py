@@ -78,7 +78,7 @@ setup(
                       "mockextras",
                       "pandas",
                       "numpy",
-                      "pymongo>=3.6.0",
+                      "pymongo>=4.0.0",
                       "pytz",
                       "tzlocal",
                       "lz4",
@@ -110,9 +110,6 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
