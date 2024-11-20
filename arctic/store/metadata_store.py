@@ -350,3 +350,16 @@ class MetadataStore(BSONStore):
             return self.find_one_and_update({'symbol': symbol, 'start_time': start_time}, {"$set": set_dict})
         else:
             return self.find_one_and_update({'symbol': symbol}, {"$set": set_dict}, sort=[('start_time', pymongo.DESCENDING)])
+
+    def rename(self, old_symbol, new_symbol):
+        """
+        Rename a symbol in the metadata store
+
+        Parameters
+        ----------
+        old_symbol : `str`
+            symbol name to rename
+        new_symbol : `str`
+            new symbol name
+        """
+        self.update_many({'symbol': old_symbol}, {'$set': {'symbol': new_symbol}})
