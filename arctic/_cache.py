@@ -70,13 +70,13 @@ class Cache:
     def get(self, key, newer_than_secs=None):
         """
 
-        :param key: Key for the dataset. eg. list_libraries.
+        :param key: Key for the dataset. e.g. list_libraries.
         :param newer_than_secs: None to indicate use cache if available. Used to indicate what level of staleness
         in seconds is tolerable.
-        :return: None unless if there is non stale data present in the cache.
+        :return: None unless if there is non-stale data present in the cache.
         """
         try:
-            if not self._cachecol:
+            if self._cachecol is not None:
                 # Collection not created or no permissions to read from it.
                 return None
             cached_data = self._cachecol.find_one({"type": key})
