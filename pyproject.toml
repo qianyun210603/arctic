@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=64", "wheel", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arctic_new"
+dynamic = ["version"]
+description = "AHL Research Versioned TimeSeries and Tick store"
+readme = "README.md"
+license = "LGPL-2.1-or-later"
+authors = [
+    { name = "Man AHL Technology", email = "arctic@man.com" },
+    { name = "YQ Tsui", email = "qianyun210603@hotmail.com" },
+]
+keywords = ["keyvalue", "tickstore", "chunkstore", "mongo", "timeseries"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Database",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Software Development :: Libraries"
+]
+requires-python = ">=3.11"
+dependencies = [
+    "decorator",
+    "enum-compat",
+    "mock",
+    "mockextras",
+    "pandas>=2.0.0",
+    "numpy",
+    "pymongo>=4.0.0",
+    "pytz",
+    "tzlocal",
+    "lz4"
+]
+
+[project.optional-dependencies]
+tests = [
+    "mock<=2.0.0",
+    "mockextras",
+    "pytest",
+    "pytest-cov",
+    "pytest-server-fixtures",
+    "pytest-timeout",
+    "pytest-xdist<=1.26.1",
+    "tomli",
+    "lz4",
+    "tzlocal"
+]
+
+[project.urls]
+Homepage = "https://github.com/qianyun210603/arctic"
+
+[tool.setuptools]
+packages = { find = { where = ["arctic"] } }
+include-package-data = true
+
+[tool.setuptools.package-data]
+"arctic" = ["data/*.txt"]
+
+[project.scripts]
+arctic_init_library = "arctic.scripts.arctic_init_library:main"
+arctic_list_libraries = "arctic.scripts.arctic_list_libraries:main"
+arctic_delete_library = "arctic.scripts.arctic_delete_library:main"
+arctic_enable_sharding = "arctic.scripts.arctic_enable_sharding:main"
+arctic_copy_data = "arctic.scripts.arctic_copy_data:main"
+arctic_create_user = "arctic.scripts.arctic_create_user:main"
+arctic_prune_versions = "arctic.scripts.arctic_prune_versions:main"
+arctic_fsck = "arctic.scripts.arctic_fsck:main"
+
+[tool.setuptools_scm]
+
+[tool.ruff]
+target-version = "py312"
+output-format = "full"
+line-length = 120
+exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "UP",  # pyupgrade
+    "W",  # pycodestyle warning
+    "PL" # pylint
+]
+ignore = ["UP008", "E501", "PLR0913", "I001", "PLR2004", "PLR0915", "B027", "PLR5501", "PLR0912", "PLR0911"]

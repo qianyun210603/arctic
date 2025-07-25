@@ -16,3 +16,4 @@ junit.xml
 /tmp/
 
 *.sw[op]
+/dist/
