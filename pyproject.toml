@@ -58,7 +58,7 @@ tests = [
 Homepage = "https://github.com/qianyun210603/arctic"
 
 [tool.setuptools]
-packages = { find = { where = ["arctic"] } }
+packages = ["arctic"]
 include-package-data = true
 
 [tool.setuptools.package-data]
