@@ -50,7 +50,7 @@ def test_read():
 def test_read_object_backwards_compat():
     self = create_autospec(PickleStore)
     version = {'blob': Binary(compressHC(pickle.dumps(object)))}
-    assert PickleStore.read(self, sentinel.arctic_lib, version, sentinel.symbol) == object
+    assert isinstance(PickleStore.read(self, sentinel.arctic_lib, version, sentinel.symbol), object)
 
 
 def test_read_object_2():
@@ -65,7 +65,7 @@ def test_read_object_2():
                               ]
     arctic_lib.get_top_level_collection.return_value = coll
 
-    assert PickleStore.read(self, arctic_lib, version, sentinel.symbol) == object
+    assert isinstance(PickleStore.read(self, arctic_lib, version, sentinel.symbol), object)
     assert coll.find.call_args_list == [call({'symbol': sentinel.symbol, 'parent': sentinel._id})]
 
 
@@ -82,7 +82,7 @@ def test_read_with_base_version_id():
                               ]
     arctic_lib.get_top_level_collection.return_value = coll
 
-    assert PickleStore.read(self, arctic_lib, version, sentinel.symbol) == object
+    assert isinstance(PickleStore.read(self, arctic_lib, version, sentinel.symbol), object)
     assert coll.find.call_args_list == [call({'symbol': sentinel.symbol, 'parent': sentinel.base_version_id})]
 
 

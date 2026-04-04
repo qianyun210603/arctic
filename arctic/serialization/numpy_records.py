@@ -340,7 +340,7 @@ class SeriesSerializer(PandasSerializer):
                     unicode_indexes.append(_index)
                 index = unicode_indexes
             else:
-                if len(index) and type(index[0]) == bytes:
+                if len(index) and isinstance(index[0], bytes):
                     index = index.astype('unicode')
 
         if PD_VER < '0.23.0':
@@ -401,7 +401,7 @@ class DataFrameSerializer(PandasSerializer):
                 # which is converted to u"b'abc'" i.e it includes the b character as well! This generally happens
                 # when there is a str conversion without specifying the encoding. eg. str(b'abc') -> "b'abc'" and the
                 # fix for this is to tell it the encoding to use: i.e str(b'abc', 'utf-8') -> "abc"
-                if type(df[c].iloc[0]) == bytes:
+                if isinstance(df[c].iloc[0], bytes):
                     df[c] = df[c].str.decode('utf-8')
 
             if isinstance(df.index, MultiIndex):
@@ -414,10 +414,10 @@ class DataFrameSerializer(PandasSerializer):
                     unicode_indexes.append(_index)
                 df.index = unicode_indexes
             else:
-                if type(df.index[0]) == bytes:
+                if isinstance(df.index[0], bytes):
                     df.index = df.index.astype('unicode')
 
-            if not df.columns.empty and type(df.columns[0]) == bytes:
+            if not df.columns.empty and isinstance(df.columns[0], bytes):
                 df.columns = df.columns.astype('unicode')
 
         return df
