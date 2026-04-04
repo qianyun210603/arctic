@@ -56,7 +56,7 @@ class CustomArcticLibType(object):
         self._sub_collection = self._collection.sub_collection
 
         # The name of this library
-        print("My name is %s" % arctic_lib.get_name())
+        print(f"My name is {arctic_lib.get_name()}")
 
         # Fetch some per-library metadata for this library
         self.some_metadata = arctic_lib.get_library_metadata('some_metadata')

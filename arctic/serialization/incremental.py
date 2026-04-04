@@ -29,7 +29,7 @@ class LazyIncrementalSerializer(ABC):
     def __init__(self, serializer, input_data, chunk_size):
         if chunk_size < 1:
             raise ArcticSerializationException("LazyIncrementalSerializer can't be initialized "
-                                               "with chunk_size < 1 ({})".format(chunk_size))
+                                               f"with chunk_size < 1 ({chunk_size})")
         if not serializer:
             raise ArcticSerializationException("LazyIncrementalSerializer can't be initialized "
                                                "with a None serializer object")
@@ -67,7 +67,7 @@ class IncrementalPandasToRecArraySerializer(LazyIncrementalSerializer):
                                                "Series as data source input.")
         if string_max_len and string_max_len < 1:
             raise ArcticSerializationException("IncrementalPandasToRecArraySerializer can't be initialized "
-                                               "with string_max_len < 1 ({})".format(string_max_len))
+                                               f"with string_max_len < 1 ({string_max_len})")
         self.string_max_len = string_max_len
         # The state which needs to be lazily initialized
         self._dtype = None
@@ -82,7 +82,7 @@ class IncrementalPandasToRecArraySerializer(LazyIncrementalSerializer):
             return input_ndtype, False
         type_sym = 'S' if input_ndtype.type == np.string_ else 'U'
         max_str_len = len(max(self.input_data[fname].astype(type_sym), key=len))
-        str_field_dtype = np.dtype('{}{:d}'.format(type_sym, max_str_len)) if max_str_len > 0 else input_ndtype
+        str_field_dtype = np.dtype(f'{type_sym}{max_str_len:d}') if max_str_len > 0 else input_ndtype
         return str_field_dtype, True
 
     def _get_dtype(self):
@@ -149,8 +149,8 @@ class IncrementalPandasToRecArraySerializer(LazyIncrementalSerializer):
         rows_per_chunk = int(max_chunk_size / sze)
         if rows_per_chunk < 1 and ARCTIC_AUTO_EXPAND_CHUNK_SIZE:
             # If a row size is larger than chunk_size, use the maximum document size
-            logging.warning('Chunk size of {} is too small to fit a row ({}). '
-                            'Using maximum document size.'.format(max_chunk_size, MAX_DOCUMENT_SIZE))
+            logging.warning(f'Chunk size of {max_chunk_size} is too small to fit a row ({MAX_DOCUMENT_SIZE}). '
+                            'Using maximum document size.')
             # For huge rows, fall-back to using a very large document size, less than max-allowed by MongoDB
             rows_per_chunk = int(MAX_DOCUMENT_SIZE / sze)
         if rows_per_chunk < 1:

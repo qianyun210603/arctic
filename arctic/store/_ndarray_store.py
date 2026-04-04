@@ -65,8 +65,7 @@ def _attempt_update_unchanged(symbol, unchanged_segment_ids, collection, version
             'segment': {'$lte': unchanged_segment_ids[-1]['segment']}}
     matched_segments_ids = set([x['_id'] for x in collection.find(spec)])
     if unchanged_ids != matched_segments_ids:
-        logger.error("Mismatched unchanged segments for {}: {} != {} (query spec={})".format(
-            symbol, unchanged_ids, matched_segments_ids, spec))
+        logger.error(f"Mismatched unchanged segments for {symbol}: {unchanged_ids} != {matched_segments_ids} (query spec={spec})")
         raise DataIntegrityException("Symbol: {}:{} update_many updated {} segments instead of {}".format(
             symbol, previous_version['version'], result.matched_count, len(unchanged_segment_ids)))
 
@@ -414,7 +413,7 @@ class NdarrayStore(object):
 
         if str(dtype) != previous_version['dtype'] or \
                 _fw_pointers_convert_append_to_write(previous_version):
-            logger.debug('Converting %s from %s to %s' % (symbol, previous_version['dtype'], str(dtype)))
+            logger.debug(f"Converting {symbol} from {previous_version['dtype']} to {str(dtype)}")
             if item.dtype.hasobject:
                 raise UnhandledDtypeException()
             version['dtype'] = str(dtype)
@@ -534,26 +533,22 @@ class NdarrayStore(object):
             unchanged_segments.append(segment)
 
         # Found all the chunks which aren't part of an append
-        if len(unchanged_segments) < previous_version['segment_count'] - previous_version['append_count'] - 1:
-            raise DataIntegrityException("Symbol: %s:%s expected %s segments but found %s" %
-                                         (symbol, previous_version['version'],
-                                          previous_version['segment_count'] - previous_version['append_count'] - 1,
-                                          len(unchanged_segments)
-                                          ))
+        prev_count_diff = previous_version['segment_count'] - previous_version['append_count'] - 1
+        if len(unchanged_segments) < prev_count_diff:
+            raise DataIntegrityException(f"Symbol: {symbol}:{previous_version['version']} expected {prev_count_diff} segments but found {len(unchanged_segments)}")
         if unchanged_segments:
             read_index_range[0] = unchanged_segments[-1]['segment'] + 1
 
         # Only read back the section that needs to be compressed here (index_range=...)
         old_arr = self._do_read(collection, previous_version, symbol, index_range=read_index_range)
         if len(item) == 0:
-            logger.debug('Rewrite and compress/chunk item %s, rewrote old_arr' % symbol)
+            logger.debug(f'Rewrite and compress/chunk item {symbol}, rewrote old_arr')
             self._do_write(collection, version, symbol, old_arr, previous_version, segment_offset=read_index_range[0])
         elif len(old_arr) == 0:
-            logger.debug('Rewrite and compress/chunk item %s, wrote item' % symbol)
+            logger.debug(f'Rewrite and compress/chunk item {symbol}, wrote item')
             self._do_write(collection, version, symbol, item, previous_version, segment_offset=read_index_range[0])
         else:
-            logger.debug("Rewrite and compress/chunk %s, np.concatenate %s to %s" % (symbol,
-                                                                                     item.dtype, old_arr.dtype))
+            logger.debug(f"Rewrite and compress/chunk {symbol}, np.concatenate {item.dtype} to {old_arr.dtype}")
             self._do_write(collection, version, symbol, np.concatenate([old_arr, item]), previous_version,
                            segment_offset=read_index_range[0])
         if unchanged_segments:
@@ -580,19 +575,16 @@ class NdarrayStore(object):
         seen_chunks = mongo_count(collection, filter=spec)
 
         if seen_chunks != version['segment_count']:
-            raise pymongo.errors.OperationFailure("Failed to write all the chunks. Saw %s expecting %s. "
-                                                  "Parent: %s. Segments: %s" %
-                                                  (seen_chunks, version['segment_count'], parent_id,
-                                                   list(collection.find(spec, projection={'_id': 1, 'segment': 1}))))
+            raise pymongo.errors.OperationFailure(f"Failed to write all the chunks. Saw {seen_chunks} expecting {version['segment_count']}. "
+                                                  f"Parent: {parent_id}. Segments: {list(collection.find(spec, projection={'_id': 1, 'segment': 1}))}")
 
         if version.get(FW_POINTERS_CONFIG_KEY) == FwPointersCfg.HYBRID.name and ARCTIC_FORWARD_POINTERS_RECONCILE:
             seen_chunks_reverse_pointers = mongo_count(collection, filter={'symbol': symbol, 'parent': parent_id})
             if seen_chunks != seen_chunks_reverse_pointers:
-                raise pymongo.errors.OperationFailure("Failed to reconcile forward pointer chunks ({}). "
-                                                      "Parent {}. "
-                                                      "Reverse pointers segments #: {}. "
-                                                      "Forward pointers segments #: {}.".format(
-                    symbol, parent_id, seen_chunks_reverse_pointers, seen_chunks))
+                raise pymongo.errors.OperationFailure(f"Failed to reconcile forward pointer chunks ({symbol}). "
+                                                      f"Parent {parent_id}. "
+                                                      f"Reverse pointers segments #: {seen_chunks_reverse_pointers}. "
+                                                      f"Forward pointers segments #: {seen_chunks}.")
 
     def checksum(self, item):
         sha = hashlib.sha1()
@@ -704,7 +696,7 @@ class NdarrayStore(object):
             try:
                 collection.bulk_write(bulk, ordered=False)
             except BulkWriteError as bwe:
-                logger.error("Bulk write failed with details: %s (Exception: %s)" % (bwe.details, bwe))
+                logger.error(f"Bulk write failed with details: {bwe.details} (Exception: {bwe})")
                 raise
 
         segment_index = self._segment_index(item, existing_index=existing_index, start=segment_offset,

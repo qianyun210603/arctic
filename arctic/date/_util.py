@@ -62,7 +62,7 @@ def string_to_daterange(str_range, delimiter='-', as_dates=False, interval=CLOSE
     """
     num_dates = str_range.count(delimiter) + 1
     if num_dates > 2:
-        raise ValueError('Too many dates in input string [%s] with delimiter (%s)' % (str_range, delimiter))
+        raise ValueError(f'Too many dates in input string [{str_range}] with delimiter ({delimiter})')
 
     # Allow the user to use the [date-date), etc. range syntax to specify the interval.
     range_mode = Ranges.get(str_range[0] + str_range[-1], None)
@@ -148,7 +148,7 @@ def to_pandas_closed_closed(date_range, add_tz=True):
 def ms_to_datetime(ms, tzinfo=None):
     """Convert a millisecond time value to an offset-aware Python datetime object."""
     if not isinstance(ms, (int, long)):
-        raise TypeError('expected integer, not %s' % type(ms))
+        raise TypeError(f'expected integer, not {type(ms)}')
 
     if tzinfo is None:
         tzinfo = mktz()
@@ -179,7 +179,7 @@ def datetime_to_ms(d):
             else:
                 return calendar.timegm(tmp.utctimetuple()) * 1000 + millisecond
     except AttributeError:
-        raise TypeError('expect Python datetime object, not %s' % type(d))
+        raise TypeError(f'expect Python datetime object, not {type(d)}')
 
 
 def utc_dt_to_local_dt(dtm):
@@ -187,9 +187,7 @@ def utc_dt_to_local_dt(dtm):
     utc_zone = mktz("UTC")
     if dtm.tzinfo is not None and dtm.tzinfo != utc_zone:
         raise ValueError(
-            "Expected dtm without tzinfo or with UTC, not %r" % (
-                dtm.tzinfo
-            )
+            f"Expected dtm without tzinfo or with UTC, not {dtm.tzinfo!r}"
         )
 
     if dtm.tzinfo is None:

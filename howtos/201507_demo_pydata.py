@@ -112,10 +112,7 @@ def read_all_data_from_lib(lib):
     rows_read = 0
     for s in lib.list_symbols():
         rows_read += len(lib.read(s).data)
-    print("Symbols: %s Rows: %s  Time: %s  Rows/s: %s" % (len(lib.list_symbols()),
-                                                          rows_read,
-                                                          (time.time() - start),
-                                                          rows_read / (time.time() - start)))
+    print(f"Symbols: {len(lib.list_symbols())} Rows: {rows_read}  Time: {time.time() - start}  Rows/s: {rows_read / (time.time() - start)}")
 
 
 read_all_data_from_lib(lib)

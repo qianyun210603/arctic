@@ -52,7 +52,7 @@ class MetadataStore(BSONStore):
         return MetadataStore.__init__(self, state['arctic_lib'])
 
     def __str__(self):
-        return """<%s at %s>\n%s""" % (self.__class__.__name__, hex(id(self)), indent(str(self._arctic_lib), 4))
+        return f"""<{self.__class__.__name__} at {hex(id(self))}>\n{indent(str(self._arctic_lib), 4)}"""
 
     def __repr__(self):
         return str(self)
@@ -321,7 +321,7 @@ class MetadataStore(BSONStore):
         """
         last_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
         if last_metadata is None:
-            raise NoDataFoundException('No metadata found for symbol {}'.format(symbol))
+            raise NoDataFoundException(f'No metadata found for symbol {symbol}')
 
         self.find_one_and_delete({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
         mongo_retry(self.find_one_and_update)({'symbol': symbol}, {'$unset': {'end_time': ''}},
@@ -339,7 +339,7 @@ class MetadataStore(BSONStore):
         symbol : `str`
             symbol name to delete
         """
-        logger.warning("Deleting entire metadata history for %r from %r" % (symbol, self._arctic_lib.get_name()))
+        logger.warning(f"Deleting entire metadata history for {symbol} from {self._arctic_lib.get_name()}")
         self.delete_many({'symbol': symbol})
 
     def amend(self, symbol, new_metadata, start_time=None, last_update=None):

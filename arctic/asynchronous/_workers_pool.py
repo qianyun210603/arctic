@@ -16,7 +16,7 @@ def _looping_task(shutdown_flag, fun, *args, **kwargs):
         try:
             fun(*args, **kwargs)
         except Exception as e:
-            logging.exception("Task failed {}".format(fun))
+            logging.exception(f"Task failed {fun}")
             raise e
 
 
@@ -24,7 +24,7 @@ def _exec_task(fun, *args, **kwargs):
     try:
         fun(*args, **kwargs)
     except Exception as e:
-        logging.exception("Task failed {}".format(fun))
+        logging.exception(f"Task failed {fun}")
         raise e
 
 
@@ -76,11 +76,11 @@ class LazySingletonTasksCoordinator(ABC):
     def __init__(self, pool_size):
         # Only allow creation via get_instance
         if not type(self)._SINGLETON_LOCK._is_owned():
-            raise AsyncArcticException("{} is a singleton, can't create a new instance".format(type(self)))
+            raise AsyncArcticException(f"{type(self)} is a singleton, can't create a new instance")
 
         pool_size = int(pool_size)
         if pool_size < 1:
-            raise ValueError("{} can't be instantiated with a pool_size of {}".format(type(self), pool_size))
+            raise ValueError(f"{type(self)} can't be instantiated with a pool_size of {pool_size}")
 
         # Enforce the singleton pattern
         with type(self)._SINGLETON_LOCK:

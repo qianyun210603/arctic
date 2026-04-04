@@ -89,16 +89,16 @@ class TopLevelTickStore(object):
         except Exception as e:
             logger.error("Could not load library")
             raise e
-        assert date_range.start and date_range.end, "Date range should have start and end properties {}".format(date_range)
+        assert date_range.start and date_range.end, f"Date range should have start and end properties {date_range}"
         start = date_range.start.astimezone(mktz('UTC')) if date_range.start.tzinfo is not None else date_range.start.replace(tzinfo=mktz('UTC'))
         end = date_range.end.astimezone(mktz('UTC')) if date_range.end.tzinfo is not None else date_range.end.replace(tzinfo=mktz('UTC'))
-        assert start.time() == time.min and end.time() == end_time_min, "Date range should fall on UTC day boundaries {}".format(date_range)
+        assert start.time() == time.min and end.time() == end_time_min, f"Date range should fall on UTC day boundaries {date_range}"
         # check that the date range does not overlap
         library_metadata = self._get_library_metadata(date_range)
         if len(library_metadata) > 1 or (len(library_metadata) == 1 and library_metadata[0] != library_name):
-            raise OverlappingDataException("""There are libraries that overlap with the date range:
-library: {}
-overlapping libraries: {}""".format(library_name, [lib.library for lib in library_metadata]))
+            raise OverlappingDataException(f"""There are libraries that overlap with the date range:
+library: {library_name}
+overlapping libraries: {[lib.library for lib in library_metadata]}""")
         self._collection.update_one({'library_name': library_name},
                                     {'$set': {'start': start, 'end': end}}, upsert=True)
 
@@ -113,7 +113,7 @@ overlapping libraries: {}""".format(library_name, [lib.library for lib in librar
             except NoDataFoundException as e:
                 continue
         if len(dfs) == 0:
-            raise NoDataFoundException("No Data found for {} in range: {}".format(symbol, date_range))
+            raise NoDataFoundException(f"No Data found for {symbol} in range: {date_range}")
         return pd.concat(dfs)
 
     def write(self, symbol, data):
@@ -163,7 +163,7 @@ overlapping libraries: {}""".format(library_name, [lib.library for lib in librar
         if date_range.end is None or current_start < date_range.end:
             name = self.get_name()
             db_name, tick_type = name.split('.', 1)
-            current_lib = "{}_current.{}".format(db_name, tick_type)
+            current_lib = f"{db_name}_current.{tick_type}"
             try:
                 rtn.append(TickStoreLibrary(self._arctic_lib.arctic[current_lib],
                                             DateRange(current_start, None, OPEN_OPEN)))
@@ -183,7 +183,7 @@ overlapping libraries: {}""".format(library_name, [lib.library for lib in librar
         elif isinstance(data, pd.DataFrame):
             return data[start:end]
         else:
-            raise UnhandledDtypeException("Can't persist type %s to tickstore" % type(data))
+            raise UnhandledDtypeException(f"Can't persist type {type(data)} to tickstore")
 
     def _get_library_metadata(self, date_range):
         """
@@ -195,7 +195,7 @@ overlapping libraries: {}""".format(library_name, [lib.library for lib in librar
         if date_range is None:
             raise Exception("A date range must be provided")
         if not (date_range.start and date_range.end):
-            raise Exception("The date range {0} must contain a start and end date".format(date_range))
+            raise Exception(f"The date range {date_range} must contain a start and end date")
 
         start = date_range.start if date_range.start.tzinfo is not None else date_range.start.replace(tzinfo=mktz())
         end = date_range.end if date_range.end.tzinfo is not None else date_range.end.replace(tzinfo=mktz())

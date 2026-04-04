@@ -390,7 +390,7 @@ def test_get_library_not_initialized():
          patch('arctic.arctic.ArcticLibraryBinding', autospec=True) as ML:
         ML.return_value.get_library_type.return_value = None
         Arctic.get_library(self, sentinel.lib_name)
-    assert "Library %s was not correctly initialized in %s." % (sentinel.lib_name, self) in str(e.value)
+    assert f"Library {sentinel.lib_name} was not correctly initialized in {self}." in str(e.value)
 
 
 def test_get_library_auth_issue():
@@ -400,7 +400,7 @@ def test_get_library_auth_issue():
          patch('arctic.arctic.ArcticLibraryBinding', autospec=True) as ML:
         ML.return_value.get_library_type.side_effect = OperationFailure('database error: not authorized for query on arctic_marketdata.index.ARCTIC')
         Arctic.get_library(self, sentinel.lib_name)
-    assert "Library %s was not correctly initialized in %s." % (sentinel.lib_name, self) in str(e.value)
+    assert f"Library {sentinel.lib_name} was not correctly initialized in {self}." in str(e.value)
 
 
 def test_get_library_not_registered():
@@ -410,8 +410,7 @@ def test_get_library_not_registered():
          patch('arctic.arctic.ArcticLibraryBinding', autospec=True) as ML:
         ML.return_value.get_library_type.return_value = sentinel.lib_type
         Arctic.get_library(self, sentinel.lib_name)
-    assert ("Couldn't load LibraryType '%s' for '%s' (has the class been registered?)" %
-            (sentinel.lib_type, sentinel.lib_name)
+    assert (f"Couldn't load LibraryType '{sentinel.lib_type}' for '{sentinel.lib_name}' (has the class been registered?)"
             )in str(e.value)
 
 

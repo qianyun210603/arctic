@@ -50,9 +50,9 @@ def test_copy_data_no_force(arctic, mongo_host):
 
     assert_frame_equal(ts, arctic[dest].read('some_ts').data)
     assert_frame_equal(ts1, arctic[dest].read('some_ts1').data)
-    assert logger.info.call_args_list == [call('Copying data from %s -> %s' % (src_host, dest_host)),
+    assert logger.info.call_args_list == [call(f'Copying data from {src_host} -> {dest_host}'),
                                           call('Copying: 2 symbols')]
-    assert logger.warn.call_args_list == [call('Symbol: some_ts already exists in %s, use --force to overwrite or --splice to join with existing data' % dest_host)]
+    assert logger.warn.call_args_list == [call(f'Symbol: some_ts already exists in {dest_host}, use --force to overwrite or --splice to join with existing data')]
     assert arctic[dest].read_audit_log('some_ts1')[0]['message'] == 'CR101'
 
 
@@ -74,7 +74,7 @@ def test_copy_data_force(arctic, mongo_host):
 
     assert_frame_equal(ts, arctic[dest].read('some_ts').data)
     assert_frame_equal(ts1, arctic[dest].read('some_ts1').data)
-    assert logger.info.call_args_list == [call('Copying data from %s -> %s' % (src_host, dest_host)),
+    assert logger.info.call_args_list == [call(f'Copying data from {src_host} -> {dest_host}'),
                                           call('Copying: 2 symbols')]
     assert logger.warn.call_args_list == [call('Symbol: some_ts already exists in destination, OVERWRITING')]
     assert arctic[dest].read_audit_log('some_ts1')[0]['message'] == 'CR101'
@@ -98,7 +98,7 @@ def test_copy_data_splice(arctic, mongo_host):
 
     assert_frame_equal(ts3, arctic[dest].read('some_ts').data)
     assert_frame_equal(ts1, arctic[dest].read('some_ts1').data)
-    assert logger.info.call_args_list == [call('Copying data from %s -> %s' % (src_host, dest_host)),
+    assert logger.info.call_args_list == [call(f'Copying data from {src_host} -> {dest_host}'),
                                           call('Copying: 2 symbols')]
     assert logger.warn.call_args_list == [call('Symbol: some_ts already exists in destination, splicing in new data')]
 
@@ -123,7 +123,7 @@ def test_copy_data_wild(arctic, mongo_host):
     assert_frame_equal(ts, arctic[dest].read('some_a_ts').data)
     assert_frame_equal(ts1, arctic[dest].read('some_a_ts1').data)
     assert_frame_equal(ts1, arctic[dest].read('some_b_ts1').data)
-    assert logger.info.call_args_list == [call('Copying data from %s -> %s' % (src_host, dest_host)),
+    assert logger.info.call_args_list == [call(f'Copying data from {src_host} -> {dest_host}'),
                                           call('Copying: 3 symbols')]
     assert arctic[dest].read_audit_log('some_a_ts1')[0]['message'] == 'CR101'
 
@@ -138,6 +138,6 @@ def test_copy_data_doesnt_exist(arctic, mongo_host):
     with patch('arctic.scripts.arctic_copy_data.logger') as logger:
         run_as_main(mcd.main, '--src', src_host, '--dest', dest_host, '--log', 'CR101', 'some_ts')
 
-    assert logger.info.call_args_list == [call('Copying data from %s -> %s' % (src_host, dest_host)),
+    assert logger.info.call_args_list == [call(f'Copying data from {src_host} -> {dest_host}'),
                                           call('Copying: 0 symbols')]
     assert logger.warn.call_args_list == [call('No symbols found that matched those provided.')]

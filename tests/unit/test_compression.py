@@ -38,7 +38,7 @@ def test_decompress():
 
 
 def test_decompress_array():
-    ll = [('foo%s' % i).encode('ascii') for i in range(100)]
+    ll = [f'foo{i}'.encode('ascii') for i in range(100)]
     assert decompress_array(compress_array(ll)) == ll
 
 

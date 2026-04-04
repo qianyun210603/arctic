@@ -13,10 +13,10 @@ def authenticate(db, user, password):
     PyMongo 2.6 changed the auth API to raise on Auth failure.
     """
     try:
-        logger.debug("Authenticating {} with {}".format(db, user))
+        logger.debug(f"Authenticating {db} with {user}")
         return db.authenticate(user, password)
     except OperationFailure as e:
-        logger.debug("Auth Error %s" % e)
+        logger.debug(f"Auth Error {e}")
     return False
 
 

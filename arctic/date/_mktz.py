@@ -33,7 +33,7 @@ def mktz(zone=None):
 
     tz = dateutil.tz.gettz(zone)
     if not tz:
-        raise TimezoneError('Timezone "%s" can not be read' % (zone))
+        raise TimezoneError(f'Timezone "{zone}" can not be read')
     # Stash the zone name as an attribute (as pytz does)
     if not hasattr(tz, 'zone'):
         tz.zone = zone

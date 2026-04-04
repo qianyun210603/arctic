@@ -42,7 +42,7 @@ class SequenceStore(BSONStore):
         return SequenceStore.__init__(self, state["arctic_lib"])
 
     def __str__(self):
-        return """<%s at %s>\n%s""" % (self.__class__.__name__, hex(id(self)), indent(str(self._arctic_lib), 4))
+        return f"""<{self.__class__.__name__} at {hex(id(self))}>\n{indent(str(self._arctic_lib), 4)}"""
 
     def __repr__(self):
         return str(self)

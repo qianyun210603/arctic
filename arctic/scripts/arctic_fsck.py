@@ -29,7 +29,7 @@ def main():
     if not opts.f:
         logger.info("DRY-RUN: No changes will be made.")
 
-    logger.info("FSCK'ing: %s on mongo %s" % (opts.library, opts.host))
+    logger.info(f"FSCK'ing: {opts.library} on mongo {opts.host}")
     store = Arctic(get_mongodb_uri(opts.host))
 
     for lib in opts.library:
@@ -47,22 +47,18 @@ def main():
 
         final_stats = store[lib].stats()
         logger.info('Stats:')
-        logger.info('Sharded:        %s' % final_stats['chunks'].get('sharded', False))
+        logger.info('Sharded:        {}'.format(final_stats['chunks'].get('sharded', False)))
         logger.info('Symbols:  %10d' % len(store[lib].list_symbols()))
         logger.info('Versions: %10d   Change(+/-) %6d  (av: %.2fMB)' %
                     (final_stats['versions']['count'],
                      final_stats['versions']['count'] - orig_stats['versions']['count'],
                      final_stats['versions'].get('avgObjSize', 0) / 1024. / 1024.))
-        logger.info("Versions: %10.2fMB Change(+/-) %.2fMB" %
-                    (final_stats['versions']['size'] / 1024. / 1024.,
-                     (final_stats['versions']['size'] - orig_stats['versions']['size']) / 1024. / 1024.))
+        logger.info(f"Versions: {final_stats['versions']['size'] / 1024. / 1024.:10.2f}MB Change(+/-) {(final_stats['versions']['size'] - orig_stats['versions']['size']) / 1024. / 1024.:.2f}MB")
         logger.info('Chunk Count: %7d   Change(+/-) %6d  (av: %.2fMB)' %
                     (final_stats['chunks']['count'],
                      final_stats['chunks']['count'] - orig_stats['chunks']['count'],
                      final_stats['chunks'].get('avgObjSize', 0) / 1024. / 1024.))
-        logger.info("Chunks: %12.2fMB Change(+/-) %6.2fMB" %
-                    (final_stats['chunks']['size'] / 1024. / 1024.,
-                     (final_stats['chunks']['size'] - orig_stats['chunks']['size']) / 1024. / 1024.))
+        logger.info(f"Chunks: {final_stats['chunks']['size'] / 1024. / 1024.:12.2f}MB Change(+/-) {(final_stats['chunks']['size'] - orig_stats['chunks']['size']) / 1024. / 1024.:6.2f}MB")
         logger.info('----------------------------')
 
     if not opts.f:

@@ -32,10 +32,10 @@ def f(library_name, total_writes, do_reset):
     for i in range(total_writes):
         if i % 20 == 0:  # add some randomisation, make sure that processes are multiplexed across time
             time.sleep(random())
-        key = "{}_{}".format(my_pid, i)
+        key = f"{my_pid}_{i}"
         vstore.write(key, data + [key])
     for i in range(total_writes):
-        key = "{}_{}".format(my_pid, i)
+        key = f"{my_pid}_{i}"
         assert vstore.read(key).data == data + [key]
 
 

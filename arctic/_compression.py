@@ -47,7 +47,7 @@ def set_compression_pool_size(pool_size):
     """
     pool_size = int(pool_size)
     if pool_size < 1:
-        raise ValueError("The compression thread pool size cannot be of size {}".format(pool_size))
+        raise ValueError(f"The compression thread pool size cannot be of size {pool_size}")
 
     global _compress_thread_pool
     if _compress_thread_pool is not None:

@@ -48,10 +48,10 @@ def test_performance_sequential(n, length):
     [lz4_decompress(y) for y in [lz4_compress(x) for x in _strarr]]
     lz4_time = (dt.now() - now).total_seconds()
     print()
-    print("LZ4 Test %sx len:%s" % (n, length))
-    print("    LZ4 HC %s s" % clz4_time)
-    print("    LZ4 HC Parallel %s s" % clz4_time_p)
-    print("    LZ4 %s s" % lz4_time)
+    print(f"LZ4 Test {n}x len:{length}")
+    print(f"    LZ4 HC {clz4_time} s")
+    print(f"    LZ4 HC Parallel {clz4_time_p} s")
+    print(f"    LZ4 {lz4_time} s")
 
 
 def random_string(N):

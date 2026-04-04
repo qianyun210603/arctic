@@ -14,7 +14,7 @@ def n_append(library, library_name, total_appends, rows_per_append, bulk_data_ts
     for i in range(total_appends):
         first_row = start_idx + i * rows_per_append
         open_last_row = start_idx + (i + 1) * rows_per_append
-        snap = 'snap_{}'.format(first_row)
+        snap = f'snap_{first_row}'
         library.append(symbol, bulk_data_ts[first_row:open_last_row],
                        metadata={'snap': snap},
                        prune_previous_version=do_prune)
@@ -69,7 +69,7 @@ def test_no_corruption_restore_append_overlapping(library, library_name):
 
     # Corrupts all versions between the version that row "restore_from_row" was written,
     restore_from_row = rows_per_append * 10
-    library.restore_version(symbol, 'snap_{}'.format(restore_from_row))
+    library.restore_version(symbol, f'snap_{restore_from_row}')
     library.append(symbol, large_ts[restore_from_row:restore_from_row + 50])
 
     last_v = library._versions.find_one(sort=[('version', pymongo.DESCENDING)])
@@ -96,7 +96,7 @@ def test_no_corruption_restore_writemeta_append(library, library_name):
 
     # Corrupts all versions between the version that row "restore_from_row" was written,
     restore_from_row = rows_per_append * 10
-    library.restore_version(symbol, 'snap_{}'.format(restore_from_row))
+    library.restore_version(symbol, f'snap_{restore_from_row}')
 
     library.write_metadata(symbol, metadata={'abc3': 'xyz3'})
 

@@ -140,8 +140,8 @@ class TickStore(object):
         return TickStore.__init__(self, state['arctic_lib'])
 
     def __str__(self):
-        return """<%s at %s>
-%s""" % (self.__class__.__name__, hex(id(self)), indent(str(self._arctic_lib), 4))
+        return f"""<{self.__class__.__name__} at {hex(id(self))}>
+{indent(str(self._arctic_lib), 4)}"""
 
     def __repr__(self):
         return str(self)
@@ -228,7 +228,7 @@ class TickStore(object):
             assert date_range.end.tzinfo
             last_dt = date_range.end
         else:
-            logger.info("No end provided.  Loading a month for: {}:{}".format(symbol, first_dt))
+            logger.info(f"No end provided.  Loading a month for: {symbol}:{first_dt}")
             if not first_dt:
                 first_doc = self._collection.find_one(self._symbol_query(symbol),
                                                       projection={START: 1, ID: 0},
@@ -303,7 +303,7 @@ class TickStore(object):
                                (START, 1),
                                (VERSION, 1),
                                (IMAGE_DOC, 1)] +
-                              [(COLUMNS + '.%s' % c, 1) for c in columns])
+                              [(COLUMNS + f'.{c}', 1) for c in columns])
             column_set.update([c for c in columns if c != 'SYMBOL'])
         else:
             projection = dict([(SYMBOL, 1),
@@ -331,7 +331,7 @@ class TickStore(object):
                 break
 
         if not rtn:
-            raise NoDataFoundException("No Data found for {} in range: {}".format(symbol, date_range))
+            raise NoDataFoundException(f"No Data found for {symbol} in range: {date_range}")
         rtn = self._pad_and_fix_dtypes(rtn, column_dtypes)
 
         index = pd.DatetimeIndex(np.concatenate(rtn[INDEX]).astype('datetime64[ms]'), tz='UTC')
@@ -351,7 +351,7 @@ class TickStore(object):
             arrays = [a[sort] for a in arrays]
 
         t = (dt.now() - perf_start).total_seconds()
-        logger.info("Got data in %s secs, creating DataFrame..." % t)
+        logger.info(f"Got data in {t} secs, creating DataFrame...")
         if pd.__version__.startswith("0.") or pd.__version__.startswith("1.0"):
             mgr = _arrays_to_mgr(arrays, columns, index, columns, dtype=None)
         else:
@@ -446,7 +446,7 @@ class TickStore(object):
         for field in set(document).difference(set(image)):
             if field == INDEX:
                 continue
-            logger.debug("Field %s is missing from image!" % field)
+            logger.debug(f"Field {field} is missing from image!")
             if document[field] is not None:
                 val = np.nan
                 document[field] = np.insert(document[field], 0, document[field].dtype.type(val))
@@ -455,7 +455,7 @@ class TickStore(object):
     def _read_bucket(self, doc, column_set, column_dtypes, include_symbol, include_images, columns):
         rtn = {}
         if doc[VERSION] != 3:
-            raise ArcticException("Unhandled document version: %s" % doc[VERSION])
+            raise ArcticException(f"Unhandled document version: {doc[VERSION]}")
         # np.cumsum copies the read-only array created with frombuffer
         rtn[INDEX] = np.cumsum(np.frombuffer(lz4_decompress(doc[INDEX]), dtype='uint64'))
         doc_length = len(rtn[INDEX])
@@ -561,8 +561,7 @@ class TickStore(object):
                 doc[END] = doc[END].replace(tzinfo=mktz('UTC'))
             if doc[END] > start:
                 raise OverlappingDataException(
-                    "Document already exists with start:{} end:{} in the range of our start:{} end:{}".format(
-                        doc[START], doc[END], start, end))
+                    f"Document already exists with start:{doc[START]} end:{doc[END]} in the range of our start:{start} end:{end}")
 
     def write(self, symbol, data, initial_image=None, metadata=None):
         """
@@ -593,7 +592,7 @@ class TickStore(object):
             end = data.index[-1].to_pydatetime()
             pandas = True
         else:
-            raise UnhandledDtypeException("Can't persist type %s to tickstore" % type(data))
+            raise UnhandledDtypeException(f"Can't persist type {type(data)} to tickstore")
         self._assert_nonoverlapping_data(symbol, to_dt(start), to_dt(end))
 
         if pandas:
@@ -652,7 +651,7 @@ class TickStore(object):
         elif dtype.kind == 'U':
             return 'U%d' % (dtype.itemsize / 4)
         else:
-            raise UnhandledDtypeException("Bad dtype '%s'" % dtype)
+            raise UnhandledDtypeException(f"Bad dtype '{dtype}'")
 
     @staticmethod
     def _ensure_supported_dtypes(array):
@@ -673,7 +672,7 @@ class TickStore(object):
             except:
                 raise UnhandledDtypeException("Only unicode and utf8 strings are supported.")
         else:
-            raise UnhandledDtypeException("Unsupported dtype '%s' - only int64, float64 and U are supported" % array.dtype)
+            raise UnhandledDtypeException(f"Unsupported dtype '{array.dtype}' - only int64, float64 and U are supported")
         # Everything is little endian in tickstore
         if array.dtype.byteorder != '<':
             array = array.astype(array.dtype.newbyteorder('<'))
@@ -749,8 +748,7 @@ class TickStore(object):
                     else:
                         v = TickStore._to_ms(v)
                         if data[k][-1] > v:
-                            raise UnorderedDataException("Timestamps out-of-order: %s > %s" % (
-                                ms_to_datetime(data[k][-1]), t))
+                            raise UnorderedDataException(f"Timestamps out-of-order: {ms_to_datetime(data[k][-1])} > {t}")
                     data[k].append(v)
                 except KeyError:
                     if k != 'index':
@@ -771,8 +769,7 @@ class TickStore(object):
         if initial_image:
             image_start = initial_image.get('index', start)
             if image_start > start:
-                raise UnorderedDataException("Image timestamp is after first tick: %s > %s" % (
-                    image_start, start))
+                raise UnorderedDataException(f"Image timestamp is after first tick: {image_start} > {start}")
             start = min(start, image_start)
             rtn[IMAGE_DOC] = {IMAGE_TIME: image_start, IMAGE: initial_image}
         rtn[END] = end
@@ -792,7 +789,7 @@ class TickStore(object):
         res = self._collection.find_one({SYMBOL: symbol}, projection={ID: 0, END: 1},
                                         sort=[(START, pymongo.DESCENDING)])
         if res is None:
-            raise NoDataFoundException("No Data found for {}".format(symbol))
+            raise NoDataFoundException(f"No Data found for {symbol}")
         return utc_dt_to_local_dt(res[END])
 
     def min_date(self, symbol):
@@ -807,5 +804,5 @@ class TickStore(object):
         res = self._collection.find_one({SYMBOL: symbol}, projection={ID: 0, START: 1},
                                         sort=[(START, pymongo.ASCENDING)])
         if res is None:
-            raise NoDataFoundException("No Data found for {}".format(symbol))
+            raise NoDataFoundException(f"No Data found for {symbol}")
         return utc_dt_to_local_dt(res[START])

@@ -39,10 +39,10 @@ class Appender(object):
 
     def check_written_data_exists(self):
         values = self.lib.read('symbol').data['v'].tolist()
-        assert len(set(values)) == len(values), "Written: %s" % values
+        assert len(set(values)) == len(values), f"Written: {values}"
         i = self.begin
         while i < self.last:
-            assert i in values, "Missing %s in %s" % (i, values)
+            assert i in values, f"Missing {i} in {values}"
             i += 2
 
 

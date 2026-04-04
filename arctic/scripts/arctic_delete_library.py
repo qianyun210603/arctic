@@ -31,7 +31,7 @@ def main():
     if not opts.library:
         parser.error('Must specify the full path of the library e.g. arctic_jblackburn.lib!')
 
-    print("Deleting: %s on mongo %s" % (opts.library, opts.host))
+    print(f"Deleting: {opts.library} on mongo {opts.host}")
     c = pymongo.MongoClient(get_mongodb_uri(opts.host))
 
     db_name = opts.library[:opts.library.index('.')] if '.' in opts.library else None
@@ -39,7 +39,7 @@ def main():
     store = Arctic(c)
     store.delete_library(opts.library)
 
-    logger.info("Library %s deleted" % opts.library)
+    logger.info(f"Library {opts.library} deleted")
 
 
 if __name__ == '__main__':

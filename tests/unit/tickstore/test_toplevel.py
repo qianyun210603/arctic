@@ -32,7 +32,7 @@ def test_raise_exception_if_date_range_does_not_contain_start_date():
     dr = DateRange(start=None, end=dt(2011, 1, 1))
     with pytest.raises(Exception) as e:
         store._get_library_metadata(dr)
-    assert "The date range {0} must contain a start and end date".format(dr) in str(e.value)
+    assert f"The date range {dr} must contain a start and end date" in str(e.value)
 
 
 def test_raise_exception_if_date_range_does_not_contain_end_date():
@@ -40,7 +40,7 @@ def test_raise_exception_if_date_range_does_not_contain_end_date():
     dr = DateRange(start=dt(2011, 1, 1), end=None)
     with pytest.raises(Exception) as e:
         store._get_library_metadata(dr)
-    assert "The date range {0} must contain a start and end date".format(dr) in str(e.value)
+    assert f"The date range {dr} must contain a start and end date" in str(e.value)
 
 
 def test_raise_exception_if_date_range_does_not_contain_start_and_end_date():
@@ -48,7 +48,7 @@ def test_raise_exception_if_date_range_does_not_contain_start_and_end_date():
     dr = DateRange(start=None, end=None)
     with pytest.raises(Exception) as e:
         store._get_library_metadata(dr)
-    assert "The date range {0} must contain a start and end date".format(dr) in str(e.value)
+    assert f"The date range {dr} must contain a start and end date" in str(e.value)
 
 
 def test_raise_exception_and_log_an_error_if_an_invalid_library_name_is_added():
@@ -119,7 +119,7 @@ def test_slice_pandas_dataframe(start, end, expected_start_index, expected_end_i
     data = pd.DataFrame(np.random.randn(5, 4), index=dates, columns=list('ABCD'))
     expected = data.iloc[expected_start_index:expected_end_index]
     result = top_level_tick_store._slice(data, start, end)
-    assert_frame_equal(expected, result), '{}\n{}'.format(expected, result)
+    assert_frame_equal(expected, result), f'{expected}\n{result}'
 
 
 @pytest.mark.parametrize(('start', 'end', 'expected_start_index', 'expected_end_index'),

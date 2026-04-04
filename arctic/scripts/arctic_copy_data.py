@@ -23,9 +23,9 @@ def copy_symbols_helper(src, dest, log, force, splice):
                 existing_data = dest.has_symbol(symbol)
                 if existing_data:
                     if force:
-                        logger.warn("Symbol: %s already exists in destination, OVERWRITING" % symbol)
+                        logger.warn(f"Symbol: {symbol} already exists in destination, OVERWRITING")
                     elif splice:
-                        logger.warn("Symbol: %s already exists in destination, splicing in new data" % symbol)
+                        logger.warn(f"Symbol: {symbol} already exists in destination, splicing in new data")
                     else:
                         logger.warn("Symbol: {} already exists in {}@{}, use --force to overwrite or --splice to join "
                                     "with existing data".format(symbol, _get_host(dest).get('l'),
@@ -76,7 +76,7 @@ def main():
     src = get_arctic_lib(opts.src)
     dest = get_arctic_lib(opts.dest)
 
-    logger.info("Copying data from %s -> %s" % (opts.src, opts.dest))
+    logger.info(f"Copying data from {opts.src} -> {opts.dest}")
 
     # Prune the list of symbols from the library according to the list of symbols.
     required_symbols = set()
@@ -84,7 +84,7 @@ def main():
         required_symbols.update(src.list_symbols(regex=symbol))
     required_symbols = sorted(required_symbols)
 
-    logger.info("Copying: {} symbols".format(len(required_symbols)))
+    logger.info(f"Copying: {len(required_symbols)} symbols")
     if len(required_symbols) < 1:
         logger.warn("No symbols found that matched those provided.")
         return
@@ -93,7 +93,7 @@ def main():
     copy_symbol = copy_symbols_helper(src, dest, opts.log, opts.force, opts.splice)
 
     if opts.parallel > 1:
-        logger.info("Starting: {} jobs".format(opts.parallel))
+        logger.info(f"Starting: {opts.parallel} jobs")
         pool = Pool(processes=opts.parallel)
         # Break the jobs into chunks for multiprocessing
         chunk_size = len(required_symbols) / opts.parallel

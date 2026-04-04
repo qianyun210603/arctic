@@ -57,7 +57,7 @@ def register_library_type(name, type_):
     Register a Arctic Library Type handler
     """
     if name in LIBRARY_TYPES:
-        raise ArcticException("Library %s already registered as %s" % (name, LIBRARY_TYPES[name]))
+        raise ArcticException(f"Library {name} already registered as {LIBRARY_TYPES[name]}")
     LIBRARY_TYPES[name] = type_
 
 
@@ -142,7 +142,7 @@ class Arctic(object):
             self.__conn = mongo_host
             # Workaround for: https://jira.mongodb.org/browse/PYTHON-927
             mongo_host.server_info()
-            self.mongo_host = ",".join(["{}:{}".format(x[0], x[1]) for x in mongo_host.nodes])
+            self.mongo_host = ",".join([f"{x[0]}:{x[1]}" for x in mongo_host.nodes])
             self._adminDB = self._conn.admin
             self._cache = Cache(self._conn)
 
@@ -164,7 +164,7 @@ class Arctic(object):
 
             if self.__conn is None:
                 host = get_mongodb_uri(self.mongo_host)
-                logger.info("Connecting to mongo: {0} ({1})".format(self.mongo_host, host))
+                logger.info(f"Connecting to mongo: {self.mongo_host} ({host})")
 
                 # Get the auth details for the admin database
                 auth = get_auth(self.mongo_host, self._application_name, "admin")
@@ -196,11 +196,11 @@ class Arctic(object):
                 self.__conn = None
             for _, l in self._library_cache.items():
                 if hasattr(l, "_reset") and callable(l._reset):
-                    logger.debug("Library reset() %s" % l)
+                    logger.debug(f"Library reset() {l}")
                     l._reset()  # the existence of _reset() is not guaranteed/enforced, it also triggers re-auth
 
     def __str__(self):
-        return "<Arctic at %s, connected to %s>" % (hex(id(self)), str(self._conn))
+        return f"<Arctic at {hex(id(self))}, connected to {str(self._conn)}>"
 
     def __repr__(self):
         return str(self)
@@ -330,8 +330,7 @@ class Arctic(object):
         check_library_count = kwargs.pop("check_library_count", True)
         if len(self._conn[lib.database_name].list_collection_names()) > 5000 and check_library_count:
             raise ArcticException(
-                "Too many namespaces %s, not creating: %s"
-                % (len(self._conn[lib.database_name].list_collection_names()), library)
+                f"Too many namespaces {len(self._conn[lib.database_name].list_collection_names())}, not creating: {library}"
             )
         lib.set_library_type(lib_type)
         LIBRARY_TYPES[lib_type].initialize_library(lib, **kwargs)
@@ -353,13 +352,13 @@ class Arctic(object):
         """
         lib = ArcticLibraryBinding(self, library)
         colname = lib.get_top_level_collection().name
-        if not [c for c in lib._db.list_collection_names(False) if re.match(r"^{}(\..*)?$".format(colname), c)]:
-            logger.info("Nothing to delete. Arctic library %s does not exist." % colname)
-        logger.info("Dropping collection: %s" % colname)
+        if not [c for c in lib._db.list_collection_names(False) if re.match(rf"^{colname}(\..*)?$", c)]:
+            logger.info(f"Nothing to delete. Arctic library {colname} does not exist.")
+        logger.info(f"Dropping collection: {colname}")
         lib._db.drop_collection(colname)
         for coll in lib._db.list_collection_names():
             if coll.startswith(colname + "."):
-                logger.info("Dropping collection: %s" % coll)
+                logger.info(f"Dropping collection: {coll}")
                 lib._db.drop_collection(coll)
         if library in self._library_cache:
             del self._library_cache[library]
@@ -387,14 +386,14 @@ class Arctic(object):
         except (OperationFailure, AutoReconnect) as e:
             error = e
             raise LibraryNotFoundException(
-                "Library %s was not correctly initialized in %s.\nReason: %r)" % (library, self, error)
+                f"Library {library} was not correctly initialized in {self}.\nReason: {error!r})"
             )
 
         if not lib_type:
-            raise LibraryNotFoundException("Library %s was not correctly initialized in %s." % (library, self))
+            raise LibraryNotFoundException(f"Library {library} was not correctly initialized in {self}.")
         elif lib_type not in LIBRARY_TYPES:
             raise LibraryNotFoundException(
-                "Couldn't load LibraryType '%s' for '%s' (has the class been registered?)" % (lib_type, library)
+                f"Couldn't load LibraryType '{lib_type}' for '{library}' (has the class been registered?)"
             )
         instance = LIBRARY_TYPES[lib_type](lib)
         self._library_cache[library] = instance
@@ -469,7 +468,7 @@ class Arctic(object):
         lib = ArcticLibraryBinding(self, from_lib)
         colname = lib.get_top_level_collection().name
 
-        logger.info("Renaming collection: %s" % colname)
+        logger.info(f"Renaming collection: {colname}")
         lib._db[colname].rename(to_colname)
         for coll in lib._db.list_collection_names():
             if coll.startswith(colname + "."):
@@ -551,13 +550,8 @@ class ArcticLibraryBinding(object):
         return self._db[self.library]
 
     def __str__(self):
-        return """<ArcticLibrary at %s, %s.%s>
-%s""" % (
-            hex(id(self)),
-            self._db.name,
-            self._library_coll.name,
-            indent(str(self.arctic), 4),
-        )
+        return f"""<ArcticLibrary at {hex(id(self))}, {self._db.name}.{self._library_coll.name}>
+{indent(str(self.arctic), 4)}"""
 
     def __repr__(self):
         return str(self)
@@ -627,8 +621,7 @@ class ArcticLibraryBinding(object):
         count = stats["totals"]["count"]
         if size >= self.quota:
             raise QuotaExceededException(
-                "Mongo Quota Exceeded: %s %.3f / %.0f GB used"
-                % (".".join([self.database_name, self.library]), to_gigabytes(size), to_gigabytes(self.quota))
+                f"Mongo Quota Exceeded: {'.'.join([self.database_name, self.library])} {to_gigabytes(size):.3f} / {to_gigabytes(self.quota):.0f} GB used"
             )
 
         # Quota not exceeded, print an informational message and return
@@ -638,20 +631,18 @@ class ArcticLibraryBinding(object):
             remaining_count = remaining / avg_size
             if remaining_count < 100 or float(remaining) / self.quota < 0.1:
                 logger.warning(
-                    "Mongo Quota: %s %.3f / %.0f GB used"
-                    % (".".join([self.database_name, self.library]), to_gigabytes(size), to_gigabytes(self.quota))
+                    f"Mongo Quota: {'.'.join([self.database_name, self.library])} {to_gigabytes(size):.3f} / {to_gigabytes(self.quota):.0f} GB used"
                 )
             else:
                 logger.info(
-                    "Mongo Quota: %s %.3f / %.0f GB used"
-                    % (".".join([self.database_name, self.library]), to_gigabytes(size), to_gigabytes(self.quota))
+                    f"Mongo Quota: {'.'.join([self.database_name, self.library])} {to_gigabytes(size):.3f} / {to_gigabytes(self.quota):.0f} GB used"
                 )
 
-            # Set-up a timer to prevent us for checking for a few writes.
+            # Set up a timer to prevent us for checking for a few writes.
             # This will check every average half-life
             self.quota_countdown = int(max(remaining_count // 2, 1))
         except Exception as e:
-            logger.warning("Encountered an exception while calculating quota statistics: %s" % str(e))
+            logger.warning(f"Encountered an exception while calculating quota statistics: {str(e)}")
 
     def get_library_type(self):
         return self.get_library_metadata(ArcticLibraryBinding.TYPE_FIELD)

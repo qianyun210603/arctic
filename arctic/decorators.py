@@ -20,8 +20,8 @@ def _get_host(store):
             if isinstance(store, (list, tuple)):
                 store = store[0]
             ret['l'] = store._arctic_lib.get_name()
-            ret['mnodes'] = ["{}:{}".format(h, p) for h, p in store._collection.database.client.nodes]
-            ret['mhost'] = "{}".format(store._arctic_lib.arctic.mongo_host)
+            ret['mnodes'] = [f"{h}:{p}" for h, p in store._collection.database.client.nodes]
+            ret['mhost'] = f"{store._arctic_lib.arctic.mongo_host}"
         except Exception:
             # Sometimes get_name(), for example, fails if we're not connected to MongoDB.
             pass
@@ -68,7 +68,7 @@ def mongo_retry(f):
 
 def _handle_error(f, e, retry_count, **kwargs):
     if retry_count > _MAX_RETRIES:
-        logger.error('Too many retries %s [%s], raising' % (f.__name__, e))
+        logger.error(f'Too many retries {f.__name__} [{e}], raising')
         e.traceback = sys.exc_info()[2]
         raise
     log_fn = logger.warning if retry_count > 2 else logger.debug

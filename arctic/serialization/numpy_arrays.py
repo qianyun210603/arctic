@@ -74,9 +74,9 @@ class FrameConverter(object):
         type_ = infer_dtype(a, skipna=False)
         if type_ in ['unicode', 'string']:
             max_len = max_len_string_array(a)
-            return a.astype('U{:d}'.format(max_len)), mask
+            return a.astype(f'U{max_len:d}'), mask
         else:
-            raise ValueError('Cannot store arrays with {} dtype'.format(type_))
+            raise ValueError(f'Cannot store arrays with {type_} dtype')
 
     def docify(self, df):
         """
@@ -105,7 +105,7 @@ class FrameConverter(object):
                 arrays.append(arr.tobytes())
             except Exception as e:
                 typ = infer_dtype(df[c], skipna=False)
-                msg = "Column '{}' type is {}".format(str(c), typ)
+                msg = f"Column '{str(c)}' type is {typ}"
                 logging.warning(msg)
                 raise e
 

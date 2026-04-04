@@ -76,7 +76,7 @@ def run_as_main(fn, *args):
     ``scripts.Foo.main`` is registered as an entry point.
     """
     with _save_argv():
-        print("run_as_main: %s" % str(args))
+        print(f"run_as_main: {str(args)}")
         sys.argv = ['progname'] + list(args)
         return fn()
 

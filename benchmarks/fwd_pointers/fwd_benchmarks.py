@@ -93,9 +93,7 @@ def gen_oneminute_dataset(n_row, n_col, dense):
 
 
 def lib_name_from_args(config):
-    return 'bench2_{cfg}'.format(
-        cfg=config.name,
-    )
+    return f'bench2_{config.name}'
 
 
 def insert_random_data(config, args, n_rows):

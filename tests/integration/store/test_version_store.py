@@ -74,14 +74,14 @@ from pymongo.message import query as __query
 def _query(allow_secondary, library_name):
     def _internal_query(options, *args, **kwargs):
         coll_name = args[0]
-        data_coll_name = 'arctic_{}'.format(library_name)
+        data_coll_name = f'arctic_{library_name}'
         versions_coll_name = data_coll_name + '.versions'
         if allow_secondary and coll_name in (data_coll_name, versions_coll_name):
             # Reads to the Version and Chunks collections are allowed to slaves
-            assert bool(options & _QUERY_OPTIONS['slave_okay']) == allow_secondary, "{}: options:{}".format(coll_name, options)
+            assert bool(options & _QUERY_OPTIONS['slave_okay']) == allow_secondary, f"{coll_name}: options:{options}"
         elif '.$cmd' not in coll_name:
             # All other collections we force PRIMARY read.
-            assert bool(options & _QUERY_OPTIONS['slave_okay']) == False, "{}: options:{}".format(coll_name, options)
+            assert bool(options & _QUERY_OPTIONS['slave_okay']) == False, f"{coll_name}: options:{options}"
         return __query(options, *args, **kwargs)
     return _internal_query
 
@@ -1792,7 +1792,7 @@ def test_fwpointers_mixed_scenarios(library, write_cfg, read_cfg, append_cfg, re
             raise pymongo.errors.OperationFailure("Failed to write all the chunks. Mocked failure.")
         orig_check_written(collection, symbol, version)
 
-    symbol = 'sym/{}/{}/{}/{}'.format(write_cfg, read_cfg, append_cfg, reread_cfg)
+    symbol = f'sym/{write_cfg}/{read_cfg}/{append_cfg}/{reread_cfg}'
     mydf = _mixed_test_data()['small'][0]
     to_write = mydf[:len(mydf) // 2]
     to_append = mydf[len(mydf) // 2:]
@@ -1899,7 +1899,7 @@ def test_version_arctic_version(arctic):
         library = arctic[lib_name]
         for i in range(3):
             vs.ARCTIC_VERSION_NUMERICAL = i
-            library.write(symbol=symbol, data="hello world {}".format(i), prune_previous_version=False)
+            library.write(symbol=symbol, data=f"hello world {i}", prune_previous_version=False)
         assert library.get_arctic_version(symbol) == 2
         assert library.get_arctic_version(symbol, as_of=1) == 0
     finally:

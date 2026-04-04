@@ -34,7 +34,7 @@ def get_arctic_lib(connection_string, **kwargs):
     """
     m = CONNECTION_STR.match(connection_string)
     if not m:
-        raise ValueError("connection string incorrectly formed: %s" % connection_string)
+        raise ValueError(f"connection string incorrectly formed: {connection_string}")
     library, host = m.group(1), m.group(2)
     return _get_arctic(host, **kwargs)[library]
 

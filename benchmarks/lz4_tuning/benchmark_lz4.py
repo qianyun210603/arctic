@@ -106,7 +106,7 @@ def print_results(n_threads, chunk_size, n_chunks, total_mb, measurements, compa
     xfaster = (compare/float(mymean)) if compare is not None else 0
     measurements = n_threads, chunk_size, n_chunks, total_mb, \
                    mymean, np.min(measurements), np.max(measurements), np.std(measurements), \
-                   ("{:.2f}x faster than single threaded".format(xfaster) if xfaster > 1 else "")
+                   (f"{xfaster:.2f}x faster than single threaded" if xfaster > 1 else "")
     print("(x{:<3}threads) ({:.1f} MB/chunk, x{:<4} chunks, total {:.1f} MB) \t "
           "mean={:.6f} min={:.6f} max={:.6f} std={:.8f} {}".format(*measurements))
 
@@ -115,7 +115,7 @@ def main():
     use_HC = False
     for df_length in (1000, 3000, 10000, 30000):
         for n_chunks in (1, 2, 4, 8, 16, 32, 64, 128):
-            print("\n\n----------- High compression: {}, Chunks: {}, DataFrame size: {} ------------".format(use_HC, n_chunks, df_length))
+            print(f"\n\n----------- High compression: {use_HC}, Chunks: {n_chunks}, DataFrame size: {df_length} ------------")
             bench_compression_comparison(
                 n_chunks=n_chunks,
                 df_length=df_length,

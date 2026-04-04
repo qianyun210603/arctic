@@ -16,7 +16,7 @@ def prune_versions(lib, symbols, keep_mins):
     logger.info("Fixing snapshot pointers")
     lib._cleanup_orphaned_versions(dry_run=False)
     for symbol in symbols:
-        logger.info("Pruning %s" % symbol)
+        logger.info(f"Pruning {symbol}")
         lib._prune_previous_versions(symbol, keep_mins=keep_mins)
 
 
@@ -43,8 +43,8 @@ def main():
         parser.error('Must specify the Arctic library e.g. arctic_jblackburn.library!')
     db_name, _ = ArcticLibraryBinding._parse_db_lib(opts.library)
 
-    print("Pruning (old) versions in : %s on mongo %s" % (opts.library, opts.host))
-    print("Keeping all versions <= %s mins old" % (opts.keep_mins))
+    print(f"Pruning (old) versions in : {opts.library} on mongo {opts.host}")
+    print(f"Keeping all versions <= {opts.keep_mins} mins old")
     c = pymongo.MongoClient(get_mongodb_uri(opts.host))
 
     if not do_db_auth(opts.host, c, db_name):
@@ -56,7 +56,7 @@ def main():
         symbols = opts.symbols.split(',')
     else:
         symbols = lib.list_symbols(all_symbols=True)
-        logger.info("Found %s symbols" % len(symbols))
+        logger.info(f"Found {len(symbols)} symbols")
 
     prune_versions(lib, symbols, opts.keep_mins)
     logger.info("Done")

@@ -47,7 +47,7 @@ class ChunkStore(object):
         try:
             enable_sharding(arctic_lib.arctic, arctic_lib.get_name(), hashed=hashed, key=SYMBOL)
         except OperationFailure as e:
-            logger.warning("Library created, but couldn't enable sharding: %s. This is OK if you're not 'admin'" % str(e))
+            logger.warning(f"Library created, but couldn't enable sharding: {str(e)}. This is OK if you're not 'admin'")
 
     @mongo_retry
     def _ensure_index(self):
@@ -100,8 +100,7 @@ class ChunkStore(object):
         return ChunkStore.__init__(self, state['arctic_lib'])
 
     def __str__(self):
-        return """<%s at %s>\n%s""" % (self.__class__.__name__, hex(id(self)),
-                                       indent(str(self._arctic_lib), 4))
+        return f"""<{self.__class__.__name__} at {hex(id(self))}>\n{indent(str(self._arctic_lib), 4)}"""
 
     def __repr__(self):
         return str(self)
@@ -207,10 +206,10 @@ class ChunkStore(object):
 
         sym = self._get_symbol_info(from_symbol)
         if not sym:
-            raise NoDataFoundException('No data found for %s' % (from_symbol))
+            raise NoDataFoundException(f'No data found for {from_symbol}')
 
         if self._get_symbol_info(to_symbol) is not None:
-            raise Exception('Symbol %s already exists' % (to_symbol))
+            raise Exception(f'Symbol {to_symbol} already exists')
 
         mongo_retry(self._collection.update_many)({SYMBOL: from_symbol},
                                                   {'$set': {SYMBOL: to_symbol}})
@@ -254,7 +253,7 @@ class ChunkStore(object):
 
         sym = self._get_symbol_info(symbol)
         if not sym:
-            raise NoDataFoundException('No data found for %s' % (symbol))
+            raise NoDataFoundException(f'No data found for {symbol}')
 
         spec = {SYMBOL: {'$in': symbol}}
         chunker = CHUNKER_MAP[sym[0][CHUNKER]]

@@ -169,7 +169,7 @@ def test_delete_library(arctic, library, library_name):
     with pytest.raises(LibraryNotFoundException):
         arctic[library_name]
     with pytest.raises(LibraryNotFoundException):
-        arctic['arctic_{}'.format(library_name)]
+        arctic[f'arctic_{library_name}']
     assert 'library2' in mongo.arctic_user.list_collection_names()
     assert 'library2.versions' in mongo.arctic_user.list_collection_names()
 

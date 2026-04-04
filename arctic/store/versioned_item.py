@@ -16,8 +16,7 @@ class VersionedItem(namedtuple('VersionedItem', ['symbol', 'library', 'data', 'v
         return str(self)
 
     def __str__(self):
-        return "VersionedItem(symbol=%s,library=%s,data=%s,version=%s,metadata=%s,host=%s)" % \
-            (self.symbol, self.library, type(self.data), self.version, self.metadata, self.host)
+        return f"VersionedItem(symbol={self.symbol},library={self.library},data={type(self.data)},version={self.version},metadata={self.metadata},host={self.host})"
 
 
 ChangedItem = namedtuple('ChangedItem', ['symbol', 'orig_version', 'new_version', 'changes'])

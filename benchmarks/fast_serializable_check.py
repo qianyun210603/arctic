@@ -12,7 +12,7 @@ def _bench(rounds, input_df, fast):
     start = time.time()
     for i in range(rounds):
         df_serializer.can_convert_to_records_without_objects(input_df, 'symA')
-    print("Time per iteration (fast={}): {}".format(fast, (time.time() - start)/rounds))
+    print(f"Time per iteration (fast={fast}): {(time.time() - start)/rounds}")
 
 
 # Results suggest significant speed improvements for

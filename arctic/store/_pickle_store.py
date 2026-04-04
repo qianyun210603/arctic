@@ -50,12 +50,12 @@ class PickleStore(object):
                 data = decompress(data)
             else:
                 if blob[:len(_MAGIC_CHUNKED)] == _MAGIC_CHUNKED:
-                    logger.error("Data was written by unsupported version of pickle store for symbol %s. Upgrade Arctic and try again" % symbol)
+                    logger.error(f"Data was written by unsupported version of pickle store for symbol {symbol}. Upgrade Arctic and try again")
                     raise UnsupportedPickleStoreVersion("Data was written by unsupported version of pickle store")
                 try:
                     data = decompress(blob)
                 except:
-                    logger.error("Failed to read symbol %s" % symbol)
+                    logger.error(f"Failed to read symbol {symbol}")
 
             try:
                 # The default encoding is ascii.

@@ -27,7 +27,7 @@ def main():
     parser.add_argument("--library", help="The name of the library. e.g. 'arctic_jblackburn.lib'")
     parser.add_argument("--type", default=VERSION_STORE, choices=sorted(LIBRARY_TYPES.keys()),
                         help="The type of the library, as defined in "
-                             "arctic.py. Default: %s" % VERSION_STORE)
+                             f"arctic.py. Default: {VERSION_STORE}")
     parser.add_argument("--quota", default=10, help="Quota for the library in GB. A quota of 0 is unlimited."
                                                     "Default: 10")
     parser.add_argument(
@@ -43,7 +43,7 @@ def main():
         parser.error('Must specify the full path of the library e.g. user.library!')
     db_name, _ = ArcticLibraryBinding._parse_db_lib(opts.library)
 
-    print("Initializing: %s on mongo %s" % (opts.library, opts.host))
+    print(f"Initializing: {opts.library} on mongo {opts.host}")
     c = pymongo.MongoClient(get_mongodb_uri(opts.host))
 
     if not do_db_auth(opts.host, c, db_name):
@@ -51,10 +51,10 @@ def main():
         return
 
     store = Arctic(c)
-    store.initialize_library("%s" % opts.library, opts.type, hashed=opts.hashed)
-    logger.info("Library %s created" % opts.library)
+    store.initialize_library(f"{opts.library}", opts.type, hashed=opts.hashed)
+    logger.info(f"Library {opts.library} created")
 
-    logger.info("Setting quota to %sG" % opts.quota)
+    logger.info(f"Setting quota to {opts.quota}G")
     store.set_quota(opts.library, int(opts.quota) * 1024 * 1024 * 1024)
 
 

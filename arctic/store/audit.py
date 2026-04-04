@@ -140,8 +140,7 @@ class ArcticTransaction(object):
             new_offset = versions.index(written_ver.version)
             if len(versions[base_offset: new_offset + 1]) != 2:
                 self._version_store._delete_version(self._symbol, written_ver.version)
-                raise ConcurrentModificationException("Inconsistent Versions: {}: {}->{}".format(
-                                                      self._symbol, self.base_ts.version, written_ver.version))
+                raise ConcurrentModificationException(f"Inconsistent Versions: {self._symbol}: {self.base_ts.version}->{written_ver.version}")
 
             changed = ChangedItem(self._symbol, self.base_ts, written_ver, None)
             if self._audit:

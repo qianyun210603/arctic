@@ -135,7 +135,7 @@ def test_dataframe_serializer_serialize_tz_index(
         index = pd.MultiIndex.from_arrays(
             [
                 pd.date_range(
-                    "2023-02-04", "2023-02-06", tz=tz, name="idx_lvl{}".format(idx_lvl)
+                    "2023-02-04", "2023-02-06", tz=tz, name=f"idx_lvl{idx_lvl}"
                 )
                 for idx_lvl in range(1, index_nlevels + 1)
             ]
@@ -148,7 +148,7 @@ def test_dataframe_serializer_serialize_tz_index(
 
     expected_dtype_descr = [
         *(
-            ("idx_lvl{}".format(idx_lvl), str(np.dtype("datetime64[ns]")))
+            (f"idx_lvl{idx_lvl}", str(np.dtype("datetime64[ns]")))
             for idx_lvl in range(1, index_nlevels + 1)
         ),
         ("a", str(np.dtype("int64"))),
@@ -176,7 +176,7 @@ def test_dataframe_serializer_serialize_tz_index(
         assert re.search(expected_tz_str_pat, result_dtype.metadata["index_tz"])
     else:
         assert result_dtype.metadata["index"] == [
-            "idx_lvl{}".format(idx_lvl) for idx_lvl in range(1, index_nlevels + 1)
+            f"idx_lvl{idx_lvl}" for idx_lvl in range(1, index_nlevels + 1)
         ]
         for index_lvl_tz in result_dtype.metadata["index_tz"]:
             assert re.search(expected_tz_str_pat, index_lvl_tz)

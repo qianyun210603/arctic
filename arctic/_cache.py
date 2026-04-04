@@ -34,7 +34,7 @@ class Cache:
         try:
             return self._cachedb[CACHE_SETTINGS].find_one({'type': CACHE_SETTINGS_KEY})
         except OperationFailure as op:
-            logging.debug("Cannot access %s in db: %s. Error: %s" % (CACHE_SETTINGS, CACHE_DB, op))
+            logging.debug(f"Cannot access {CACHE_SETTINGS} in db: {CACHE_DB}. Error: {op}")
         return None
 
     def set_caching_state(self, enabled):
@@ -47,7 +47,7 @@ class Cache:
             return
 
         if CACHE_SETTINGS not in self._cachedb.list_collection_names():
-            logging.info("Creating %s collection for cache settings" % CACHE_SETTINGS)
+            logging.info(f"Creating {CACHE_SETTINGS} collection for cache settings")
             self._cachedb[CACHE_SETTINGS].insert_one({
                 'type': CACHE_SETTINGS_KEY,
                 'enabled': enabled,
@@ -55,7 +55,7 @@ class Cache:
             })
         else:
             self._cachedb[CACHE_SETTINGS].update_one({'type': CACHE_SETTINGS_KEY}, {'$set': {'enabled': enabled}})
-            logging.info("Caching set to: %s" % enabled)
+            logging.info(f"Caching set to: {enabled}")
 
     def _is_not_expired(self, cached_data, newer_than_secs):
         # Use the expiry period in the settings (or the default) if not overriden by the function argument.

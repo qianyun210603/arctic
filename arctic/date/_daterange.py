@@ -62,14 +62,13 @@ class DateRange(GeneralSlice):
             elif value is None:
                 return None
             else:
-                raise TypeError('unsupported type for %s: %s' % (desc, type(value)))
+                raise TypeError(f'unsupported type for {desc}: {type(value)}')
 
         super(DateRange, self).__init__(_compute_bound(start, "start"), _compute_bound(end, "end"), 1, interval)
 
         if _is_dt_type(self.start) and _is_dt_type(self.end):
             if self.start > self.end:
-                raise ValueError('start date (%s) cannot be greater than end date (%s)!'
-                                 % (self.start, self.end))
+                raise ValueError(f'start date ({self.start}) cannot be greater than end date ({self.end})!')
 
     @property
     def unbounded(self):
@@ -165,7 +164,7 @@ class DateRange(GeneralSlice):
         return (self.start is None or d > self.start) and (self.end is None or d < self.end)
 
     def __repr__(self):
-        return 'DateRange(start=%r, end=%r)' % (self.start, self.end)
+        return f'DateRange(start={self.start!r}, end={self.end!r})'
 
     def __eq__(self, rhs):
         if rhs is None or not (hasattr(rhs, "end") and hasattr(rhs, "start")):
@@ -188,15 +187,10 @@ class DateRange(GeneralSlice):
         elif key == 1:
             return self.end
         else:
-            raise IndexError('Index %s not in range (0:1)' % key)
+            raise IndexError(f'Index {key} not in range (0:1)')
 
     def __str__(self):
-        return "%s%s, %s%s" % (
-            "(" if self.startopen else "[",
-            self.start,
-            self.end,
-            ")" if self.endopen else "]",
-        )
+        return f"{'(' if self.startopen else '['}{self.start}, {self.end}{')' if self.endopen else ']'}"
 
     def __setstate__(self, state):
         """Called by pickle, PyYAML etc to set state."""

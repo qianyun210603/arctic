@@ -25,14 +25,14 @@ def do_db_auth(host, connection, db_name):
     if admin_creds is None:
         # Get ordinary credentials for authenticating against the DB
         if user_creds is None:
-            logger.error("You need credentials for db '%s' on '%s', or admin credentials" % (db_name, host))
+            logger.error(f"You need credentials for db '{db_name}' on '{host}', or admin credentials")
             return False
         if not authenticate(connection[db_name], user_creds.user, user_creds.password):
-            logger.error("Failed to authenticate to db '%s' on '%s', using user credentials" % (db_name, host))
+            logger.error(f"Failed to authenticate to db '{db_name}' on '{host}', using user credentials")
             return False
         return True
     elif not authenticate(connection.admin, admin_creds.user, admin_creds.password):
-        logger.error("Failed to authenticate to '%s' as Admin. Giving up." % (host))
+        logger.error(f"Failed to authenticate to '{host}' as Admin. Giving up.")
         return False
     # Ensure we attempt to auth against the user DB, for non-priviledged users to get access
     authenticate(connection[db_name], user_creds.user, user_creds.password)
