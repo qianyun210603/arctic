@@ -98,7 +98,7 @@ def test_get_version_allow_secondary_True():
 
     VersionStore.read(vs, "symbol")
     assert vs._read_metadata.call_args_list == [call('symbol', as_of=None, read_preference=sentinel.read_preference)]
-    assert vs._do_read.call_args_list == [call('symbol', vs._read_metadata.return_value, None, 
+    assert vs._do_read.call_args_list == [call('symbol', vs._read_metadata.return_value, None,
                                                date_range=None,
                                                read_preference=sentinel.read_preference)]
 
@@ -115,7 +115,7 @@ def test_get_version_allow_secondary_user_override_False():
     VersionStore.read(vs, "symbol", allow_secondary=False)
     assert vs._read_metadata.call_args_list == [call('symbol', as_of=None, read_preference=sentinel.read_preference)]
     assert vs._do_read.call_args_list == [call('symbol', vs._read_metadata.return_value, None,
-                                               date_range=None, 
+                                               date_range=None,
                                                read_preference=sentinel.read_preference)]
     vs._read_preference.assert_called_once_with(False)
 
@@ -228,7 +228,7 @@ def test_read_handles_operation_failure():
                       date_range=sentinel.date_range,
                       other_kwarg=sentinel.other_kwarg)
     # Assert that, for the two read calls, the second uses the new metadata
-    assert self._do_read.call_args_list == [call(sentinel.symbol, sentinel.meta1, 
+    assert self._do_read.call_args_list == [call(sentinel.symbol, sentinel.meta1,
                                                  sentinel.from_version,
                                                  date_range=sentinel.date_range,
                                                  other_kwarg=sentinel.other_kwarg,
@@ -263,7 +263,7 @@ def test_snapshot():
     vs.list_symbols.return_value = ['foo', 'bar']
     VersionStore.snapshot(vs, "symbol")
     assert (vs._read_metadata.call_args_list == [call('foo', as_of=None, read_preference=ReadPreference.PRIMARY),
-                                                call('bar', as_of=None, read_preference=ReadPreference.PRIMARY)] or 
+                                                call('bar', as_of=None, read_preference=ReadPreference.PRIMARY)] or
                                                 vs._read_metadata.call_args_list == [call('bar', as_of=None, read_preference=ReadPreference.PRIMARY),
                                                 call('foo', as_of=None, read_preference=ReadPreference.PRIMARY)])
 

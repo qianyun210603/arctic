@@ -1,6 +1,6 @@
 try:
     from unittest.mock import Mock, patch, MagicMock, create_autospec, sentinel, call
-except:    
+except Exception:
     from unittest.mock import Mock, patch, MagicMock, create_autospec, sentinel, call
 from datetime import datetime as dt
 
@@ -132,7 +132,7 @@ def test_slice_pandas_dataframe(start, end, expected_start_index, expected_end_i
 def test_slice_list_of_dicts(start, end, expected_start_index, expected_end_index):
     top_level_tick_store = TopLevelTickStore(Mock())
     dates = list(rrule(DAILY, count=5, dtstart=dt(2010, 1, 1, tzinfo=utc), interval=2))
-    data = [{'index': date, 'A': val} for date, val in zip(dates, range(5))]
+    data = [{'index': date, 'A': val} for date, val in zip(dates, range(5), strict=False)]
     expected = data[expected_start_index:expected_end_index]
     result = top_level_tick_store._slice(data, start, end)
     assert expected == result

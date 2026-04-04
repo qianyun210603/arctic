@@ -209,7 +209,7 @@ def get_datetime_index_test_data():
     df = pd.DataFrame(prices, index=index, columns=['OPEN', 'CLOSE'])
 
     #                                          OPEN  CLOSE
-    # sample_dt           observed_dt                     
+    # sample_dt           observed_dt
     # 2014-01-01 21:30:00 2014-01-01 22:00:00     0     10
     #                     2014-01-01 22:30:00    20     30
     #                     2014-02-01 00:00:00    40     50

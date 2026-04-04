@@ -86,7 +86,7 @@ class TimeSuiteRead(object):
 
     def teardown(self, arg):
         self.store.delete_library('test.lib')
-        self.lib = None 
+        self.lib = None
 
     def time_read_dataframe(self, idx):
         self.lib.read('test_df')
@@ -108,7 +108,7 @@ class TimeSuiteAppend(object):
 
     def teardown(self, arg):
         self.store.delete_library('test.lib')
-        self.lib = None 
+        self.lib = None
 
     def time_append_dataframe(self, idx):
         self.lib.append('test_df', df_random[idx])

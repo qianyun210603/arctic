@@ -653,7 +653,7 @@ class NdarrayStore(object):
 
         # Write
         bulk = []
-        for i, chunk in zip(idxs, compressed_chunks):
+        for i, chunk in zip(idxs, compressed_chunks, strict=False):
             segment = {
                 'data': Binary(chunk),
                 'compressed': True,

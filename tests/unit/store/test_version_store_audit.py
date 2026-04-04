@@ -186,7 +186,7 @@ def _test_ArcticTransaction_detects_concurrent_writes():
                                           data=None, host=sentinel.host),
                             VersionedItem(symbol=sentinel.symbol, library=sentinel.library, version=3, metadata=None,
                                           data=None, host=sentinel.host)]
-    # note that we return some extra version 5, it is possible that we have a write coming in after our own write that gets picked up 
+    # note that we return some extra version 5, it is possible that we have a write coming in after our own write that gets picked up
     vs.list_versions.side_effect = [[{'version': 5}, {'version': 2}, {'version': 1}, ],
                                    [{'version': 5}, {'version': 3}, {'version': 2}, {'version': 1}, ]]
     from threading import Event, Thread
@@ -211,7 +211,7 @@ def _test_ArcticTransaction_detects_concurrent_writes():
     t1.start()
     t2.start()
 
-    # both read the same timeseries and are locked doing some 'work' 
+    # both read the same timeseries and are locked doing some 'work'
     e2.set()
     # t2  should now be able to finish
     t2.join()

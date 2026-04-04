@@ -88,7 +88,7 @@ lib = arctic['nyse']
 
 def load_all_stock_history_NYSE():
     # Data downloaded from BBG Open Symbology:
-    # 
+    #
     nyse = pd.read_csv('/users/is/jblackburn/git/arctic/howtos/nyse.csv')
     stocks = [x.split('/')[0] for x in nyse['Ticker']]
     print(len(stocks), " symbols")

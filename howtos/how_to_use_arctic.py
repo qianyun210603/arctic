@@ -53,7 +53,7 @@ library.list_symbols(some_key='some_value')
 list(library.list_versions('SYMBOL'))
 
 # Snapshot a library
-#  (Point-in-time named reference for all symbols in a library.) 
+#  (Point-in-time named reference for all symbols in a library.)
 library.snapshot('snapshot_name')
 library.list_snapshots()
 

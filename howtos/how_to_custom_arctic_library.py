@@ -91,7 +91,7 @@ class CustomArcticLibType(object):
         """
         for x in self._collection.find(*args, **kwargs):
             x['stuff'] = pickle.loads(x['stuff'])
-            del x['_id'] # Remove default unique '_id' field from doc 
+            del x['_id'] # Remove default unique '_id' field from doc
             yield Stuff(**x)
 
     @mongo_retry
@@ -117,7 +117,7 @@ class CustomArcticLibType(object):
                     'date_field': thing.date_field,
                     }
         to_store['stuff'] = Binary(pickle.dumps(thing.stuff))
-        # Respect any soft-quota on write - raises if stats().totals.size > quota 
+        # Respect any soft-quota on write - raises if stats().totals.size > quota
         self._arctic_lib.check_quota()
         self._collection.insert_one(to_store)
 

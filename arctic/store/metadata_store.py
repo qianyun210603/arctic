@@ -212,7 +212,7 @@ class MetadataStore(BSONStore):
             if self.has_symbol(symbol):
                 self.purge(symbol)
             doc = {'symbol': symbol, 'metadata': entries[0], 'start_time': times[0], 'last_update': last_update}
-            for metadata, start_time in zip(entries[1:], times[1:]):
+            for metadata, start_time in zip(entries[1:], times[1:], strict=False):
                 if metadata == doc['metadata']:
                     continue
                 doc['end_time'] = start_time
