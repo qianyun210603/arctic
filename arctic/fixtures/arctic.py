@@ -1,7 +1,10 @@
 import base64
 import getpass
 import logging
+import os
+import urllib.parse
 
+import pymongo
 import bson
 import pytest as pytest
 
@@ -12,6 +15,46 @@ from ..tickstore.tickstore import TICK_STORE_TYPE
 
 logger = logging.getLogger(__name__)
 
+@pytest.fixture(scope="function")
+def mongo_server():
+    """Provide a simple local Mongo server wrapper for tests.
+
+    This fixture is a lightweight replacement when an external pytest plugin that
+    provides a more featureful `mongo_server` is not available. It uses the
+    ARCTIC_MONGO_URI environment variable if set, otherwise defaults to
+    mongodb://localhost:27017.
+
+    The returned object exposes:
+      - api: the pymongo.MongoClient
+      - hostname: the resolved host (str)
+      - port: the resolved port (int)
+    """
+    uri = os.environ.get("ARCTIC_MONGO_URI", "mongodb://localhost:27017")
+    logger.info(f'arctic.fixtures: connecting to mongo server at {uri}')
+    client = pymongo.MongoClient(uri)
+
+    class _MS:
+        def __init__(self, client, uri):
+            self.api = client
+            # pymongo may not populate .address until a connection is made; try to
+            # inspect client.address first, otherwise parse the URI.
+            try:
+                addr = client.address
+                if addr:
+                    self.hostname, self.port = addr
+                else:
+                    raise Exception()
+            except Exception:
+                parsed = urllib.parse.urlparse(uri)
+                self.hostname = parsed.hostname or "localhost"
+                self.port = parsed.port or 27017
+
+    ms = _MS(client, uri)
+    yield ms
+    try:
+        client.close()
+    except Exception:
+        pass
 
 @pytest.fixture(scope="function")
 def mongo_host(mongo_server):

@@ -10,7 +10,7 @@ from arctic._config import FwPointersCfg, FW_POINTERS_REFS_KEY
 from arctic._util import mongo_count
 from arctic.store._ndarray_store import NdarrayStore
 from arctic.store.version_store import register_versioned_storage
-from tests.integration.store.test_version_store import _query, FwPointersCtx
+from tests.integration.store.test_version_store import _find, FwPointersCtx
 
 register_versioned_storage(NdarrayStore)
 
@@ -38,7 +38,7 @@ def test_save_read_simple_ndarray(library):
 def test_read_simple_ndarray_from_secondary(library_secondary, library_name):
     ndarr = np.ones(1000)
     library_secondary.write('MYARR', ndarr)
-    with patch('pymongo.message.query', side_effect=_query(True, library_name)) as query, \
+    with patch('pymongo.collection.Collection.find', side_effect=_find(True, library_name)) as query, \
          patch('pymongo.server_description.ServerDescription.server_type', SERVER_TYPE.Mongos):
         saved_arr = library_secondary.read('MYARR').data
     assert query.call_count > 0

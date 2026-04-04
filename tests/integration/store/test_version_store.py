@@ -68,21 +68,31 @@ class FwPointersCtx:
         arctic.store._ndarray_store.ARCTIC_FORWARD_POINTERS_RECONCILE = self.reconcile_orig_value
 
 
-from pymongo.cursor import _QUERY_OPTIONS
-from pymongo.message import query as __query
-def _query(allow_secondary, library_name):
-    def _internal_query(options, *args, **kwargs):
-        coll_name = args[0]
+# Older tests inspected low-level pymongo query flags (private internals).
+# Newer pymongo exposes public read-preference APIs. Use Collection.read_preference
+# to assert expected behaviour instead of poking at private symbols.
+from pymongo.read_preferences import ReadPreference
+from pymongo.collection import Collection
+
+# Keep a reference to the original Collection.find implementation so our
+# side-effect can forward the call to it after performing assertions.
+__find = Collection.find
+
+def _find(allow_secondary, library_name):
+    def _internal_find(self, *args, **kwargs):
+        coll_name = f"{self.database.name}.{self.name}"
         data_coll_name = f'arctic_{library_name}'
         versions_coll_name = data_coll_name + '.versions'
+        rp = getattr(self, 'read_preference', ReadPreference.PRIMARY)
         if allow_secondary and coll_name in (data_coll_name, versions_coll_name):
-            # Reads to the Version and Chunks collections are allowed to slaves
-            assert bool(options & _QUERY_OPTIONS['slave_okay']) == allow_secondary, f"{coll_name}: options:{options}"
+            # Reads to the Version and Chunks collections are allowed to secondaries
+            assert rp != ReadPreference.PRIMARY, f"{coll_name}: read_pref:{rp}"
         elif '.$cmd' not in coll_name:
-            # All other collections we force PRIMARY read.
-            assert bool(options & _QUERY_OPTIONS['slave_okay']) == False, f"{coll_name}: options:{options}"
-        return __query(options, *args, **kwargs)
-    return _internal_query
+            # All other collections we expect PRIMARY reads
+            assert rp == ReadPreference.PRIMARY, f"{coll_name}: read_pref:{rp}"
+        return __find(self, *args, **kwargs)
+
+    return _internal_find
 
 
 # MongoDB always sets slaveOk when talking to a single server.
@@ -98,7 +108,7 @@ def _query(allow_secondary, library_name):
 
 
 def test_store_item_new_version(library, library_name):
-    with patch('pymongo.message.query', side_effect=_query(False, library_name)), \
+    with patch('pymongo.collection.Collection.find', side_effect=_find(False, library_name)), \
          patch('pymongo.server_description.ServerDescription.server_type', SERVER_TYPE.Mongos):
         library.write(symbol, ts1)
         coll = library._collection
@@ -114,7 +124,7 @@ def test_store_item_new_version(library, library_name):
 @pytest.mark.xfail(reason="mongo/pymongo codepaths have changed, query no longer called for this")
 def test_store_item_read_preference(library_secondary, library_name):
     with patch('arctic.arctic.ArcticLibraryBinding.check_quota'), \
-         patch('pymongo.message.query', side_effect=_query(False, library_name)) as query, \
+         patch('pymongo.collection.Collection.find', side_effect=_find(False, library_name)) as query, \
          patch('pymongo.server_description.ServerDescription.server_type', SERVER_TYPE.Mongos):
         # write an item
         library_secondary.write(symbol, ts1)
@@ -130,7 +140,7 @@ def test_store_item_read_preference(library_secondary, library_name):
 def test_read_item_read_preference_SECONDARY(library_secondary, library_name):
     # write an item
     library_secondary.write(symbol, ts1)
-    with patch('pymongo.message.query', side_effect=_query(True, library_name)) as query, \
+    with patch('pymongo.collection.Collection.find', side_effect=_find(True, library_name)) as query, \
          patch('pymongo.server_description.ServerDescription.server_type', SERVER_TYPE.Mongos):
         library_secondary.read(symbol)
     assert query.call_count > 0
@@ -140,18 +150,19 @@ def test_read_item_read_preference_SECONDARY(library_secondary, library_name):
 def _test_query_falls_back_to_primary(library_secondary, library_name, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         allow_secondary = [True]
-        def _query(options, *args, **kwargs):
-            # If we're allowing secondary read and an error occurs when reading a chunk.
-            # We should attempt a call to primary only subsequently.
-            # In newer MongoDBs we query <database>.$cmd rather than <database>.<collection>
-            if args[0].startswith('arctic_{}.'.format(library_name.split('.')[0])) and \
-                        bool(options & _QUERY_OPTIONS['slave_okay']) == True:
+        def _find_fallback(self, *args, **kwargs):
+            # If we're allowing secondary read and an error occurs when reading a chunk
+            # we should attempt a call to primary only subsequently. Simulate an
+            # OperationFailure when a secondary read is attempted for arctic collections.
+            coll_name = f"{self.database.name}.{self.name}"
+            if coll_name.startswith('arctic_{}.'.format(library_name.split('.')[0])) and \
+                    getattr(self, 'read_preference', ReadPreference.PRIMARY) != ReadPreference.PRIMARY:
                 allow_secondary[0] = False
                 raise OperationFailure("some_error")
-            return __query(options, *args, **kwargs)
+            return __find(self, *args, **kwargs)
 
         library_secondary.write(symbol, ts1)
-        with patch('pymongo.message.query', side_effect=_query), \
+        with patch('pymongo.collection.Collection.find', side_effect=_find_fallback), \
              patch('pymongo.server_description.ServerDescription.server_type', SERVER_TYPE.Mongos):
             assert library_secondary.read(symbol) is not None
         # We raised at least once on a secondary read
