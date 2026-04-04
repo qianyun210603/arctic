@@ -75,7 +75,7 @@ fallback_version = "0.0+unknown"
 target-version = "py313"
 output-format = "full"
 line-length = 120
-exclude = ["*.ipynb", ".git/*"]
+exclude = ["*.ipynb", ".git/*", "howtos/*"]
 
 [tool.ruff.lint]
 select = [
@@ -86,4 +86,7 @@ select = [
     "W",  # pycodestyle warning
     "PL" # pylint
 ]
-ignore = ["UP008", "E501", "PLR0913", "I001", "PLR2004", "PLR0915", "B027", "PLR5501", "PLR0912", "PLR0911"]
+ignore = ["UP008", "E501", "PLR0913", "I001", "PLR2004", "PLR0915", "B027", "PLR5501", "PLR0912", "PLR0911", "B017", "PLC0415"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B018"]
