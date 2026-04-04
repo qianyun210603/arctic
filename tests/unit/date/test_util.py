@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 
 import pytest
-from mock import patch
+from unittest.mock import patch
 
 from arctic.date import datetime_to_ms, ms_to_datetime, mktz, to_pandas_closed_closed, DateRange, OPEN_OPEN, \
     CLOSED_CLOSED

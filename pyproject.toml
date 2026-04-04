@@ -76,7 +76,7 @@ arctic_fsck = "arctic.scripts.arctic_fsck:main"
 target-version = "py312"
 output-format = "full"
 line-length = 120
-exclude = ["*.ipynb"]
+exclude = ["*.ipynb", ".git/*"]
 
 [tool.ruff.lint]
 select = [

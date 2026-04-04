@@ -5,7 +5,7 @@ import bson
 import pymongo
 import pytest
 from bson import ObjectId
-from mock import patch, MagicMock, sentinel, create_autospec, Mock, call
+from unittest.mock import patch, MagicMock, sentinel, create_autospec, Mock, call
 from pymongo import ReadPreference
 from pymongo.collection import Collection
 from pymongo.errors import OperationFailure, DuplicateKeyError

@@ -1,4 +1,4 @@
-from mock import sentinel, create_autospec, patch, call, Mock
+from unittest.mock import sentinel, create_autospec, patch, call, Mock
 from pymongo.collection import Collection
 
 from arctic import Arctic

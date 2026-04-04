@@ -1,4 +1,4 @@
-from mock import Mock
+from unittest.mock import Mock
 
 import arctic.fixtures.arctic as fix
 from arctic.arctic import Arctic

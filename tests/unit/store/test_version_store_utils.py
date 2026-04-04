@@ -2,7 +2,7 @@ import binascii
 
 import numpy as np
 import pytest
-from mock import sentinel
+from unittest.mock import sentinel
 
 from arctic.store._version_store_utils import _split_arrs, checksum, version_base_or_id
 

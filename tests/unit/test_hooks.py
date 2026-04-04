@@ -1,4 +1,4 @@
-from mock import sentinel, call, Mock
+from unittest.mock import sentinel, call, Mock
 
 from arctic.auth import get_auth
 from arctic.hooks import register_get_auth_hook, register_log_exception_hook, \

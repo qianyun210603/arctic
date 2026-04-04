@@ -2,7 +2,7 @@ import time
 from datetime import datetime as dt
 
 import pytest
-from mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 from pandas.testing import assert_frame_equal
 from pymongo.errors import OperationFailure
 

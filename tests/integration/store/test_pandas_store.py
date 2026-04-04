@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from dateutil.rrule import rrule, DAILY
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from pandas import DataFrame, Series, DatetimeIndex, MultiIndex, read_csv, date_range, concat
 try:
     from pandas import Panel

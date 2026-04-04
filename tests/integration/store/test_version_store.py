@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pymongo
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from pandas.testing import assert_frame_equal, assert_series_equal
 from pymongo.errors import OperationFailure
 from pymongo.server_type import SERVER_TYPE

@@ -6,7 +6,7 @@ Created on 25 Aug 2015
 from datetime import datetime as dt
 
 import pytz
-from mock import patch
+from unittest.mock import patch
 from pandas.testing import assert_frame_equal
 
 from arctic.date._mktz import mktz

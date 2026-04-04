@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytz
 import pytest
-from mock import patch, Mock, sentinel
+from unittest.mock import patch, Mock, sentinel
 from numpy.testing import assert_array_equal
 from pandas import Timestamp
 

@@ -3,7 +3,7 @@ try:
 except ImportError:
     import pickle
 import pytest
-from mock import patch, MagicMock, sentinel, create_autospec, Mock, call
+from unittest.mock import patch, MagicMock, sentinel, create_autospec, Mock, call
 from pymongo.errors import OperationFailure, AutoReconnect
 from pymongo.mongo_client import MongoClient
 

@@ -1,5 +1,5 @@
 import pytest
-from mock import patch
+from unittest.mock import patch
 
 from arctic.scripts import arctic_init_library as mil
 from arctic.scripts.arctic_init_library import Arctic as ar

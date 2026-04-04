@@ -1,4 +1,4 @@
-from mock import patch, Mock, call, MagicMock
+from unittest.mock import patch, Mock, call, MagicMock
 
 from arctic.scripts.utils import do_db_auth
 

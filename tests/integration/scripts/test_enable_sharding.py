@@ -1,7 +1,7 @@
 import getpass
 
 import pytest
-from mock import patch, Mock, call
+from unittest.mock import patch, Mock, call
 from pymongo.errors import OperationFailure
 from pymongo.read_preferences import Primary
 

@@ -1,6 +1,6 @@
 import datetime as dt
 
-from mock import create_autospec, call
+from unittest.mock import create_autospec, call
 
 from arctic.store.metadata_store import MetadataStore
 

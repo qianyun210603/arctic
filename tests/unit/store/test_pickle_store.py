@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from bson.binary import Binary
 from bson.objectid import ObjectId
-from mock import create_autospec, sentinel, Mock, call
+from unittest.mock import create_autospec, sentinel, Mock, call
 import pickle
 
 from arctic._compression import compress, compressHC

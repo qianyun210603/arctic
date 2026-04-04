@@ -4,7 +4,7 @@ from datetime import datetime as dt
 import numpy as np
 import pandas as pd
 import pytest
-from mock import patch, call, Mock
+from unittest.mock import patch, call, Mock
 from numpy.testing import assert_array_equal
 from pandas import DatetimeIndex
 from pandas.testing import assert_frame_equal

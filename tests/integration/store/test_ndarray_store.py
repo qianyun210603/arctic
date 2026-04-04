@@ -3,7 +3,7 @@ from datetime import datetime as dt, timedelta as dtd
 import bson
 import numpy as np
 import pytest
-from mock import patch
+from unittest.mock import patch
 from pymongo.server_type import SERVER_TYPE
 
 from arctic._config import FwPointersCfg, FW_POINTERS_REFS_KEY

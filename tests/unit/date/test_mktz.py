@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 
 import tzlocal
-from mock import patch
+from unittest.mock import patch
 from pytest import raises
 
 from arctic.date import mktz, TimezoneError

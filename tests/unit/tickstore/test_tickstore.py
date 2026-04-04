@@ -3,7 +3,7 @@ from datetime import datetime as dt
 import numpy as np
 import pandas as pd
 import pytest
-from mock import create_autospec, sentinel, call
+from unittest.mock import create_autospec, sentinel, call
 from pymongo import ReadPreference
 from pymongo.collection import Collection
 

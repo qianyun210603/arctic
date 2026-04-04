@@ -1,6 +1,6 @@
 import time
 
-from mock import patch, ANY, call
+from unittest.mock import patch, ANY, call
 
 from arctic.auth import Credential
 from arctic.scripts import arctic_prune_versions as mpv

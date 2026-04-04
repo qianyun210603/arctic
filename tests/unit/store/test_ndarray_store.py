@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from mock import create_autospec, sentinel, call
+from unittest.mock import create_autospec, sentinel, call
 from pymongo.collection import Collection
 from pymongo.results import UpdateResult
 from pytest import raises

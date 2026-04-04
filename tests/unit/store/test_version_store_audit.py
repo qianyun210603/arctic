@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from mock import Mock, sentinel, ANY, call
+from unittest.mock import Mock, sentinel, ANY, call
 from pymongo.errors import OperationFailure
 
 from arctic.exceptions import ConcurrentModificationException, NoDataFoundException

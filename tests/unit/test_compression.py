@@ -1,4 +1,4 @@
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 
 from arctic._compression import compress, compress_array, decompress, decompress_array, enable_parallel_lz4
 

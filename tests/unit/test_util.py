@@ -1,4 +1,4 @@
-from mock import MagicMock, ANY, patch
+from unittest.mock import MagicMock, ANY, patch
 
 from arctic._util import are_equals, enable_sharding, mongo_count
 from arctic.arctic import Arctic

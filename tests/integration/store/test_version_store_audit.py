@@ -2,7 +2,7 @@ from datetime import datetime as dt
 
 import pytest
 from bson import ObjectId
-from mock import patch
+from unittest.mock import patch
 from pandas.testing import assert_frame_equal
 from pymongo.errors import OperationFailure
 

@@ -1,5 +1,5 @@
 import pytest
-from mock import patch, call
+from unittest.mock import patch, call
 
 try:
     from ConfigParser import NoSectionError

@@ -1,5 +1,5 @@
 import pytest
-from mock import patch, sentinel, Mock, MagicMock
+from unittest.mock import patch, sentinel, Mock, MagicMock
 from pymongo.errors import AutoReconnect, OperationFailure, DuplicateKeyError, ServerSelectionTimeoutError
 
 from arctic.decorators import mongo_retry, _get_host

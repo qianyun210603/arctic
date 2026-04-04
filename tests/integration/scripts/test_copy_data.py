@@ -1,5 +1,5 @@
 import pytest
-from mock import patch, call
+from unittest.mock import patch, call
 from pandas.testing import assert_frame_equal
 
 from arctic import arctic as m

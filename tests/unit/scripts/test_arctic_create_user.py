@@ -1,4 +1,4 @@
-from mock import patch, call, ANY
+from unittest.mock import patch, call, ANY
 
 from arctic.scripts.arctic_create_user import main
 from ...util import run_as_main

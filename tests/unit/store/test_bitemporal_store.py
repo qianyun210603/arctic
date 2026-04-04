@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 
-from mock import create_autospec
+from unittest.mock import create_autospec
 from pandas.testing import assert_frame_equal
 
 from arctic.store.bitemporal_store import BitemporalStore

@@ -1,7 +1,7 @@
 try:
     from unittest.mock import Mock, patch, MagicMock, create_autospec, sentinel, call
 except:    
-    from mock import Mock, patch, MagicMock, create_autospec, sentinel, call
+    from unittest.mock import Mock, patch, MagicMock, create_autospec, sentinel, call
 from datetime import datetime as dt
 
 import numpy as np
