@@ -47,7 +47,7 @@ class VersionStore(object):
 
     @classmethod
     def initialize_library(cls, arctic_lib, hashed=True, **kwargs):
-        c = arctic_lib.get_top_level_collection()
+        # arctic_lib.get_top_level_collection()
 
         if 'strict_write_handler' in kwargs:
             arctic_lib.set_library_metadata('STRICT_WRITE_HANDLER_MATCH',

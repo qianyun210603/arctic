@@ -16,14 +16,14 @@ def test_get_arctic_lib_with_known_host():
 
 def test_get_arctic_lib_with_unknown_host():
     with patch('arctic.arctic.Arctic') as Arctic:
-        with patch('pymongo.MongoClient') as MongoClient:
+        with patch('pymongo.MongoClient'):
             get_arctic_lib("foo@bar:123")
             assert Arctic.call_args_list == [call("bar:123")]
 
 
 def test_get_arctic_connection_strings():
-    with patch('arctic.arctic.Arctic') as Arctic:
-        with patch('pymongo.MongoClient') as MongoClient:
+    with patch('arctic.arctic.Arctic'):
+        with patch('pymongo.MongoClient'):
             get_arctic_lib("foo@bar")
             get_arctic_lib("foo.sheep@bar")
             get_arctic_lib("foo.sheep@bar:123")

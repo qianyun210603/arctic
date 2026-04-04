@@ -1161,7 +1161,7 @@ def test_write_metadata(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a, mydf_b = _rnd_df(10, 5), _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write(symbol, data=mydf_b, metadata={'field_a': 2})  # creates version 2
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 3 (only metadata)
@@ -1183,7 +1183,7 @@ def test_write_metadata_followed_by_append(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a, mydf_b = _rnd_df(10, 5), _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2 (only metadata)
             library.append(symbol, data=mydf_b, metadata={'field_c': 1})  # creates version 3
@@ -1203,7 +1203,7 @@ def test_write_metadata_followed_by_append(library, fw_pointers_cfg):
 def test_write_metadata_new_symbol(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 1 (only metadata)
             v = library.read(symbol)
             assert v.data == None
@@ -1216,7 +1216,7 @@ def test_write_metadata_after_append(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a, mydf_b = _rnd_df(10, 5), _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.append(symbol, data=mydf_b, metadata={'field_a': 2})  # creates version 2
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 3
@@ -1230,8 +1230,8 @@ def test_write_metadata_after_append(library, fw_pointers_cfg):
 def test_write_metadata_purge_previous_versions(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
-        mydf_a, mydf_b, mydf_c = _rnd_df(10, 5), _rnd_df(10, 5), _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        mydf_a, mydf_b = _rnd_df(10, 5), _rnd_df(10, 5)
+        with patch('arctic.arctic.logger.info'):
             with FwPointersCtx(fw_pointers_cfg):
                 library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
                 library.write(symbol, data=mydf_b, metadata={'field_a': 2})  # creates version 2
@@ -1262,7 +1262,7 @@ def test_write_metadata_delete_symbol(library, fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
         mydf_b = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2 (only metadata)
 
@@ -1280,7 +1280,7 @@ def test_write_metadata_snapshots(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a, mydf_b = _rnd_df(10, 5), _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.snapshot('SNAP_1')
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2 (only metadata)
@@ -1309,7 +1309,7 @@ def test_restore_version(library, fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
         mydf_b = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write(symbol, data=mydf_b, metadata={'field_a': 2})  # creates version 2
 
@@ -1335,7 +1335,7 @@ def test_restore_version_followed_by_append(library, fw_pointers_cfg):
         mydf_a = _rnd_df(10, 5)
         mydf_b = _rnd_df(10, 5)
         mydf_c = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write(symbol, data=mydf_b, metadata={'field_b': 2})  # creates version 2
 
@@ -1361,7 +1361,7 @@ def test_restore_version_purging_previous_versions(library, fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
         mydf_b = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write(symbol, data=mydf_b, metadata={'field_a': 2})  # creates version 2
 
@@ -1386,7 +1386,7 @@ def test_restore_version_non_existent_version(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
 
             with pytest.raises(NoDataFoundException):
@@ -1404,7 +1404,7 @@ def test_restore_version_which_updated_only_metadata(library, fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
         mydf_b = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2
             library.write(symbol, data=mydf_b)  # creates version 3
@@ -1425,7 +1425,7 @@ def test_restore_version_then_snapshot(library, fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
         mydf_b = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2
 
@@ -1447,7 +1447,7 @@ def test_restore_version_latest_snapshot_noop(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2
             library.snapshot('SNAP_1')
@@ -1467,7 +1467,7 @@ def test_restore_version_latest_version_noop(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 2
 
@@ -1486,7 +1486,7 @@ def test_restore_version_snap_delete_symbol_restore(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf = _rnd_df(20, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf[:10], metadata={'field_a': 1})  # creates version 1
             library.append(symbol, data=mydf[10:15])  # version 2
             library.snapshot('snapA')
@@ -1509,7 +1509,7 @@ def test_restore_from_version_with_deleted_symbol(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         symbol = 'FTL'
         mydf_a = _rnd_df(10, 5)
-        with patch('arctic.arctic.logger.info') as info:
+        with patch('arctic.arctic.logger.info'):
             library.write(symbol, data=mydf_a, metadata={'field_a': 1})  # creates version 1
             library.delete(symbol)
 

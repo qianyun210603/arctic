@@ -267,7 +267,7 @@ class PandasSerializer(object):
             If any object dtypes are detected in columns or index will return a dict with field-name -> dtype
              mappings, and empty dict otherwise.
         """
-        i_dtype, f_dtypes = df.index.dtype, df.dtypes
+        _i_dtype, f_dtypes = df.index.dtype, df.dtypes
         index_has_object = df.index.dtype is NP_OBJECT_DTYPE
         fields_with_object = [f for f in df.columns if f_dtypes[f] is NP_OBJECT_DTYPE]
         if df.empty or (not index_has_object and not fields_with_object):

@@ -155,8 +155,8 @@ def test_purge(ms_lib):
 
 def test_amend(ms_lib):
     import pandas as pd
-    ret1 = ms_lib.append(symbol1, metadata1, pd.Timestamp(start_time1).tz_localize('UTC'))
-    ret2 = ms_lib.append(symbol1, metadata2, pd.Timestamp(start_time2).tz_localize('UTC'))
+    ms_lib.append(symbol1, metadata1, pd.Timestamp(start_time1).tz_localize('UTC'))
+    ms_lib.append(symbol1, metadata2, pd.Timestamp(start_time2).tz_localize('UTC'))
     print(ms_lib.read_history(symbol1))
     ret3 = ms_lib.amend(symbol1, metadata1)
     ret4 = ms_lib.amend(symbol1, metadata2, pd.Timestamp(start_time1).tz_localize('UTC'))

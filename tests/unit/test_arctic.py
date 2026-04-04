@@ -19,7 +19,7 @@ def test_arctic_lazy_init():
     with patch('pymongo.MongoClient', return_value=MagicMock(), autospec=True) as mc, \
         patch('arctic.arctic.mongo_retry', side_effect=lambda x: x, autospec=True), \
         patch('arctic._cache.Cache._is_not_expired', return_value=True), \
-        patch('arctic.arctic.get_auth', autospec=True) as ga:
+        patch('arctic.arctic.get_auth', autospec=True):
             store = Arctic('cluster')
             assert not mc.called
             # do something to trigger lazy arctic init
@@ -31,7 +31,7 @@ def test_arctic_lazy_init_ssl_true():
     with patch('pymongo.MongoClient', return_value=MagicMock(), autospec=True) as mc, \
             patch('arctic.arctic.mongo_retry', side_effect=lambda x: x, autospec=True), \
             patch('arctic._cache.Cache._is_not_expired', return_value=True), \
-            patch('arctic.arctic.get_auth', autospec=True) as ga:
+            patch('arctic.arctic.get_auth', autospec=True):
         store = Arctic('cluster', ssl=True)
         assert not mc.called
         # do something to trigger lazy arctic init
@@ -111,7 +111,7 @@ def test_arctic_auth_custom_app_name():
 
 def test_arctic_connect_hostname():
     with patch('pymongo.MongoClient', return_value=MagicMock(), autospec=True) as mc, \
-         patch('arctic.arctic.mongo_retry', autospec=True) as ar, \
+         patch('arctic.arctic.mongo_retry', autospec=True), \
             patch('arctic._cache.Cache._is_not_expired', return_value=True), \
             patch('arctic.arctic.get_mongodb_uri', autospec=True) as gmu:
                 store = Arctic('hostname', socketTimeoutMS=sentinel.socket_timeout,
@@ -127,7 +127,7 @@ def test_arctic_connect_hostname():
 
 def test_arctic_connect_with_environment_name():
     with patch('pymongo.MongoClient', return_value=MagicMock(), autospec=True) as mc, \
-         patch('arctic.arctic.mongo_retry', autospec=True) as ar, \
+         patch('arctic.arctic.mongo_retry', autospec=True), \
          patch('arctic.arctic.get_auth', autospec=True), \
          patch('arctic._cache.Cache._is_not_expired', return_value=True), \
          patch('arctic.arctic.get_mongodb_uri') as gmfe:
@@ -330,7 +330,7 @@ def test_initialize_library_too_many_ns():
     lib_type = Mock()
     with pytest.raises(ArcticException) as e:
         with patch.dict('arctic.arctic.LIBRARY_TYPES', {sentinel.lib_type: lib_type}), \
-             patch('arctic.arctic.ArcticLibraryBinding', return_value=lib, autospec=True) as ML:
+             patch('arctic.arctic.ArcticLibraryBinding', return_value=lib, autospec=True):
             Arctic.initialize_library(self, sentinel.lib_name, sentinel.lib_type, thing=sentinel.thing)
     assert self._conn.__getitem__.call_args_list == [call(sentinel.db_name),
                                                      call(sentinel.db_name)]
@@ -458,7 +458,7 @@ def test__conn_auth_issue():
 
 def test_reset():
     c = MagicMock()
-    with patch('pymongo.MongoClient', return_value=c, autospec=True) as mc, \
+    with patch('pymongo.MongoClient', return_value=c, autospec=True), \
             patch('arctic._cache.Cache._is_not_expired', return_value=True):
                 store = Arctic('hostname')
                 # do something to trigger lazy arctic init

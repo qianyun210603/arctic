@@ -61,10 +61,10 @@ def test_main_with_db_write():
 
 def test_no_auth():
     with patch('arctic.scripts.arctic_create_user.logger', autospec=True) as logger, \
-         patch('arctic.scripts.arctic_create_user.MongoClient', autospec=True) as MC, \
-         patch('arctic.scripts.arctic_create_user.get_mongodb_uri', autospec=True) as get_mongodb_uri, \
+         patch('arctic.scripts.arctic_create_user.MongoClient', autospec=True), \
+         patch('arctic.scripts.arctic_create_user.get_mongodb_uri', autospec=True), \
          patch('arctic.scripts.arctic_create_user.do_db_auth', autospec=True,
-               return_value=False) as do_db_auth:
+               return_value=False):
         run_as_main(main, '--host', 'some_host',
                           'jblackburn')
     assert logger.error.call_args_list == [call("Failed to authenticate to 'some_host'. Check your admin password!")]
