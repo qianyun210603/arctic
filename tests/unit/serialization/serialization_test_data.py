@@ -22,10 +22,17 @@ def _mixed_test_data():
         empty_index = create_test_data(size=0, cols=10, index=True, multiindex=False, random_data=True, random_ids=True)
 
         with_some_objects_ts = medium_ts.copy(deep=True)
+        # Ensure columns become object dtype before inserting None/String values to avoid
+        # pandas rejecting lossy assignment into float64 columns on newer versions.
+        object_cols = list(with_some_objects_ts.columns[:2])
+        with_some_objects_ts = with_some_objects_ts.astype({col: object for col in object_cols})
         with_some_objects_ts.iloc[0:NON_HOMOGENEOUS_DTYPE_PATCH_SIZE_ROWS, 0] = None
         with_some_objects_ts.iloc[0:NON_HOMOGENEOUS_DTYPE_PATCH_SIZE_ROWS, 1] = 'A string'
         large_with_some_objects = create_test_data(size=10000, cols=64, index=True, multiindex=False, random_data=True,
                                                    random_ids=True, use_hours=True)
+        # Convert affected columns to object dtype before inserting mixed types.
+        large_object_cols = list(large_with_some_objects.columns[:2])
+        large_with_some_objects = large_with_some_objects.astype({col: object for col in large_object_cols})
         large_with_some_objects.iloc[0:NON_HOMOGENEOUS_DTYPE_PATCH_SIZE_ROWS, 0] = None
         large_with_some_objects.iloc[0:NON_HOMOGENEOUS_DTYPE_PATCH_SIZE_ROWS, 1] = 'A string'
 
@@ -102,6 +109,8 @@ def _mixed_test_data():
 
         # Multi-column with some objects
         multi_column_with_some_objects = multi_column_no_multiindex.copy()
+        multi_column_object_col = multi_column_with_some_objects.columns[1]
+        multi_column_with_some_objects = multi_column_with_some_objects.astype({multi_column_object_col: object})
         multi_column_with_some_objects.iloc[1:, 1:2] = 'Convert this columnt dtype to object'
 
         # Index with timezone-aware datetime

@@ -40,11 +40,23 @@ def dt_or_str_parser(string):
 
 def read_str_as_pandas(ts_str, num_index=1):
     labels = [x.strip() for x in ts_str.split('\n')[0].split('|')]
-    pd = pandas.read_csv(stringio.StringIO(ts_str), sep='|', index_col=list(range(num_index)), date_parser=dt_or_str_parser)
-    # Trim the whitespace on the column names
-    pd.columns = labels[num_index:]
-    pd.index.names = labels[0:num_index]
-    return pd
+    # Read without the deprecated/removed `date_parser` argument and convert index columns manually
+    df = pandas.read_csv(stringio.StringIO(ts_str), sep='|', header=0)
+    # Trim whitespace on the column names
+    df.columns = [c.strip() for c in df.columns]
+
+    # Convert the first `num_index` columns with the date/string parser
+    index_col_names = list(df.columns[:num_index])
+    for col in index_col_names:
+        df[col] = df[col].apply(dt_or_str_parser)
+
+    # Set the index to those columns
+    df = df.set_index(index_col_names)
+
+    # Ensure column names and index names match the header labels provided
+    df.columns = [c.strip() for c in labels[num_index:]]
+    df.index.names = [name.strip() for name in labels[0:num_index]]
+    return df
 
 
 def get_large_ts(size=2500):

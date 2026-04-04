@@ -39,7 +39,8 @@ def set_fast_check_df_serializable(config):
 
 
 def _to_primitive(arr, string_max_len=None, forced_dtype=None):
-    if arr.dtype.hasobject:
+    arr = np.asarray(arr)
+    if getattr(arr.dtype, 'hasobject', False):
         if len(arr) > 0 and isinstance(arr[0], Timestamp):
             return np.array([t.value for t in arr], dtype=DTN64_DTYPE)
 
@@ -50,8 +51,14 @@ def _to_primitive(arr, string_max_len=None, forced_dtype=None):
         else:
             casted_arr = np.array(list(arr))
 
-        # Pick any unwanted data conversions (e.g. np.NaN to 'nan')
-        if np.array_equal(arr, casted_arr):
+        # Pick any unwanted data conversions (e.g. np.nan to 'nan'). Some pandas
+        # missing sentinels (e.g. pd.NA) make equality checks ambiguous, in which
+        # case we conservatively keep the original object array.
+        try:
+            arrays_equal = np.array_equal(arr, casted_arr)
+        except (TypeError, ValueError):
+            arrays_equal = False
+        if arrays_equal:
             return casted_arr
     return arr
 
@@ -98,9 +105,23 @@ def consistent_get_timezone_str(tz: Union[datetime.tzinfo, str]) -> str:
     if PD_VER < "1.3.0":
         return str(get_timezone(tz))
 
-    # Special case for `dateutil.tz.gettz("UTC")` to ensure we always return a 'dateutil/...' string:
-    if is_utc(tz) and treat_tz_as_dateutil(tz):
-        return "dateutil/" + tz._filename
+    zone_name = (
+        getattr(tz, 'zone', None)
+        or getattr(tz, 'key', None)
+        or getattr(tz, '_filename', None)
+        or getattr(tz, '_name', None)
+    )
+
+    # Special-case UTC handling across pandas/dateutil implementations. On Windows,
+    # dateutil may return tzwin('UTC'), which pandas does not reliably round-trip
+    # from its string representation.
+    if is_utc(tz):
+        if treat_tz_as_dateutil(tz) and zone_name:
+            return "dateutil/" + zone_name
+        return "UTC"
+
+    if treat_tz_as_dateutil(tz) and zone_name:
+        return "dateutil/" + zone_name
 
     return str(get_timezone(tz))
 
@@ -210,13 +231,13 @@ class PandasSerializer(object):
         names = index_names + columns
 
         arrays = []
-        for arr, name in zip(ix_vals + column_vals, index_names + columns):
+        for arr, name in zip(ix_vals + column_vals, index_names + columns, strict=False):
             arrays.append(_to_primitive(arr, string_max_len,
                                         forced_dtype=None if forced_dtype is None else forced_dtype[name]))
 
         if forced_dtype is None:
             dtype = np.dtype([(str(x), v.dtype) if len(v.shape) == 1 else (str(x), v.dtype, v.shape[1])
-                              for x, v in zip(names, arrays)],
+                              for x, v in zip(names, arrays, strict=False)],
                              metadata=metadata)
         else:
             dtype = forced_dtype
