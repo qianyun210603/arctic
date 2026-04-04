@@ -39,7 +39,7 @@ def _mixed_test_data():
         with_string_ts = medium_ts.copy(deep=True)
         with_string_ts['str_col'] = 'abc'
         with_unicode_ts = medium_ts.copy(deep=True)
-        with_unicode_ts['ustr_col'] = u'abc'
+        with_unicode_ts['ustr_col'] = 'abc'
 
         with_some_none_ts = medium_ts.copy(deep=True)
         with_some_none_ts.iloc[10:10] = None

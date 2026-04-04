@@ -182,8 +182,8 @@ def test_get_info_empty(chunkstore_lib):
     chunkstore_lib.write('test', pd.DataFrame(data={'date': [], 'data': []}))
     ret = chunkstore_lib.get_info('test')
     assert ret == {'appended_rows': 0,
-                   'chunker': u'date',
+                   'chunker': 'date',
                    'len': 0, 'chunk_size': 0,
                    'chunk_count': 0,
-                   'serializer': u'FrameToArray',
+                   'serializer': 'FrameToArray',
                    'metadata': None}

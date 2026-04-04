@@ -673,7 +673,7 @@ def test_read_utf8_strings(tickstore_lib):
 
 
 def test_read_unicode_strings(tickstore_lib):
-    df = pd.DataFrame(data={'data': [u'一', u'二', u'三']}, # Chinese character [one, two , three]
+    df = pd.DataFrame(data={'data': ['一', '二', '三']}, # Chinese character [one, two , three]
                       index=pd.Index(data=[dt(2016, 1, 1, 00, tzinfo=mktz('UTC')),
                                            dt(2016, 1, 2, 00, tzinfo=mktz('UTC')),
                                            dt(2016, 1, 3, 00, tzinfo=mktz('UTC'))], name='date'))

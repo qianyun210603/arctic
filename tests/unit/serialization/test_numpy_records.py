@@ -32,9 +32,9 @@ def test_to_primitive_timestamps():
 
 
 def test_to_primitive_fixed_length_strings():
-    mydf = pd.DataFrame({'a': ['abc', u'xyz', '']})
+    mydf = pd.DataFrame({'a': ['abc', 'xyz', '']})
     primitives_arr = anr._to_primitive(np.array(mydf.a.values), string_max_len=32)
-    assert_array_equal(primitives_arr, np.array([u'abc', u'xyz', u''], dtype='U32'))
+    assert_array_equal(primitives_arr, np.array(['abc', 'xyz', ''], dtype='U32'))
     assert primitives_arr.dtype == np.dtype('U32')
 
 
@@ -206,10 +206,10 @@ def test_can_convert_to_records_mixed_object_column_string_nan(fast_serializable
         df = pd.DataFrame({'a': ['abc', 'cde', 'def'], 'b': [1.2, 8.0, np.nan]})
         assert serializer.can_convert_to_records_without_objects(df, 'my_symbol')
 
-        df = pd.DataFrame({'a': [u'abc', u'cde', 'def'], 'b': [1.2, 8.0, np.nan]})
+        df = pd.DataFrame({'a': ['abc', 'cde', 'def'], 'b': [1.2, 8.0, np.nan]})
         assert serializer.can_convert_to_records_without_objects(df, 'my_symbol')
 
-        df = pd.DataFrame({'a': [u'abc', u'cde', 'def'], 'b': [1.2, '8.0', np.nan]})
+        df = pd.DataFrame({'a': ['abc', 'cde', 'def'], 'b': [1.2, '8.0', np.nan]})
         assert not serializer.can_convert_to_records_without_objects(df, 'my_symbol')
 
         # Do not serialize and force-stringify None

@@ -88,41 +88,41 @@ def test_indexes(arctic):
     chunk = c.arctic.library.index_information()
     index_version = chunk['_id_']['v']  # Mongo 3.2 has index v1, 3.4 and 3.5 have v2 (3.4 can run in compabitility mode with v1)
 
-    test_chunk = {u'_id_': {u'key': [(u'_id', 1)], u'ns': u'arctic.library', u'v': index_version},
-                     u'symbol_1_parent_1_segment_1': {u'background': True,
-                                                      u'key': [(u'symbol', 1),
-                                                               (u'parent', 1),
-                                                               (u'segment', 1)],
-                                                      u'ns': u'arctic.library',
-                                                      u'unique': True,
-                                                      u'v': index_version},
-                     u'symbol_1_sha_1': {u'background': True,
-                                         u'key': [(u'symbol', 1), (u'sha', 1)],
-                                         u'ns': u'arctic.library',
-                                         u'unique': True,
-                                         u'v': index_version},
-                     u'symbol_hashed': {u'background': True,
-                                        u'key': [(u'symbol', u'hashed')],
-                                        u'ns': u'arctic.library',
-                                        u'v': index_version},
-                     u'symbol_1_sha_1_segment_1': {u'background': True,
-                                                   u'key': [(u'symbol', 1), (u'sha', 1), (u'segment', 1)],
-                                                   u'ns': u'arctic.library',
-                                                   u'unique': True,
-                                                   u'v': index_version}}
+    test_chunk = {'_id_': {'key': [('_id', 1)], 'ns': 'arctic.library', 'v': index_version},
+                     'symbol_1_parent_1_segment_1': {'background': True,
+                                                      'key': [('symbol', 1),
+                                                               ('parent', 1),
+                                                               ('segment', 1)],
+                                                      'ns': 'arctic.library',
+                                                      'unique': True,
+                                                      'v': index_version},
+                     'symbol_1_sha_1': {'background': True,
+                                         'key': [('symbol', 1), ('sha', 1)],
+                                         'ns': 'arctic.library',
+                                         'unique': True,
+                                         'v': index_version},
+                     'symbol_hashed': {'background': True,
+                                        'key': [('symbol', 'hashed')],
+                                        'ns': 'arctic.library',
+                                        'v': index_version},
+                     'symbol_1_sha_1_segment_1': {'background': True,
+                                                   'key': [('symbol', 1), ('sha', 1), ('segment', 1)],
+                                                   'ns': 'arctic.library',
+                                                   'unique': True,
+                                                   'v': index_version}}
 
     test_chunk_44 = makeMongo44Index(test_chunk)
     assert chunk == test_chunk or chunk == test_chunk_44
 
     snapshots = c.arctic.library.snapshots.index_information()
-    test_snapshots = {u'_id_': {u'key': [(u'_id', 1)],
-                                               u'ns': u'arctic.library.snapshots',
-                                               u'v': index_version},
-                                     u'name_1': {u'background': True,
-                                                 u'key': [(u'name', 1)],
-                                                 u'ns': u'arctic.library.snapshots',
-                                                 u'unique': True,
-                                                 u'v': index_version}}
+    test_snapshots = {'_id_': {'key': [('_id', 1)],
+                                               'ns': 'arctic.library.snapshots',
+                                               'v': index_version},
+                                     'name_1': {'background': True,
+                                                 'key': [('name', 1)],
+                                                 'ns': 'arctic.library.snapshots',
+                                                 'unique': True,
+                                                 'v': index_version}}
     test_snapshots_44 = makeMongo44Index(test_snapshots)
     assert snapshots == test_snapshots or snapshots == test_snapshots_44
 
@@ -141,14 +141,14 @@ def test_indexes(arctic):
     assert versions == test_versions or versions == test_versions_44
 
     version_nums = c.arctic.library.version_nums.index_information()
-    test_version_nums = {u'_id_': {u'key': [(u'_id', 1)],
-                                               u'ns': u'arctic.library.version_nums',
-                                               u'v': index_version},
-                                     u'symbol_1': {u'background': True,
-                                                   u'key': [(u'symbol', 1)],
-                                                   u'ns': u'arctic.library.version_nums',
-                                                   u'unique': True,
-                                                   u'v': index_version}}
+    test_version_nums = {'_id_': {'key': [('_id', 1)],
+                                               'ns': 'arctic.library.version_nums',
+                                               'v': index_version},
+                                     'symbol_1': {'background': True,
+                                                   'key': [('symbol', 1)],
+                                                   'ns': 'arctic.library.version_nums',
+                                                   'unique': True,
+                                                   'v': index_version}}
     test_version_nums_44 = makeMongo44Index(test_version_nums)
     assert version_nums == test_version_nums or version_nums == test_version_nums_44
 

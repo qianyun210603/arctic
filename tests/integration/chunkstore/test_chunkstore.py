@@ -529,10 +529,10 @@ def test_get_info(chunkstore_lib):
     info = {'len': 3,
             'appended_rows': 0,
             'chunk_count': 3,
-            'metadata': {'columns': [u'date', u'id', u'data']},
-            'chunker': u'date',
+            'metadata': {'columns': ['date', 'id', 'data']},
+            'chunker': 'date',
             'chunk_size': 'D',
-            'serializer': u'FrameToArray'
+            'serializer': 'FrameToArray'
             }
     assert(chunkstore_lib.get_info('test_df') == info)
 
@@ -557,10 +557,10 @@ def test_get_info_after_append(chunkstore_lib):
     info = {'len': 6,
             'appended_rows': 2,
             'chunk_count': 4,
-            'metadata': {'columns': [u'date', u'id', u'data']},
-            'chunker': u'date',
-            'chunk_size': u'D',
-            'serializer': u'FrameToArray'
+            'metadata': {'columns': ['date', 'id', 'data']},
+            'chunker': 'date',
+            'chunk_size': 'D',
+            'serializer': 'FrameToArray'
             }
 
     assert(chunkstore_lib.get_info('test_df') == info)
@@ -585,10 +585,10 @@ def test_get_info_after_update(chunkstore_lib):
     info = {'len': 4,
             'appended_rows': 0,
             'chunk_count': 4,
-            'metadata': {'columns': [u'date', u'id', u'data']},
-            'chunker': u'date',
-            'chunk_size': u'D',
-            'serializer': u'FrameToArray'
+            'metadata': {'columns': ['date', 'id', 'data']},
+            'chunker': 'date',
+            'chunk_size': 'D',
+            'serializer': 'FrameToArray'
             }
 
     assert(chunkstore_lib.get_info('test_df') == info)
@@ -1085,7 +1085,7 @@ def test_metadata(chunkstore_lib):
     df.index.name = 'date'
     chunkstore_lib.write('data', df, metadata = 'some metadata')
     m = chunkstore_lib.read_metadata('data')
-    assert(m == u'some metadata')
+    assert(m == 'some metadata')
 
 
 def test_metadata_update(chunkstore_lib):
@@ -1099,7 +1099,7 @@ def test_metadata_update(chunkstore_lib):
     df.index.name = 'date'
     chunkstore_lib.update('data', df, metadata='different metadata')
     m = chunkstore_lib.read_metadata('data')
-    assert(m == u'different metadata')
+    assert(m == 'different metadata')
 
 
 def test_metadata_nosymbol(chunkstore_lib):
@@ -1130,7 +1130,7 @@ def test_write_metadata(chunkstore_lib):
     chunkstore_lib.write('data', df)
     chunkstore_lib.write_metadata('data', 'meta')
     m = chunkstore_lib.read_metadata('data')
-    assert(m == u'meta')
+    assert(m == 'meta')
 
 
 def test_write_metadata_nosymbol(chunkstore_lib):

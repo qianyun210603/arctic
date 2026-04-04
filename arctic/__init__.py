@@ -29,3 +29,35 @@ register_versioned_storage(PandasDataFrameStore)
 register_versioned_storage(PandasSeriesStore)
 register_versioned_storage(NdarrayStore)
 
+
+# Public package API ---------------------------------------------------------
+# Exported names: core API, store types and registration helpers, and version
+# metadata. Keep this list explicit so tools and `from arctic import *`
+# behave predictably.
+__all__ = [
+    "Arctic",
+    "register_library_type",
+
+    # Store type constants
+    "VERSION_STORE",
+    "TICK_STORE",
+    "CHUNK_STORE",
+    "METADATA_STORE",
+    "SEQUENCE_STORE",
+
+    # Concrete store classes
+    "NdarrayStore",
+    "PandasDataFrameStore",
+    "PandasSeriesStore",
+    "PandasPanelStore",
+
+    # Registration / version helpers
+    "register_versioned_storage",
+    "register_version",
+
+    # Version metadata
+    "__version__",
+    "__version_parts__",
+    "__version_numerical__",
+]
+

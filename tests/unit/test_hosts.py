@@ -1,10 +1,5 @@
 import pytest
 from unittest.mock import patch, call
-
-try:
-    from ConfigParser import NoSectionError
-except ImportError:
-    pass
 from arctic.hosts import get_arctic_lib
 
 

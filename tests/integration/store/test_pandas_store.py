@@ -30,7 +30,7 @@ def test_write_multi_column_to_arctic_1_40_data(multicolumn_store_with_uncompres
     store = multicolumn_store_with_uncompressed_write['store']
     symbol = multicolumn_store_with_uncompressed_write['symbol']
 
-    df = pd.DataFrame([[1, 2], [3, 4], [5, 6]], index=['x', 'y', 'z'], columns=[[u'a', 'w'], ['a', 'v']])
+    df = pd.DataFrame([[1, 2], [3, 4], [5, 6]], index=['x', 'y', 'z'], columns=[['a', 'w'], ['a', 'v']])
     store.write(symbol, df)
 
     assert np.all(store.read(symbol).data == df).all()
@@ -73,7 +73,7 @@ def test_save_read_pandas_series_with_unicode_index_name(library):
     df = Series(data=['A', 'BC', 'DEF'],
                 index=MultiIndex.from_tuples([(np.datetime64(dt(2013, 1, 1)),),
                                               (np.datetime64(dt(2013, 1, 2)),),
-                                              (np.datetime64(dt(2013, 1, 3)),)], names=[u'DATETIME']))
+                                              (np.datetime64(dt(2013, 1, 3)),)], names=['DATETIME']))
     library.write('pandas', df)
     saved_df = library.read('pandas').data
     assert np.all(df.values == saved_df.values)
@@ -97,7 +97,7 @@ def test_save_read_pandas_dataframe_with_unicode_index_name(library):
     df = DataFrame(data=['A', 'BC', 'DEF'],
                    index=MultiIndex.from_tuples([(np.datetime64(dt(2013, 1, 1)),),
                                                  (np.datetime64(dt(2013, 1, 2)),),
-                                                 (np.datetime64(dt(2013, 1, 3)),)], names=[u'DATETIME']))
+                                                 (np.datetime64(dt(2013, 1, 3)),)], names=['DATETIME']))
     library.write('pandas', df)
     saved_df = library.read('pandas').data
     assert np.all(df.values == saved_df.values)
@@ -199,7 +199,7 @@ def test_save_read_pandas_dataframe_strings(library):
 
 
 def test_save_read_pandas_dataframe_empty_multiindex(library):
-    expected = read_csv(StringIO(u'''\
+    expected = read_csv(StringIO('''\
 STRATEGY MAC INSTRUMENT CONTRACT $Price $Delta $Gamma $Vega $Theta $Notional uDelta uGamma uVega uTheta Delta Gamma Vega Theta'''),
                         delimiter=' ').set_index(['STRATEGY', 'MAC', 'INSTRUMENT', 'CONTRACT'])
     library.write('pandas', expected)
@@ -209,7 +209,7 @@ STRATEGY MAC INSTRUMENT CONTRACT $Price $Delta $Gamma $Vega $Theta $Notional uDe
 
 
 def test_save_read_pandas_dataframe_empty_multiindex_and_no_columns(library):
-    expected = read_csv(StringIO(u'''STRATEGY MAC INSTRUMENT CONTRACT'''),
+    expected = read_csv(StringIO('''STRATEGY MAC INSTRUMENT CONTRACT'''),
                         delimiter=' ').set_index(['STRATEGY', 'MAC', 'INSTRUMENT', 'CONTRACT'])
     library.write('pandas', expected)
     saved_df = library.read('pandas').data
@@ -218,7 +218,7 @@ def test_save_read_pandas_dataframe_empty_multiindex_and_no_columns(library):
 
 
 def test_save_read_pandas_dataframe_multiindex_and_no_columns(library):
-    expected = read_csv(StringIO(u'''\
+    expected = read_csv(StringIO('''\
 STRATEGY MAC INSTRUMENT CONTRACT
 STRAT F22 ASD 201312'''),
                         delimiter=' ').set_index(['STRATEGY', 'MAC', 'INSTRUMENT', 'CONTRACT'])
@@ -963,8 +963,8 @@ def test_data_info_series(library):
     library.write('pandas', s)
     md = library.get_info('pandas')
     assert md == {'dtype': [('index', '<i8'), ('values', '<i8')],
-                  'col_names': {u'index': [u'index'], u'columns': [u'values']},
-                  'type': u'pandasseries',
+                  'col_names': {'index': ['index'], 'columns': ['values']},
+                  'type': 'pandasseries',
                   'handler': 'PandasSeriesStore',
                   'rows': 3,
                   'segment_count': 1,
@@ -976,8 +976,8 @@ def test_data_info_df(library):
     library.write('pandas', s)
     md = library.get_info('pandas')
     assert md == {'dtype': [('index', '<i8'), ('0', '<i8')],
-                  'col_names': {u'index': [u'index'], u'columns': [u'0']},
-                  'type': u'pandasdf',
+                  'col_names': {'index': ['index'], 'columns': ['0']},
+                  'type': 'pandasdf',
                   'handler': 'PandasDataFrameStore',
                   'rows': 3,
                   'segment_count': 1,
@@ -1001,7 +1001,7 @@ def test_data_info_cols(library):
     assert md['rows'] == 3
     assert md['handler'] == 'PandasDataFrameStore'
     assert md['type'] == 'pandasdf'
-    assert md['col_names'] == {'index': ['level_0', u'level_1'], 'columns': [u'0'], 'index_tz': [None, None]}
+    assert md['col_names'] == {'index': ['level_0', 'level_1'], 'columns': ['0'], 'index_tz': [None, None]}
     assert len(md['dtype']) == 3
     assert md['dtype'][0][0] == 'level_0'
     assert md['dtype'][1][0] == 'level_1'
@@ -1030,10 +1030,10 @@ def test_mutable_df(library):
 
 @pytest.mark.skip(reason="Skip for Python3")
 def test_forced_encodings_with_df_mixed_types(library):
-    sample_data = {'str_col': ['a', 'b'], u'unicode_col': [u'a', u'b'], 'int_col': [1, 2]}
+    sample_data = {'str_col': ['a', 'b'], 'unicode_col': ['a', 'b'], 'int_col': [1, 2]}
     # This is for testing py2 bytes vs unicode serialization issues. Ignoring Py3 for now.
     # ===================BEFORE===================
-    df = pd.DataFrame(sample_data, index=['str_type', u'uni_type'])
+    df = pd.DataFrame(sample_data, index=['str_type', 'uni_type'])
     assert type(df['str_col'][0]) == bytes
     assert type(df['unicode_col'][0]) == unicode
     # Check that all column names are stored as as is by pandas
@@ -1051,7 +1051,7 @@ def test_forced_encodings_with_df_mixed_types(library):
 
     library.write('dummy', df)
     library.write('dummy_str_col', df['str_col'])
-    library.write('dummy_unicode_col', df[u'unicode_col'])
+    library.write('dummy_unicode_col', df['unicode_col'])
 
     # ===================READ BACK WITHOUT FORCED ENCODING===================
     df_normal = library.read('dummy').data
@@ -1095,7 +1095,7 @@ def test_forced_encodings_with_df_mixed_types(library):
 
 @pytest.mark.skip(reason="Skip for Python3")
 def test_forced_encodings_with_df(library):
-    sample_data = {'str_col': ['a', 'b'], 'unicode_col': [u'a', u'b'], 'int_col': [1, 2]}
+    sample_data = {'str_col': ['a', 'b'], 'unicode_col': ['a', 'b'], 'int_col': [1, 2]}
     # This is for testing py2 bytes vs unicode serialization issues. Ignoring Py3 for now.
     # ===================BEFORE===================
     df = pd.DataFrame(sample_data, index=['str_type', 'uni_type'])
@@ -1150,7 +1150,7 @@ def test_forced_encodings_with_df(library):
 
 
 def test_forced_encodings_with_df_py3(library):
-    sample_data = {'str_col': [b'a', b'b'], 'unicode_col': [u'a', u'b'], 'int_col': [1, 2]}
+    sample_data = {'str_col': [b'a', b'b'], 'unicode_col': ['a', 'b'], 'int_col': [1, 2]}
     unicode_type = str
 
     # ===================BEFORE===================
@@ -1205,7 +1205,7 @@ def test_forced_encodings_with_df_py3(library):
 
 
 def test_forced_encodings_with_df_py3_multi_index(library):
-    sample_data = {'str_col': [b'a', b'b'], 'unicode_col': [u'a', u'b'], 'int_col': [1, 2]}
+    sample_data = {'str_col': [b'a', b'b'], 'unicode_col': ['a', 'b'], 'int_col': [1, 2]}
     unicode_type = str
 
     def _assert_index_type(index, t_type):
