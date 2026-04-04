@@ -1,5 +1,4 @@
 import sys
-from distutils.version import LooseVersion
 from os import path
 
 import pandas as pd
@@ -13,8 +12,6 @@ from arctic._compression import compress, compressHC
 from arctic.exceptions import UnsupportedPickleStoreVersion
 from arctic.store._pickle_store import PickleStore
 from arctic.store._version_store_utils import checksum
-
-PANDAS_VERSION = LooseVersion(pd.__version__)
 
 
 def test_write():
@@ -97,14 +94,10 @@ def test_read_backward_compatibility():
     """
     fname = path.join(path.dirname(__file__), "data", "test-data.pkl")
 
-    # For newer versions; verify that unpickling fails when using cPickle
-    if PANDAS_VERSION >= LooseVersion("0.16.1"):
-        if sys.version_info[0] >= 3:
-            with pytest.raises(UnicodeDecodeError), open(fname) as fh:
-                pickle.load(fh)
-        else:
-            with pytest.raises(TypeError), open(fname) as fh:
-                pickle.load(fh)
+    # On the supported Python 3 test matrix, plain pickle.load is expected to
+    # fail on this legacy Python 2 payload without an explicit encoding.
+    with pytest.raises(UnicodeDecodeError), open(fname) as fh:
+        pickle.load(fh)
 
     # Verify that PickleStore() uses a backwards compatible unpickler.
     store = PickleStore()
@@ -115,7 +108,7 @@ def test_read_backward_compatibility():
     df = store.read(sentinel.arctic_lib, version, sentinel.symbol)
 
     expected = pd.DataFrame(range(4), pd.date_range(start="20150101", periods=4))
-    assert (df == expected).all().all()
+    pd.testing.assert_frame_equal(df, expected)
 
 
 def test_unpickle_highest_protocol():
@@ -130,7 +123,7 @@ def test_unpickle_highest_protocol():
     ps = store.read(sentinel.arctic_lib, version, sentinel.symbol)
 
     expected = pd.Series()
-    assert (ps == expected).all()
+    pd.testing.assert_series_equal(ps, expected)
 
 
 def test_pickle_chunk_V1_read():

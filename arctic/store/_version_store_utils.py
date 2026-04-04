@@ -1,13 +1,10 @@
-import functools
 import hashlib
 import logging
 import pickle
 
 import numpy as np
-import pandas as pd
 import pymongo
 from bson import Binary
-from pandas.compat import pickle_compat
 from pymongo.errors import OperationFailure
 
 from arctic._config import FW_POINTERS_REFS_KEY, FW_POINTERS_CONFIG_KEY, FwPointersCfg
@@ -136,13 +133,10 @@ def version_base_or_id(version):
     return version.get('base_version_id', version['_id'])
 
 
-def _define_compat_pickle_load():
-    """Factory function to initialise the correct Pickle load function based on
-    the Pandas version.
-    """
-    if pd.__version__.startswith("0.14"):
-        return pickle.load
-    return pickle_compat.load
+# pandas 3.x removed pandas.compat.pickle_compat; for supported runtimes,
+# the valid unpickler is the stdlib loader. Legacy Python 2 payload handling
+# is provided by callers via pickle.load(..., encoding='latin_1').
+pickle_compat_load = pickle.load
 
 
 def analyze_symbol(instance, sym, from_ver, to_ver, do_reads=False):
@@ -372,6 +366,3 @@ def is_corrupted(instance, sym, input_v):
     return True
 
 
-# Initialise the pickle load function and delete the factory function.
-pickle_compat_load = _define_compat_pickle_load()
-del _define_compat_pickle_load
