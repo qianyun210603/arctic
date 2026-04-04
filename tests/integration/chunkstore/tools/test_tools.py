@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from pandas.testing import assert_frame_equal
 
 from arctic.chunkstore.tools import segment_id_repair
 from ..test_fixes import assert_frame_equal_

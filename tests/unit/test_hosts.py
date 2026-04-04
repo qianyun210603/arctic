@@ -4,7 +4,7 @@ from unittest.mock import patch, call
 try:
     from ConfigParser import NoSectionError
 except ImportError:
-    from configparser import NoSectionError
+    pass
 from arctic.hosts import get_arctic_lib
 
 

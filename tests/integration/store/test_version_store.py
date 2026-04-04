@@ -22,7 +22,6 @@ from arctic.date import DateRange
 from arctic.date._mktz import mktz
 from arctic.exceptions import NoDataFoundException, DuplicateSnapshotException, ArcticException
 from arctic.store import _version_store_utils
-from arctic.store import version_store
 from tests.unit.serialization.serialization_test_data import _mixed_test_data
 from ...util import read_str_as_pandas
 from ..test_utils import enable_profiling_for_library

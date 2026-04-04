@@ -12,7 +12,7 @@ from pymongo.errors import OperationFailure, AutoReconnect
 from ._cache import Cache
 from ._config import ENABLE_CACHE
 from ._util import indent
-from .auth import authenticate, get_auth
+from .auth import get_auth
 from .chunkstore import chunkstore
 from .decorators import mongo_retry
 from .exceptions import LibraryNotFoundException, ArcticException, QuotaExceededException

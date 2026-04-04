@@ -19,7 +19,7 @@ from io import StringIO
 from arctic._compression import decompress
 from arctic.date import DateRange, mktz
 # Do not remove PandasStore, used in global scope
-from arctic.store._pandas_ndarray_store import PandasDataFrameStore, PandasSeriesStore, PandasStore
+from arctic.store._pandas_ndarray_store import PandasDataFrameStore, PandasSeriesStore
 from arctic.store.version_store import register_versioned_storage
 from tests.util import assert_frame_equal_, assert_series_equal_
 
