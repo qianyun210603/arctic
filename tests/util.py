@@ -1,4 +1,3 @@
-from __future__ import print_function
 try:
     import cStringIO as stringio
 except ImportError:

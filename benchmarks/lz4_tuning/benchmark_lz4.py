@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import random
 from datetime import datetime as dt
