@@ -4,7 +4,7 @@ from multiprocessing.pool import ThreadPool
 try:
     from lz4.block import compress as lz4_compress, decompress as lz4_decompress
     lz4_compressHC = lambda _str: lz4_compress(_str, mode='high_compression')
-except ImportError as e:
+except ImportError:
     from lz4 import compress as lz4_compress, compressHC as lz4_compressHC, decompress as lz4_decompress
 
 # ENABLE_PARALLEL mutated in global_scope. Do not remove.

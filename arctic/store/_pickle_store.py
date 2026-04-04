@@ -60,7 +60,7 @@ class PickleStore(object):
             try:
                 # The default encoding is ascii.
                 return pickle_compat_load(io.BytesIO(data))
-            except UnicodeDecodeError as ue:
+            except UnicodeDecodeError:
                 # Using encoding='latin1' is required for unpickling NumPy arrays and instances of datetime, date
                 # and time pickled by Python 2: https://docs.python.org/3/library/pickle.html#pickle.load
                 logger.info("Could not Unpickle with ascii, Using latin1.")

@@ -15,7 +15,7 @@ try:
     release = tuple(int(v) for v in version_match.group(1).split(".")) if version_match else tuple()
     num_version = sum([1000 ** i * v for i, v in enumerate(reversed(release))])
     register_version(str_version, num_version)
-except Exception as e:
+except Exception:
     __version__ = None
     __version_parts__ = tuple()
     __version_numerical__ = 0
