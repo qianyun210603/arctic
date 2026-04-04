@@ -23,7 +23,7 @@ def test_with_strings():
 
 
 def test_with_objects_raises():
-    class Example(object):
+    class Example:
         def __init__(self, data):
             self.data = data
 

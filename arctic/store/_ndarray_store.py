@@ -206,7 +206,7 @@ def _fw_pointers_convert_append_to_write(previous_version):
     return prev_fw_config is FwPointersCfg.ENABLED and ARCTIC_FORWARD_POINTERS_CFG is not FwPointersCfg.ENABLED
 
 
-class NdarrayStore(object):
+class NdarrayStore:
     """Chunked store for arbitrary ndarrays, supporting append.
 
     for the simple example:

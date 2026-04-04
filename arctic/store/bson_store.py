@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 BSON_STORE_TYPE = 'BSONStore'
 
 
-class BSONStore(object):
+class BSONStore:
     """
     BSON Data Store. This stores any Python object that encodes to BSON correctly,
     and offers a vanilla pymongo interface. Note that strings myst be valid UTF-8.

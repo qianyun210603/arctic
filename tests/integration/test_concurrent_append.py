@@ -9,7 +9,7 @@ from arctic.arctic import Arctic
 from arctic.exceptions import OptimisticLockException
 
 
-class Appender(object):
+class Appender:
 
     def __init__(self, mongo_server, library_name, sem, counter_init, runtime=30):
         super(Appender, self).__init__()

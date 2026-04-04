@@ -38,7 +38,7 @@ CHUNKER_MAP = {DateChunker.TYPE: DateChunker(),
                PassthroughChunker.TYPE: PassthroughChunker()}
 
 
-class ChunkStore(object):
+class ChunkStore:
     @classmethod
     def initialize_library(cls, arctic_lib, hashed=True, **kwargs):
         ChunkStore(arctic_lib)._ensure_index()

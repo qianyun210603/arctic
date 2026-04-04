@@ -2,7 +2,7 @@ START = 's'
 END = 'e'
 
 
-class Chunker(object):
+class Chunker:
 
     def to_chunks(self, data, **kwargs):
         """

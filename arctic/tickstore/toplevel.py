@@ -25,7 +25,7 @@ YEAR_REGEX = re.compile(r"\d{4}")
 end_time_min = (dt.combine(date.today(), time.min) - timedelta(milliseconds=1)).time()
 
 
-class DictList(object):
+class DictList:
     def __init__(self, lst, key):
         self.lst = lst
         self.key = key
@@ -37,7 +37,7 @@ class DictList(object):
         return self.lst[idx][self.key]
 
 
-class TopLevelTickStore(object):
+class TopLevelTickStore:
 
     @classmethod
     def initialize_library(cls, arctic_lib, **kwargs):

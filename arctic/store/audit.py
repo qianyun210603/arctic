@@ -14,7 +14,7 @@ from ..exceptions import NoDataFoundException, ConcurrentModificationException
 logger = logging.getLogger(__name__)
 
 
-class DataChange(object):
+class DataChange:
     """
     Object representing incoming data change
     """
@@ -23,7 +23,7 @@ class DataChange(object):
         self.new_data = new_data
 
 
-class ArcticTransaction(object):
+class ArcticTransaction:
     """Use this context manager if you want to modify data in a version store while ensuring that no other writes
     interfere with your own.
 

@@ -174,7 +174,7 @@ def test_lib_repr():
 
 
 def test_register_library_type():
-    class DummyType(object):
+    class DummyType:
         pass
     register_library_type("new_dummy_type", DummyType)
     assert LIBRARY_TYPES['new_dummy_type'] == DummyType

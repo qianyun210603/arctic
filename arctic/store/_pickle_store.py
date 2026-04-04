@@ -22,7 +22,7 @@ _HARD_MAX_BSON_ENCODE = 10 * 1024 * 1024  # 10MB
 logger = logging.getLogger(__name__)
 
 
-class PickleStore(object):
+class PickleStore:
 
     @classmethod
     def initialize_library(cls, *args, **kwargs):

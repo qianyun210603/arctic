@@ -61,7 +61,7 @@ def register_library_type(name, type_):
     LIBRARY_TYPES[name] = type_
 
 
-class Arctic(object):
+class Arctic:
     """
     The Arctic class is a top-level God object, owner of all arctic_<user> databases
     accessible in Mongo.
@@ -494,7 +494,7 @@ class Arctic(object):
         return ArcticLibraryBinding(self, lib).get_library_type()
 
 
-class ArcticLibraryBinding(object):
+class ArcticLibraryBinding:
     """
     The ArcticLibraryBinding type holds the binding between the library name and the
     concrete implementation of the library.

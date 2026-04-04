@@ -95,7 +95,7 @@ META = 'md'
 CHUNK_VERSION_NUMBER = 3
 
 
-class TickStore(object):
+class TickStore:
 
     @classmethod
     def initialize_library(cls, arctic_lib, **kwargs):

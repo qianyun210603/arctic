@@ -13,7 +13,7 @@ from pandas import Timestamp
 import arctic.serialization.numpy_records as anr
 
 
-class FastCheckSerializable(object):
+class FastCheckSerializable:
     def __init__(self, enabled):
         self.enabled = bool(enabled)
         self.orig_setting = None

@@ -11,7 +11,7 @@ class AsyncRequestType(Enum):
     ACCESSOR = 'accessor'
 
 
-class AsyncRequest(object):
+class AsyncRequest:
     def __init__(self, kind, library, fun, callback, *args, **kwargs):
         self.id = uuid.uuid4()
 

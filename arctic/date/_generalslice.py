@@ -8,7 +8,7 @@ class Intervals(Enum):
 (OPEN_CLOSED, CLOSED_OPEN, OPEN_OPEN, CLOSED_CLOSED) = INTERVALS = Intervals.__members__.values()
 
 
-class GeneralSlice(object):
+class GeneralSlice:
     """General slice object, supporting open/closed ranges:
 
     =====  ====  ============================  ===============================

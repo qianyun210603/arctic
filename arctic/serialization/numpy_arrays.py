@@ -26,7 +26,7 @@ METADATA = 'md'
 LENGTHS = 'ln'
 
 
-class FrameConverter(object):
+class FrameConverter:
     """
     Converts a Pandas Dataframe to and from PyMongo SON representation:
 

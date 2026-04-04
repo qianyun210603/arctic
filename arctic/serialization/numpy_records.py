@@ -150,7 +150,7 @@ def _multi_index_to_records(index, empty_index):
     return ix_vals, index_names, index_tz
 
 
-class PandasSerializer(object):
+class PandasSerializer:
 
     def _index_to_records(self, df):
         metadata = {}

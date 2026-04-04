@@ -43,7 +43,7 @@ df_compress = [gen_dataframe_compressible(10, rows) for rows in TEST_SIZES]
 s_compress = [gen_series_compressible(rows) for rows in TEST_SIZES]
 
 
-class TimeSuiteWrite(object):
+class TimeSuiteWrite:
     params = list(range(len(TEST_SIZES)))
     param_names = ['5K * 10^']
 
@@ -70,7 +70,7 @@ class TimeSuiteWrite(object):
         self.lib.write('series_bench_compressible', s_compress[idx])
 
 
-class TimeSuiteRead(object):
+class TimeSuiteRead:
     params = list(range(len(TEST_SIZES)))
     param_names = ['5K * 10^']
 
@@ -92,7 +92,7 @@ class TimeSuiteRead(object):
         self.lib.read('test_df')
 
 
-class TimeSuiteAppend(object):
+class TimeSuiteAppend:
     params = list(range(len(TEST_SIZES)))
     param_names = ['5K * 10^']
 

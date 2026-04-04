@@ -9,7 +9,7 @@ from arctic.multi_index import groupby_asof
 BitemporalItem = namedtuple('BitemporalItem', 'symbol, library, data, metadata, last_updated')
 
 
-class BitemporalStore(object):
+class BitemporalStore:
     """ A versioned pandas DataFrame store.
 
     As the name hinted, this holds versions of DataFrame by maintaining an extra 'insert time' index internally.
