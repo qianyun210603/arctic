@@ -5,23 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "arctic_new"
 dynamic = ["version"]
-description = "AHL Research Versioned TimeSeries and Tick store"
-readme = "README.md"
 license = "LGPL-2.1-or-later"
 authors = [
     { name = "Man AHL Technology", email = "arctic@man.com" },
     { name = "YQ Tsui", email = "qianyun210603@hotmail.com" },
 ]
+description = "AHL Research Versioned TimeSeries and Tick store"
+readme = { file = "README.md", content-type = "text/markdown" }
 keywords = ["keyvalue", "tickstore", "chunkstore", "mongo", "timeseries"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Operating System :: POSIX",
-    "Operating System :: Microsoft :: Windows",
     "Topic :: Database",
     "Topic :: Database :: Front-Ends",
     "Topic :: Software Development :: Libraries"
@@ -58,7 +56,7 @@ tests = [
 Homepage = "https://github.com/qianyun210603/arctic"
 
 [tool.setuptools.packages.find]
-include = ["arctic"]
+include = ["arctic", "arctic.*"]
 
 [project.scripts]
 arctic_init_library = "arctic.scripts.arctic_init_library:main"
@@ -71,9 +69,10 @@ arctic_prune_versions = "arctic.scripts.arctic_prune_versions:main"
 arctic_fsck = "arctic.scripts.arctic_fsck:main"
 
 [tool.setuptools_scm]
+fallback_version = "0.0+unknown"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 output-format = "full"
 line-length = 120
 exclude = ["*.ipynb", ".git/*"]

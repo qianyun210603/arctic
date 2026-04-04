@@ -1,6 +1,6 @@
 """ The Arctic TimeSeries and Tick store."""
 
-import pandas
+import re
 
 from .arctic import Arctic, register_library_type
 from .arctic import VERSION_STORE, TICK_STORE, CHUNK_STORE, METADATA_STORE, SEQUENCE_STORE
@@ -9,11 +9,11 @@ from .store._pandas_ndarray_store import PandasDataFrameStore, PandasSeriesStore
 from .store.version_store import register_versioned_storage, register_version
 
 try:
-    from packaging.version import Version
-    import importlib_metadata
-    str_version = importlib_metadata.version("arctic_new")
-    parsed_version = Version(str_version)
-    num_version = sum([1000 ** i * v for i, v in enumerate(reversed(parsed_version.release))])
+    from importlib.metadata import version as metadata_version
+    str_version = metadata_version("arctic_new")
+    version_match = re.match(r"^(\d+(?:\.\d+)*)", str_version)
+    release = tuple(int(v) for v in version_match.group(1).split(".")) if version_match else tuple()
+    num_version = sum([1000 ** i * v for i, v in enumerate(reversed(release))])
     register_version(str_version, num_version)
 except Exception as e:
     __version__ = None
@@ -21,7 +21,7 @@ except Exception as e:
     __version_numerical__ = 0
 else:
     __version__ = str_version
-    __version_parts__ = parsed_version.release
+    __version_parts__ = release
     __version_numerical__ = num_version
 
 
