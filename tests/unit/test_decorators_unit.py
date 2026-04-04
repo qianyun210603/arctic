@@ -83,7 +83,7 @@ def test_retry_nested():
                 raise error
             try:
                 bar()
-            except:
+            except Exception:
                 raise error
         with pytest.raises(OperationFailure):
             foo()

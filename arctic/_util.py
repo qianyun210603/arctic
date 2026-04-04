@@ -23,7 +23,7 @@ def _detect_new_count_api():
     try:
         mongo_v = [int(v) for v in pymongo.version.split('.')]
         return mongo_v[0] >= 3 and mongo_v[1] >= 7
-    except:
+    except Exception:
         return False
 
 

@@ -42,7 +42,7 @@ def _corrupt_with_append_only(library, library_name):
     library._insert_version = do_fail
     try:
         library.append(symbol, large_ts[1010:1020])  # v3
-    except:
+    except Exception:
         pass
     library._insert_version = orig_insert_version
 

@@ -121,7 +121,7 @@ class AsyncArctic(LazySingletonTasksCoordinator):
                     picked = deferred
                     self._schedule_request(deferred)
                     break
-        except:
+        except Exception:
             logging.exception(f"Failed to re-schedule a deferred task: {picked}")
             return
         self.deferred_requests.remove(picked)

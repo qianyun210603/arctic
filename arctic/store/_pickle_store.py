@@ -54,7 +54,7 @@ class PickleStore(object):
                     raise UnsupportedPickleStoreVersion("Data was written by unsupported version of pickle store")
                 try:
                     data = decompress(blob)
-                except:
+                except Exception:
                     logger.error(f"Failed to read symbol {symbol}")
 
             try:

@@ -64,11 +64,11 @@ class FrameConverter(object):
             mask = None
 
         if infer_dtype(a, skipna=False) == 'mixed':
-            # assume its a string, otherwise raise an error
+            # assume it's a string, otherwise raise an error
             try:
                 a = np.array([s.encode('ascii') for s in a])
                 a = a.astype('O')
-            except:
+            except Exception:
                 raise ValueError("Column of type 'mixed' cannot be converted to string")
 
         type_ = infer_dtype(a, skipna=False)
