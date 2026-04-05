@@ -155,7 +155,7 @@ class PandasSerializer:
     def _index_to_records(self, df):
         metadata = {}
         index = df.index
-        index_tz: str | None | List[str | None]
+        index_tz: str | None | list[str | None]
 
         if isinstance(index, MultiIndex):
             ix_vals, index_names, index_tz = _multi_index_to_records(index, len(df) == 0)

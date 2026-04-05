@@ -130,7 +130,7 @@ class ChunkStore:
             dict to store in the audit log
         """
         if chunk_range is not None:
-            sym: Dict = self._get_symbol_info(symbol)
+            sym: dict = self._get_symbol_info(symbol)
             # read out chunks that fall within the range and filter out
             # data within the range
             df = self.read(symbol, chunk_range=chunk_range, filter_data=False)
@@ -185,7 +185,7 @@ class ChunkStore:
             return symbols
         return [x for x in symbols if partial_match in x]
 
-    def _get_symbol_info(self, symbol) -> Dict | list:
+    def _get_symbol_info(self, symbol) -> dict | list:
         if isinstance(symbol, list):
             return list(self._symbols.find({SYMBOL: {'$in': symbol}}))
         return self._symbols.find_one({SYMBOL: symbol})
@@ -400,7 +400,7 @@ class ChunkStore:
             audit['chunks'] = chunk_count
             self._audit.insert_one(audit)
 
-    def __update(self, sym: Dict, item, metadata=None, combine_method=None, chunk_range=None, audit=None):
+    def __update(self, sym: dict, item, metadata=None, combine_method=None, chunk_range=None, audit=None):
         """
         helper method used by update and append since they very closely
         resemble each other. Really differ only by the combine method.
@@ -580,7 +580,7 @@ class ChunkStore:
         -------
         dictionary
         """
-        sym: Dict = self._get_symbol_info(symbol)
+        sym: dict = self._get_symbol_info(symbol)
         if not sym:
             raise NoDataFoundException("Symbol does not exist.")
         ret = {'chunk_count': sym[CHUNK_COUNT], 'len': sym[LEN], 'appended_rows': sym[APPEND_COUNT],
