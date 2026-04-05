@@ -33,7 +33,7 @@ def mktz(zone=None):
         return ZoneInfo(tzlocal.get_localzone_name())
     try:
         return ZoneInfo(zone)
-    except Exception:
+    except Exception as e:
         p = Path(zone)
         if p.exists() and p.is_file():
             try:
@@ -41,4 +41,4 @@ def mktz(zone=None):
                     return ZoneInfo.from_file(fh)
             except Exception:
                 pass
-        raise TimezoneError(f'Timezone "{zone}" can not be read')
+        raise TimezoneError(f'Timezone "{zone}" can not be read') from e

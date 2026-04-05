@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-import numpy.ma as ma
+from numpy import ma
 import pandas as pd
 from pandas.api.types import is_string_dtype
 from bson import Binary, SON
@@ -69,8 +69,8 @@ class FrameConverter:
             try:
                 a = np.array([s.encode('ascii') for s in a])
                 a = a.astype('O')
-            except Exception:
-                raise ValueError("Column of type 'mixed' cannot be converted to string")
+            except Exception as e:
+                raise ValueError("Column of type 'mixed' cannot be converted to string") from None
 
         type_ = infer_dtype(a, skipna=False)
         if type_ in ['unicode', 'string']:

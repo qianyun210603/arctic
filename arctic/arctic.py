@@ -384,10 +384,9 @@ class Arctic:
             lib = ArcticLibraryBinding(self, library)
             lib_type = lib.get_library_type()
         except (OperationFailure, AutoReconnect) as e:
-            error = e
             raise LibraryNotFoundException(
-                f"Library {library} was not correctly initialized in {self}.\nReason: {error!r})"
-            )
+                f"Library {library} was not correctly initialized in {self}.\nReason: {e!r})"
+            ) from e
 
         if not lib_type:
             raise LibraryNotFoundException(f"Library {library} was not correctly initialized in {self}.")

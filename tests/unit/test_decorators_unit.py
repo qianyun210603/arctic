@@ -83,8 +83,9 @@ def test_retry_nested():
                 raise error
             try:
                 bar()
-            except Exception:
-                raise error
+            except Exception as e:
+                # Re-raise the expected error while preserving the original exception as the cause
+                raise error from e
         with pytest.raises(OperationFailure):
             foo()
     assert le.call_count == 15

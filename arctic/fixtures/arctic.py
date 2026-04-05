@@ -6,7 +6,7 @@ import urllib.parse
 
 import pymongo
 import bson
-import pytest as pytest
+import pytest
 
 from .. import arctic as m
 from ..chunkstore.chunkstore import CHUNK_STORE_TYPE

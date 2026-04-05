@@ -670,7 +670,7 @@ def test_read_data_doesnt_exist(chunkstore_lib):
 
 def test_invalid_type(chunkstore_lib):
     with pytest.raises(Exception) as e:
-        chunkstore_lib.write('some_data', str("Cannot write a string"), 'D')
+        chunkstore_lib.write('some_data', "Cannot write a string", 'D')
     assert('Can only chunk DataFrames' in str(e.value))
 
 

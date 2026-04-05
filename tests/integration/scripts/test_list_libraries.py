@@ -7,10 +7,11 @@ from ...util import run_as_main
 def test_list_library(mongo_host, library, library_name):
     with patch('arctic.scripts.arctic_list_libraries.print') as p:
         run_as_main(arctic_list_libraries.main, "--host", mongo_host)
+    has_library = False
     for x in p.call_args_list:
         if x == call(library_name):
-            return
-    assert False, "Failed to find a library"
+            has_library = True
+    assert has_library, "Failed to find a library"
 
 
 def test_list_library_args(mongo_host, library, library_name):

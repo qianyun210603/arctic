@@ -166,7 +166,8 @@ class VersionStore:
             try:
                 query['parent'] = self._snapshots.find_one({'name': snapshot})['_id']
             except TypeError:
-                raise NoDataFoundException(f'No snapshot {snapshot} in library {self._arctic_lib.get_name()}')
+                # Explicitly suppress exception chaining to distinguish this handled error
+                raise NoDataFoundException(f'No snapshot {snapshot} in library {self._arctic_lib.get_name()}') from None
         elif all_symbols:
             return self._versions.find(query).distinct('symbol')
 
@@ -266,7 +267,8 @@ class VersionStore:
             try:
                 query['parent'] = self._snapshots.find_one({'name': snapshot})['_id']
             except TypeError:
-                raise NoDataFoundException(f'No snapshot {snapshot} in library {self._arctic_lib.get_name()}')
+                # Explicitly suppress exception chaining to distinguish this handled error
+                raise NoDataFoundException(f'No snapshot {snapshot} in library {self._arctic_lib.get_name()}') from None
 
         versions = []
         snapshots = {ss.get('_id'): ss.get('name') for ss in self._snapshots.find()}
@@ -519,7 +521,8 @@ class VersionStore:
             mongo_retry(self._versions.insert_one)(version)
         except DuplicateKeyError as err:
             logger.exception(err)
-            raise OperationFailure("A version with the same _id exists, force a clean retry")
+            # Chain the raised OperationFailure to the original DuplicateKeyError for clarity
+            raise OperationFailure("A version with the same _id exists, force a clean retry") from err
 
     @mongo_retry
     def append(self, symbol, data, metadata=None, prune_previous_version=True, upsert=True, **kwargs):

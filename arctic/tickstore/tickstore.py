@@ -665,7 +665,8 @@ class TickStore:
                 # `UnicodeDecodeError` in python2 and `SystemError` in python3
                 array = np.array([s.decode('utf-8') for s in array])
             except Exception:
-                raise UnhandledDtypeException("Only unicode and utf8 strings are supported.")
+                # Make the cause explicit; suppress chaining to avoid confusing traceback
+                raise UnhandledDtypeException("Only unicode and utf8 strings are supported.") from None
         else:
             raise UnhandledDtypeException(f"Unsupported dtype '{array.dtype}' - only int64, float64 and U are supported")
         # Everything is little endian in tickstore
