@@ -14,7 +14,7 @@ def test_dtype_parsing():
     dtypes = []
 
     dtypes.append(np.dtype(np.object_))
-    dtypes.append(np.dtype(np.float128))
+    dtypes.append(np.dtype(np.longdouble))
     dtypes.append(np.dtype('int64'))
     dtypes.append(np.dtype([('S', 'int64')]))
     dtypes.append(np.dtype([('S', 'int64'), ('B', '<f8')]))

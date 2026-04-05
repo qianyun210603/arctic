@@ -99,7 +99,7 @@ class FrameConverter:
             try:
                 columns.append(str(c))
                 arr, mask = self._convert_types(df[c].values)
-                dtypes[str(c)] = arr.dtype.str
+                dtypes[str(c)] = str(arr.dtype)
                 if mask is not None:
                     masks[str(c)] = Binary(compress(mask.tobytes()))
                 arrays.append(arr.tobytes())
