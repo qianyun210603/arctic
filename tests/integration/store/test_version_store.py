@@ -421,7 +421,7 @@ def test_list_version_deleted(library):
     assert versions[0]['symbol'] == symbol
     assert versions[0]['version'] == 2
     assert versions[0]['snapshots'] == []
-    assert versions[0]['deleted'] == True
+    assert versions[0]['deleted']
 
     assert versions[1]['symbol'] == symbol
     assert versions[1]['version'] == 1

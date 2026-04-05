@@ -83,7 +83,7 @@ def test_existing_ts_update_existing_data_and_read(bitemporal_library):
 def test_read_ts_with_historical_update(bitemporal_library):
     with patch('arctic.store.bitemporal_store.dt') as mock_dt:
         mock_dt.now.return_value = dt(2015, 5, 1)
-        mock_dt.side_effect = lambda *args, **kwargs: dt(*args, **kwargs)
+        mock_dt.side_effect = dt
         bitemporal_library.update('spam', ts1)
 
     bitemporal_library.update('spam', read_str_as_pandas("""         sample_dt | near
@@ -112,7 +112,7 @@ def test_read_ts_with_historical_update(bitemporal_library):
 def test_read_ts_with_historical_update_and_new_row(bitemporal_library):
     with patch('arctic.store.bitemporal_store.dt') as mock_dt:
         mock_dt.now.return_value = dt(2015, 5, 1)
-        mock_dt.side_effect = lambda *args, **kwargs: dt(*args, **kwargs)
+        mock_dt.side_effect = dt
         bitemporal_library.update('spam', ts1)
 
     bitemporal_library.update('spam', read_str_as_pandas("""           sample_dt | near
