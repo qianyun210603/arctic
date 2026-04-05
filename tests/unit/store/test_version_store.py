@@ -22,7 +22,7 @@ def test_delete_version_version_not_found():
         with patch('arctic.store.version_store.logger') as logger:
             vs = version_store.VersionStore(sentinel.connection)
             vs._versions = MagicMock()
-            with patch.object(vs._versions, 'find_one', return_value=None, autospec=True):
+            with patch.object(vs._versions, 'find_one', return_value=None):
                 vs._delete_version(sentinel.symbol, sentinel.version)
     logger.error.assert_called_once_with("Can't delete sentinel.symbol:sentinel.version as not found in DB")
 
