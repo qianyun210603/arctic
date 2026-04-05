@@ -166,7 +166,7 @@ def _test_query_falls_back_to_primary(library_secondary, library_name, fw_pointe
              patch('pymongo.server_description.ServerDescription.server_type', SERVER_TYPE.Mongos):
             assert library_secondary.read(symbol) is not None
         # We raised at least once on a secondary read
-        assert allow_secondary[0] == False
+        assert not allow_secondary[0]
 
 
 @pytest.mark.parametrize('fw_pointers_cfg', [FwPointersCfg.DISABLED, FwPointersCfg.HYBRID, FwPointersCfg.ENABLED])
@@ -425,7 +425,7 @@ def test_list_version_deleted(library):
 
     assert versions[1]['symbol'] == symbol
     assert versions[1]['version'] == 1
-    assert versions[1]['deleted'] == False
+    assert not versions[1]['deleted']
     assert versions[1]['snapshots'] == ['xxx']
 
 

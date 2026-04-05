@@ -105,7 +105,7 @@ def test_save_read_pandas_dataframe_with_unicode_index_name(library):
 
 def test_cant_write_pandas_series_with_tuple_values(library):
     df = Series(data=[('A', 'BC')], index=np.array([dt(2013, 1, 1), ]).astype('datetime64[ns]'))
-    assert PandasSeriesStore().can_write(Mock(), 'FOO', df) == False
+    assert not PandasSeriesStore().can_write(Mock(), 'FOO', df)
 
 
 def test_save_read_pandas_series_with_datetimeindex_with_timezone(library):

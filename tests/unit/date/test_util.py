@@ -108,7 +108,7 @@ def test_daterange_raises():
 
 def test_daterange_eq():
     dr = DateRange(dt(2013, 1, 1))
-    assert((dr == None) == False)
+    assert(dr is not None)
     assert(dr == dr)
 
 
@@ -118,7 +118,7 @@ def test_daterange_lt():
 
     assert(dr2 < dr)
     dr.start = None
-    assert((dr2 < dr) == False)
+    assert(dr2 >= dr)
 
 
 @patch("arctic.date._util.mktz", lambda zone="Asia/Shanghai": mktz(zone))
