@@ -4,8 +4,6 @@ import re
 import threading
 import warnings
 
-# just suppress for pymongo
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 import pymongo
 from pymongo.errors import OperationFailure, AutoReconnect
 
@@ -19,6 +17,9 @@ from .exceptions import LibraryNotFoundException, ArcticException, QuotaExceeded
 from .hooks import get_mongodb_uri
 from .store import version_store, bson_store, metadata_store, sequence_store
 from .tickstore import tickstore, toplevel
+
+# just suppress for pymongo
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 __all__ = [
     "Arctic",
@@ -194,10 +195,10 @@ class Arctic:
             if self.__conn is not None:
                 self.__conn.close()
                 self.__conn = None
-            for _, l in self._library_cache.items():
-                if hasattr(l, "_reset") and callable(l._reset):
-                    logger.debug(f"Library reset() {l}")
-                    l._reset()  # the existence of _reset() is not guaranteed/enforced, it also triggers re-auth
+            for _, lib in self._library_cache.items():
+                if hasattr(lib, "_reset") and callable(lib._reset):
+                    logger.debug(f"Library reset() {lib}")
+                    lib._reset()  # the existence of _reset() is not guaranteed/enforced, it also triggers re-auth
 
     def __str__(self):
         return f"<Arctic at {hex(id(self))}, connected to {str(self._conn)}>"
