@@ -1,6 +1,5 @@
 import calendar
 import datetime
-import sys
 from datetime import timedelta
 import pandas as pd
 
@@ -8,9 +7,6 @@ from ._daterange import DateRange
 from ._generalslice import OPEN_OPEN, CLOSED_CLOSED, OPEN_CLOSED, CLOSED_OPEN
 from ._mktz import mktz
 from ._parse import parse
-
-if sys.version_info > (3,):
-    long = int
 
 
 # Support standard brackets syntax for open/closed ranges.
@@ -104,7 +100,7 @@ def to_dt(date, default_tz=None):
     -------
     Non-naive datetime
     """
-    if isinstance(date, (int, long)):
+    if isinstance(date, int):
         return ms_to_datetime(date, default_tz)
     elif date.tzinfo is None:
         if default_tz is None:
@@ -149,7 +145,7 @@ def to_pandas_closed_closed(date_range, add_tz=True):
 
 def ms_to_datetime(ms, tzinfo=None):
     """Convert a millisecond time value to an offset-aware Python datetime object."""
-    if not isinstance(ms, (int, long)):
+    if not isinstance(ms, int):
         raise TypeError(f'expected integer, not {type(ms)}')
 
     if tzinfo is None:
@@ -168,20 +164,14 @@ def datetime_to_ms(d):
     """Convert a Python datetime object to a millisecond epoch (UTC) time value."""
     try:
         millisecond = d.microsecond // 1000
-
-        # https://github.com/pandas-dev/pandas/issues/32526
-        # https://github.com/pandas-dev/pandas/issues/32174
-        if sys.version_info < (3, 8, 0):
-            return calendar.timegm(_add_tzone(d).utctimetuple()) * 1000 + millisecond
+        tmp = _add_tzone(d)
+        # convert to Datetime seems to be the only reliable option
+        if isinstance(tmp, pd.Timestamp):
+            return calendar.timegm(tmp.to_pydatetime().utctimetuple()) * 1000 + millisecond
         else:
-            tmp = _add_tzone(d)
-            # convert to Datetime seems to be the only reliable option
-            if isinstance(tmp, pd.Timestamp):
-                return calendar.timegm(tmp.to_pydatetime().utctimetuple()) * 1000 + millisecond
-            else:
-                return calendar.timegm(tmp.utctimetuple()) * 1000 + millisecond
+            return calendar.timegm(tmp.utctimetuple()) * 1000 + millisecond
     except AttributeError:
-        raise TypeError(f'expect Python datetime object, not {type(d)}')
+        raise TypeError(f'expect Python datetime object, not {type(d)}') from None
 
 
 def utc_dt_to_local_dt(dtm):
