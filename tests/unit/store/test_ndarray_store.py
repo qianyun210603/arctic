@@ -26,8 +26,8 @@ def test_dtype_parsing():
 
 def test_promote_dtype_handles_string_increase():
     dtype1 = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'S10')])
-    dtype2 = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'a20')])
-    expected = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'a20')])
+    dtype2 = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'S20')])
+    expected = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'S20')])
 
     actual = _promote_struct_dtypes(dtype1, dtype2)
 
@@ -35,9 +35,9 @@ def test_promote_dtype_handles_string_increase():
 
 
 def test_promote_dtype_handles_string_decrease():
-    dtype1 = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'a20')])
+    dtype1 = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'S20')])
     dtype2 = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'S10')])
-    expected = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'a20')])
+    expected = np.dtype([('S', 'i4'), ('B', 'f4'), ('C', 'S20')])
 
     actual = _promote_struct_dtypes(dtype1, dtype2)
 
