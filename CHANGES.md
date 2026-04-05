@@ -1,5 +1,11 @@
 ## Changelog
 
+### 1.84.0 (2026-04-05) 
+ * Release: #1022 version 1.84.0
+ * Adapt to latest python, pandas and pymongo versions
+ * Compatibility: unpin pandas and pymongo
+ * Compatibility: tested on python 3.13
+
 ### 1.83.1 (2024-04-08) 
  * Release: #1022 fixes for pandas 2 and latest numpy
  * Compatibility: unpin pandas and numpy
