@@ -125,7 +125,7 @@ def test_can_convert_to_records_without_objects_returns_true_otherwise(fast_seri
         (pytz.utc, r"^UTC$"),
         (dateutil.tz.tzutc(), r"^UTC$"),
         (dateutil.tz.gettz("UTC"), r"^(UTC|dateutil/.+UTC)$"),
-        *([(datetime.timezone.utc, r"^UTC$")] if hasattr(datetime, "timezone") else []),
+        *([(datetime.UTC, r"^UTC$")] if hasattr(datetime, "timezone") else []),
         (pytz.timezone("Europe/London"), r"^Europe/London$"),
         (pytz.timezone("America/New_York"), r"^America/New_York$"),
         (dateutil.tz.gettz("Europe/London"), r"^dateutil/(?:.+/)?(Europe/London|GB-Eire)$"),
