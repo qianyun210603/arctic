@@ -157,7 +157,7 @@ def test_tickstore_pandas_to_bucket_image():
     assert np.isnan(values[1])
     assert values[0] == 1 and values[2] == 1
     assert rowmask == [1, 1, 1, 0, 0, 0, 0, 0]
-    index = [dt.fromtimestamp(int(i/1000)).replace(tzinfo=mktz(tz)) for i in
+    index = [dt.fromtimestamp(int(i/1000), tz=mktz(tz)) for i in
              list(np.cumsum(np.frombuffer(decompress(bucket[INDEX]), dtype='uint64')))]
     assert index == tick_index
     assert bucket[COLUMNS]['A'][DTYPE] == 'int64'
