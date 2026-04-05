@@ -272,8 +272,8 @@ class VersionStore:
 
         versions = []
         snapshots = {ss.get('_id'): ss.get('name') for ss in self._snapshots.find()}
-        for symbol in symbols:
-            query['symbol'] = symbol
+        for this_symbol in symbols:
+            query['symbol'] = this_symbol
             seen_symbols = set()
             for version in self._versions.find(query, projection=['symbol', 'version', 'parent', 'metadata.deleted'], sort=[('version', -1)]):
                 if latest_only and version['symbol'] in seen_symbols:

@@ -36,6 +36,8 @@ SER_MAP = {FrametoArraySerializer.TYPE: FrametoArraySerializer()}
 CHUNKER_MAP = {DateChunker.TYPE: DateChunker(),
                PassthroughChunker.TYPE: PassthroughChunker()}
 
+EMPTY_DATECHUNKER = DateChunker()
+
 
 class ChunkStore:
     @classmethod
@@ -302,7 +304,7 @@ class ChunkStore:
             return [x for x in self._audit.find({'symbol': symbol}, {'_id': False})]
         return [x for x in self._audit.find({}, {'_id': False})]
 
-    def write(self, symbol, item, metadata=None, chunker=DateChunker(), audit=None, **kwargs):
+    def write(self, symbol, item, metadata=None, chunker=EMPTY_DATECHUNKER, audit=None, **kwargs):
         """
         Writes data from item to symbol in the database
 
