@@ -1,6 +1,5 @@
 from datetime import datetime as dt
 import pandas as pd
-import sys
 
 import pytest
 from unittest.mock import patch
@@ -108,8 +107,9 @@ def test_daterange_raises():
 
 def test_daterange_eq():
     dr = DateRange(dt(2013, 1, 1))
+    dr2 = DateRange(dt(2013, 1, 1))
     assert(dr is not None)
-    assert(dr == dr)
+    assert(dr == dr2)
 
 
 def test_daterange_lt():
