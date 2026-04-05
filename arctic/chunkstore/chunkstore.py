@@ -185,7 +185,7 @@ class ChunkStore:
             return symbols
         return [x for x in symbols if partial_match in x]
 
-    def _get_symbol_info(self, symbol) -> Union[Dict, list]:
+    def _get_symbol_info(self, symbol) -> Dict | list:
         if isinstance(symbol, list):
             return list(self._symbols.find({SYMBOL: {'$in': symbol}}))
         return self._symbols.find_one({SYMBOL: symbol})

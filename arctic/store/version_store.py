@@ -1133,7 +1133,7 @@ class VersionStore:
             parent_ids = set([x['_id'] for x in parents])
 
             leaked_versions = sorted(parent_ids - versions)
-            if len(leaked_versions):
+            if leaked_versions:
                 logger.info(f"{symbol} leaked {len(leaked_versions)} versions")
             for x in leaked_versions:
                 chunk_count = mongo_count(chunks_coll, filter={'symbol': symbol, 'parent': x})
@@ -1173,7 +1173,7 @@ class VersionStore:
         parent_ids = set([x['_id'] for x in parents])
 
         leaked_snaps = sorted(parent_ids - snapshots)
-        if len(leaked_snaps):
+        if leaked_snaps:
             logger.info(f"leaked {len(leaked_snaps)} snapshots")
         for x in leaked_snaps:
             ver_count = mongo_count(versions_coll, filter={'parent': x})
