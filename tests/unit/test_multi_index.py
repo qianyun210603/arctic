@@ -96,6 +96,7 @@ def test__get_ts__unsorted_index():
     assert all(df['CLOSE'] == [10.1, 20.1, 30.1, 40.1])
 
 
+@pytest.mark.filterwarnings("ignore:.*Could not infer format")
 def test_fancy_group_by_multi_index():
 
     ts = multi_index_df_from_arrs(
@@ -226,11 +227,11 @@ def get_datetime_index_test_data():
 
 
 def test__first_within_datetime():
-    ''' This shows the groupby function can give you a timeseries of points that were observed
+    """ This shows the groupby function can give you a timeseries of points that were observed
         within a rolling window of the sample time.
         This is like saying 'give me the timeseries as it was on the day'.
         It usually makes sense I think for the window to be the same as the sample period.
-    '''
+    """
     df = get_datetime_index_test_data()
     df = fancy_group_by(df, within=timedelta(hours=1), method='first')
     assert all(df['OPEN'] == [0, 160])
@@ -238,8 +239,8 @@ def test__first_within_datetime():
 
 
 def test__last_within_datetime():
-    ''' Last-observed variant of the above.
-    '''
+    """ Last-observed variant of the above.
+    """
     df = get_datetime_index_test_data()
     df = fancy_group_by(df, within=timedelta(hours=1), method='last')
     assert all(df['OPEN'] == [20, 180])
