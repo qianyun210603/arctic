@@ -4,31 +4,17 @@ import logging
 import dateutil
 import numpy as np
 from pandas import DataFrame, MultiIndex, Series, DatetimeIndex, Index
-import pandas as pd
 
 # Used in global scope, do not remove.
 from .._config import FAST_CHECK_DF_SERIALIZABLE
 from .._util import NP_OBJECT_DTYPE
 from ..exceptions import ArcticException
-
-try:  # 1.3.0+ Compatibility
-    from pandas._libs.tslibs.timezones import is_utc
-except ImportError:  # < 1.3.0, this function is unavailable, but should never be called. Stub to satisfy linting.
-    def is_utc(tz):
-        raise AssertionError("Should never be called for Pandas versions where this is not an exported function")
-
-try:  # 0.21+ Compatibility
-    from pandas._libs.tslib import Timestamp
-    from pandas._libs.tslibs.timezones import get_timezone
-except ImportError:
-    try:  # 0.20.x Compatibility
-        from pandas._libs.tslib import Timestamp, get_timezone
-    except ImportError:  # <= 0.19 Compatibility
-        from pandas.tslib import Timestamp, get_timezone
+from pandas._libs.tslibs.timezones import is_utc
+from pandas._libs.tslib import Timestamp
+from pandas._libs.tslibs.timezones import get_timezone
 
 
 log = logging.getLogger(__name__)
-PD_VER = pd.__version__
 DTN64_DTYPE = 'datetime64[ns]'
 
 
@@ -81,28 +67,10 @@ def consistent_get_timezone_str(tz: datetime.tzinfo | str) -> str:
     if isinstance(tz, str):
         return tz
 
-    # The behaviour of Pandas' `get_timezone()` for UTC `tzinfo`s differs across versions.
-    # This is due to either changes to the underlying `is_utc()` function, or the behaviour when it returns `True`.
-    #
-    # Differing implementations:
-    #   `pandas` 0.22.0 - https://github.com/pandas-dev/pandas/blob/v0.22.0/pandas/_libs/tslibs/timezones.pyx#L71-L72
-    #      - Returns "UTC" for UTC `tzinfo`s, except:
-    #        - `dateutil.tz.gettz("UTC")` - Returns a string like "dateutil//usr/share/zoneinfo/UTC"
-    #   `pandas` 0.24.0 - https://github.com/pandas-dev/pandas/blob/v0.24.0/pandas/_libs/tslibs/timezones.pyx#L59-L60
-    #      - Returns the `tzinfo` object for UTC `tzinfo`s except:
-    #        - `dateutil.tz.gettz("UTC")` - Returns a string like "dateutil//usr/share/zoneinfo/UTC"
-    #   `pandas` 1.3.0 -  https://github.com/pandas-dev/pandas/blob/v1.3.0/pandas/_libs/tslibs/timezones.pyx#L53
-    #      - Returns the `tzinfo` object for UTC `tzinfo`s (including `dateutil.tz.gettz("UTC")`)
-    if PD_VER < "0.24.0":
-        return str(get_timezone(tz))
-
     # Special case for `dateutil.tz.tzutc()` as `str(dateutil.tz.tzutc()) == "tzutc()"` and pandas does not know
     # how to parse this.
     if isinstance(tz, dateutil.tz.tzutc):
         return "UTC"
-
-    if PD_VER < "1.3.0":
-        return str(get_timezone(tz))
 
     zone_name = (
         getattr(tz, 'zone', None)
@@ -181,11 +149,8 @@ class PandasSerializer:
         if len(index) == 1:
             rtn = Index(np.copy(recarr[str(index[0])]), name=index[0])
             if isinstance(rtn, DatetimeIndex) and 'index_tz' in recarr.dtype.metadata:
-                if PD_VER >= '1.0.4':
-                    if isinstance(recarr.dtype.metadata['index_tz'], list):
-                        rtn = rtn.tz_localize('UTC').tz_convert(recarr.dtype.metadata['index_tz'][0])
-                    else:
-                        rtn = rtn.tz_localize('UTC').tz_convert(recarr.dtype.metadata['index_tz'])
+                if isinstance(recarr.dtype.metadata['index_tz'], list):
+                    rtn = rtn.tz_localize('UTC').tz_convert(recarr.dtype.metadata['index_tz'][0])
                 else:
                     rtn = rtn.tz_localize('UTC').tz_convert(recarr.dtype.metadata['index_tz'])
         else:
@@ -342,10 +307,7 @@ class SeriesSerializer(PandasSerializer):
                 if len(index) and isinstance(index[0], bytes):
                     index = index.astype('unicode')
 
-        if PD_VER < '0.23.0':
-            return Series.from_array(data, index=index, name=name)
-        else:
-            return Series(data, index=index, name=name)
+        return Series(data, index=index, name=name)
 
     def serialize(self, item, string_max_len=None, forced_dtype=None):
         return self._to_records(item, string_max_len, forced_dtype)

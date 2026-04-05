@@ -10,7 +10,6 @@ from pandas import to_datetime as dt
 
 from .date import mktz
 
-PD_VER = pd.__version__
 logger = logging.getLogger(__name__)
 
 

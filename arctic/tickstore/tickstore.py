@@ -10,16 +10,8 @@ from bson.binary import Binary
 from pymongo import ReadPreference
 from pymongo.errors import OperationFailure
 
-try:
-    from pandas.core.frame import _arrays_to_mgr
-except ImportError:
-    # Deprecated since pandas 0.23.4
-    from pandas.core.internals.construction import arrays_to_mgr as _arrays_to_mgr
-
-try:
-    from pandas.api.types import infer_dtype
-except ImportError:
-    from pandas.lib import infer_dtype
+from pandas.core.internals.construction import arrays_to_mgr as _arrays_to_mgr
+from pandas.api.types import infer_dtype
 
 from ..date import DateRange, to_pandas_closed_closed, mktz, datetime_to_ms, ms_to_datetime, CLOSED_CLOSED, to_dt, utc_dt_to_local_dt
 from ..decorators import mongo_retry
@@ -29,7 +21,6 @@ from .._util import indent
 from lz4.block import compress as lz4_compress, decompress as lz4_decompress
 
 
-PD_VER = pd.__version__
 logger = logging.getLogger(__name__)
 
 # Example-Schema:

@@ -1,7 +1,4 @@
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 from datetime import datetime as dt
 
 import pandas as pd

@@ -1,7 +1,4 @@
-try:
-    import cStringIO as stringio
-except ImportError:
-    import io as stringio
+import io as stringio
 import sys
 from contextlib import contextmanager
 from datetime import datetime as dt
@@ -13,22 +10,12 @@ from dateutil.rrule import rrule, DAILY
 from pandas.testing import assert_frame_equal, assert_series_equal
 
 
-# check_freq default True added in pandas 1.1.0
 def assert_frame_equal_(df1, df2, check_freq=True, check_names=True):
-    if pandas.__version__ >= '1.1.0':
-        assert_frame_equal(df1.sort_index(axis=1), df2.sort_index(axis=1), check_names=check_names, check_freq=check_freq)
-    else:
-        # python 3.x
-        assert_frame_equal(df1.sort_index(axis=1), df2.sort_index(axis=1), check_names=check_names)
-    #else: # python 2.7
-        #assert_frame_equal(df1, df2)
+    assert_frame_equal(df1.sort_index(axis=1), df2.sort_index(axis=1), check_names=check_names, check_freq=check_freq)
 
-# check_freq default True added in pandas 1.1.0
+
 def assert_series_equal_(s1, s2, check_freq=True):
-    if pandas.__version__ >= '1.1.0':
-        assert_series_equal(s1, s2, check_freq=check_freq)
-    else:
-        assert_series_equal(s1, s2)
+    assert_series_equal(s1, s2, check_freq=check_freq)
 
 
 def dt_or_str_parser(string):
