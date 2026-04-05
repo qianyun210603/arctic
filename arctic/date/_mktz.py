@@ -1,4 +1,5 @@
-import dateutil
+from zoneinfo import ZoneInfo
+from pathlib import Path
 import tzlocal
 
 
@@ -29,50 +30,15 @@ def mktz(zone=None):
     TimezoneError : Raised if a user inputs a bad timezone name.
     """
     if zone is None:
-        # tzlocal provides get_localzone_name() in newer versions; fall back to examining the tzinfo
-        try:
-            zone = tzlocal.get_localzone_name()
-        except Exception:
-            local_tz = tzlocal.get_localzone()
-            # Try common attributes that may contain the zone name
-            zone = getattr(local_tz, 'zone', None) or getattr(local_tz, 'key', None) or str(local_tz)
-
-    tz = dateutil.tz.gettz(zone)
-    if not tz:
-        raise TimezoneError(f'Timezone "{zone}" can not be read')
-    # Stash the zone name as an attribute (as pytz does)
-    if not hasattr(tz, 'zone'):
-        try:
-            tz.zone = zone
-        except Exception:
-            # Some tzinfo implementations may not allow setting attributes; ignore in that case
-            pass
-        else:
-            # Try to set a filename attribute used by some pandas/dateutil code paths
-            # (e.g. pandas may look for tz._filename for dateutil tz objects). Be
-            # defensive: only set when `zone` is a string and when the tz object
-            # allows attribute assignment.
+        return ZoneInfo(tzlocal.get_localzone_name())
+    try:
+        return ZoneInfo(zone)
+    except Exception:
+        p = Path(zone)
+        if p.exists() and p.is_file():
             try:
-                if isinstance(zone, str):
-                    # Prefer a shorter filename when the zone string includes one of
-                    # dateutil.tz.TZPATHS as a prefix (matches pandas/dateutil behaviour).
-                    for p in getattr(dateutil.tz, 'TZPATHS', []):
-                        if zone.startswith(p):
-                            try:
-                                tz._filename = zone[len(p) + 1:]
-                            except Exception:
-                                tz._filename = zone
-                            break
-                    else:
-                        # No TZPATHS prefix matched — store the raw zone string.
-                        tz._filename = zone
+                with p.open("rb") as fh:
+                    return ZoneInfo.from_file(fh)
             except Exception:
-                # If any attribute assignment fails, ignore — we do not want to
-                # raise from this best-effort metadata addition.
                 pass
-                if zone.startswith(p):
-                    try:
-                        tz.zone = zone[len(p) + 1:]
-                    except Exception:
-                        pass
-    return tz
+        raise TimezoneError(f'Timezone "{zone}" can not be read')

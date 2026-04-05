@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-
+import sys
 import tzlocal
 from unittest.mock import patch
 from pytest import raises
@@ -34,9 +34,10 @@ def test_mktz_noarg():
 
 def test_mktz_zone():
     tz = mktz('UTC')
-    assert tz.zone == "UTC"
-    tz = mktz('/usr/share/zoneinfo/UTC')
-    assert tz.zone == "UTC"
+    assert str(tz) == "UTC"
+    if sys.platform.startswith("linux"):
+        tz = mktz('/usr/share/zoneinfo/UTC')
+        assert str(tz) == "UTC"
 
 
 def test_mktz_fails_if_invalid_timezone():
