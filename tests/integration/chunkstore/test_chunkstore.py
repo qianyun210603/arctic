@@ -1112,7 +1112,7 @@ def test_metadata_none(chunkstore_lib):
                    index=pd.date_range('2016-01-01', '2016-01-02'))
     df.index.name = 'date'
     chunkstore_lib.write('data', df, chunk_size='M')
-    assert(chunkstore_lib.read_metadata('data') == None)
+    assert(chunkstore_lib.read_metadata('data') is None)
 
 
 def test_metadata_invalid(chunkstore_lib):

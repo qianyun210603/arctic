@@ -1216,7 +1216,7 @@ def test_write_metadata_new_symbol(library, fw_pointers_cfg):
         with patch('arctic.arctic.logger.info'):
             library.write_metadata(symbol, metadata={'field_b': 1})  # creates version 1 (only metadata)
             v = library.read(symbol)
-            assert v.data == None
+            assert v.data is None
             assert v.metadata == {'field_b': 1}
             assert library._read_metadata(symbol).get('version') == 1
 
