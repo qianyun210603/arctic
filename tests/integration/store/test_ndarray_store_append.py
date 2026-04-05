@@ -1,8 +1,6 @@
 import numpy as np
 from numpy.testing import assert_equal
-import numpy as np
 import pytest
-from numpy.testing import assert_equal
 
 from arctic._util import FwPointersCfg
 from arctic.store._ndarray_store import NdarrayStore, _APPEND_COUNT
