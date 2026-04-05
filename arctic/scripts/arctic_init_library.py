@@ -4,7 +4,7 @@ import logging
 
 import pymongo
 
-from .utils import do_db_auth, setup_logging
+from .utils import setup_logging
 from ..arctic import Arctic, VERSION_STORE, LIBRARY_TYPES, \
     ArcticLibraryBinding
 from ..hooks import get_mongodb_uri
@@ -44,10 +44,6 @@ def main():
 
     print(f"Initializing: {opts.library} on mongo {opts.host}")
     c = pymongo.MongoClient(get_mongodb_uri(opts.host))
-
-    if not do_db_auth(opts.host, c, db_name):
-        logger.error('Authentication Failed. Exiting.')
-        return
 
     store = Arctic(c)
     store.initialize_library(f"{opts.library}", opts.type, hashed=opts.hashed)

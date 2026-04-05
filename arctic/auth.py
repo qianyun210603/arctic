@@ -1,23 +1,7 @@
 import logging
 from collections import namedtuple
 
-from pymongo.errors import OperationFailure
-
 logger = logging.getLogger(__name__)
-
-
-def authenticate(db, user, password):
-    """
-    Return True / False on authentication success.
-
-    PyMongo 2.6 changed the auth API to raise on Auth failure.
-    """
-    try:
-        logger.debug(f"Authenticating {db} with {user}")
-        return db.authenticate(user, password)
-    except OperationFailure as e:
-        logger.debug(f"Auth Error {e}")
-    return False
 
 
 Credential = namedtuple("MongoCredentials", ['database', 'user', 'password'])

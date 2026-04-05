@@ -6,7 +6,6 @@ import uuid
 from pymongo import MongoClient
 
 from arctic.arctic import Arctic
-from .utils import do_db_auth
 from ..hooks import get_mongodb_uri
 
 logger = logging.getLogger(__name__)
@@ -29,10 +28,6 @@ def main():
     args = parser.parse_args()
 
     c = MongoClient(get_mongodb_uri(args.host))
-
-    if not do_db_auth(args.host, c, args.db if args.db else 'admin'):
-        logger.error(f"Failed to authenticate to '{args.host}'. Check your admin password!")
-        return
 
     for user in args.users:
         write_access = args.write
