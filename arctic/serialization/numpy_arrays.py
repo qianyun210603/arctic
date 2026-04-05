@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import numpy.ma as ma
 import pandas as pd
+from pandas.api.types import is_string_dtype
 from bson import Binary, SON
 
 from .._compression import compress, decompress, compress_array
@@ -98,7 +99,8 @@ class FrameConverter:
         for c in df:
             try:
                 columns.append(str(c))
-                arr, mask = self._convert_types(df[c].values)
+                column_values_numpy = df[c].values.to_numpy() if is_string_dtype(df[c].dtype) else df[c].values
+                arr, mask = self._convert_types(column_values_numpy)
                 dtypes[str(c)] = str(arr.dtype)
                 if mask is not None:
                     masks[str(c)] = Binary(compress(mask.tobytes()))
