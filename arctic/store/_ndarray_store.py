@@ -401,9 +401,7 @@ class NdarrayStore:
         if (self._dtype(previous_version['dtype']).fields is None) != (dtype.fields is None):
             raise ValueError("type changes to or from structured array not supported")
 
-        if previous_version['up_to'] == 0:
-            dtype = dtype
-        elif len(item) == 0:
+        if len(item) == 0:
             dtype = self._dtype(previous_version['dtype'])
         else:
             dtype = self._promote_types(dtype, previous_version['dtype'])

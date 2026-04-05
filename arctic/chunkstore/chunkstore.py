@@ -7,7 +7,6 @@ import pymongo
 from bson.binary import Binary
 from pandas import DataFrame, Series
 from pymongo.errors import OperationFailure
-from typing import Dict, Union
 
 from .date_chunker import DateChunker, START, END
 from .passthrough_chunker import PassthroughChunker

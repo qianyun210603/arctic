@@ -2,7 +2,6 @@ import pickle
 import pytest
 from unittest.mock import patch, MagicMock, sentinel, create_autospec, Mock, call
 
-from more_itertools.more import side_effect
 from pymongo.errors import OperationFailure, AutoReconnect
 from pymongo.mongo_client import MongoClient
 

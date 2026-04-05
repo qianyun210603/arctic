@@ -35,7 +35,7 @@ def main():
 
     db_name = opts.library[:opts.library.index('.')] if '.' in opts.library else None
     store = Arctic(c)
-    store.delete_library(opts.library)
+    store.delete_library(db_name)
 
     logger.info(f"Library {opts.library} deleted")
 

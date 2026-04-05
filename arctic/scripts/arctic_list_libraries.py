@@ -4,8 +4,6 @@ import optparse
 from .utils import setup_logging
 from ..arctic import Arctic
 
-print = print
-
 
 def main():
     usage = """usage: %prog [options] [prefix ...]

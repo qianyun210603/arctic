@@ -69,7 +69,7 @@ class FrameConverter:
             try:
                 a = np.array([s.encode('ascii') for s in a])
                 a = a.astype('O')
-            except Exception as e:
+            except Exception:
                 raise ValueError("Column of type 'mixed' cannot be converted to string") from None
 
         type_ = infer_dtype(a, skipna=False)

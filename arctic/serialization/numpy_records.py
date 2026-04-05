@@ -1,6 +1,5 @@
 import datetime
 import logging
-from typing import List, Optional, Union
 
 import dateutil
 import numpy as np

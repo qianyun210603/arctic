@@ -380,7 +380,6 @@ class Arctic:
             return self._library_cache[library]
 
         try:
-            error = None
             lib = ArcticLibraryBinding(self, library)
             lib_type = lib.get_library_type()
         except (OperationFailure, AutoReconnect) as e:
