@@ -12,7 +12,7 @@ from tests.util import read_str_as_pandas
 @pytest.mark.skipif(pd.__version__ >= '0.25.0', reason="Panel has been removed")
 def test_panel_converted_to_dataframe_and_stacked_to_write():
     store = PandasPanelStore()
-    panel = Mock(shape=(1, 2, 3), axes=[Mock(names=['n%d' % i]) for i in range(3)])
+    panel = Mock(shape=(1, 2, 3), axes=[Mock(names=[f'n{i}']) for i in range(3)])
     panel.to_frame.return_value.dtypes = [sentinel.dtype]
     with patch.object(PandasDataFrameStore, 'write') as mock_write:
         with patch('arctic.store._pandas_ndarray_store.DataFrame') as DF:
@@ -26,7 +26,7 @@ def test_panel_converted_to_dataframe_and_stacked_to_write():
 @pytest.mark.skipif(pd.__version__ >= '0.25.0', reason="Panel has been removed")
 def test_panel_append_not_supported():
     store = PandasPanelStore()
-    panel = Mock(shape=(1, 2, 3), axes=[Mock(names=['n%d' % i]) for i in range(3)], dtypes=['a'])
+    panel = Mock(shape=(1, 2, 3), axes=[Mock(names=[f'n{i}']) for i in range(3)], dtypes=['a'])
     with raises(ValueError):
         store.append(sentinel.mlib, sentinel.version, sentinel.symbol, panel, sentinel.prev)
 

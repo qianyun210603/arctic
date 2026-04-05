@@ -360,7 +360,7 @@ class TickStore:
         t = (dt.now() - perf_start).total_seconds()
         ticks = len(rtn)
         rate = int(ticks / t) if t != 0 else float("nan")
-        logger.info("%d rows in %s secs: %s ticks/sec" % (ticks, t, rate))
+        logger.info(f"{ticks} rows in {t} secs: {rate} ticks/sec")
         if not rtn.index.is_monotonic_increasing:
             logger.error("TimeSeries data is out of order, sorting!")
             rtn = rtn.sort_index(kind='mergesort')
@@ -607,7 +607,7 @@ class TickStore:
         t = (dt.now() - start).total_seconds()
         ticks = len(buckets) * self._chunk_size
         rate = int(ticks / t) if t != 0 else float("nan")
-        logger.debug("%d buckets in %s: approx %s ticks/sec" % (len(buckets), t, rate))
+        logger.debug(f"{len(buckets)} buckets in {t}: approx {rate} ticks/sec")
 
     def _pandas_to_buckets(self, x, symbol, initial_image):
         rtn = []
@@ -644,7 +644,7 @@ class TickStore:
             assert dtype.itemsize == 8
             return 'float64'
         elif dtype.kind == 'U':
-            return 'U%d' % (dtype.itemsize / 4)
+            return f'U{dtype.itemsize / 4}'
         else:
             raise UnhandledDtypeException(f"Bad dtype '{dtype}'")
 

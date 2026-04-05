@@ -50,10 +50,7 @@ def main():
         logger.info(f'Symbols:  {len(store[lib].list_symbols()):10d}')
         logger.info(f"Versions: {final_stats['versions']['count']:10d}   Change(+/-) {final_stats['versions']['count'] - orig_stats['versions']['count']:6d}  (av: {final_stats['versions'].get('avgObjSize', 0) / 1024. / 1024.:.2f}MB)")
         logger.info(f"Versions: {final_stats['versions']['size'] / 1024. / 1024.:10.2f}MB Change(+/-) {(final_stats['versions']['size'] - orig_stats['versions']['size']) / 1024. / 1024.:.2f}MB")
-        logger.info('Chunk Count: %7d   Change(+/-) %6d  (av: %.2fMB)' %
-                    (final_stats['chunks']['count'],
-                     final_stats['chunks']['count'] - orig_stats['chunks']['count'],
-                     final_stats['chunks'].get('avgObjSize', 0) / 1024. / 1024.))
+        logger.info(f"Chunk Count: {final_stats['chunks']['count']:7d}   Change(+/-) {final_stats['chunks']['count'] - orig_stats['chunks']['count']:6d}  (av: {final_stats['chunks'].get('avgObjSize', 0) / 1024. / 1024.:.2f}MB)")
         logger.info(f"Chunks: {final_stats['chunks']['size'] / 1024. / 1024.:12.2f}MB Change(+/-) {(final_stats['chunks']['size'] - orig_stats['chunks']['size']) / 1024. / 1024.:6.2f}MB")
         logger.info('----------------------------')
 

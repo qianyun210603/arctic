@@ -72,7 +72,7 @@ def _handle_error(f, e, retry_count, **kwargs):
         e.traceback = sys.exc_info()[2]
         raise
     log_fn = logger.warning if retry_count > 2 else logger.debug
-    log_fn('%s %s [%s], retrying %i' % (type(e), f.__name__, e, retry_count))
+    log_fn(f"{type(e)} {f.__name__} [{str(e)}], retrying {retry_count}")
     # Log operation failure errors
     _log_exception(f.__name__, e, retry_count, **kwargs)
 #    if 'unauthorized' in str(e):

@@ -508,7 +508,7 @@ class NdarrayStore:
                                                         new_segments=[segment['segment'], ])
                     if segment_index:
                         version['segment_index'] = segment_index
-                logger.debug("Appended segment %d for parent %s" % (segment['segment'], version['_id']))
+                logger.debug(f"Appended segment {segment['segment']} for parent {version['_id']}")
             else:
                 if 'segment_index' in previous_version:
                     version['segment_index'] = previous_version['segment_index']

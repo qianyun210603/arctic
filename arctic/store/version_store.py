@@ -697,9 +697,8 @@ class VersionStore:
             # Revert the change
             mongo_retry(self._versions.delete_one)({'_id': new_version['_id']})
             # Indicate the failure
-            raise OperationFailure("Failed to write metadata for symbol %s. "
-                                   "The previous version (%s, %d) has been removed during the update" %
-                                   (symbol, str(reference_version['_id']), reference_version['version']))
+            raise OperationFailure(f"Failed to write metadata for symbol {symbol}. "
+                                   f"The previous version ({str(reference_version['_id'])}, {reference_version['version']}) has been removed during the update")
 
         if prune_previous_version and reference_version:
             self._prune_previous_versions(symbol, new_version_shas=new_version.get(FW_POINTERS_REFS_KEY))
@@ -1135,7 +1134,7 @@ class VersionStore:
 
             leaked_versions = sorted(parent_ids - versions)
             if len(leaked_versions):
-                logger.info("%s leaked %d versions" % (symbol, len(leaked_versions)))
+                logger.info(f"{symbol} leaked {len(leaked_versions)} versions")
             for x in leaked_versions:
                 chunk_count = mongo_count(chunks_coll, filter={'symbol': symbol, 'parent': x})
                 logger.info(f"{symbol}: Missing Version {x.generation_time} ({x}) ; {chunk_count} chunks ref'd")
@@ -1175,7 +1174,7 @@ class VersionStore:
 
         leaked_snaps = sorted(parent_ids - snapshots)
         if len(leaked_snaps):
-            logger.info("leaked %d snapshots" % (len(leaked_snaps)))
+            logger.info(f"leaked {len(leaked_snaps)} snapshots")
         for x in leaked_snaps:
             ver_count = mongo_count(versions_coll, filter={'parent': x})
             logger.info(f"Missing Snapshot {x.generation_time} ({x}) ; {ver_count} versions ref'd")

@@ -137,7 +137,7 @@ def _multi_index_to_records(index, empty_index):
     count = 0
     for i, n in enumerate(index_names):
         if n is None:
-            index_names[i] = 'level_%d' % count
+            index_names[i] = f'level_{count}'
             count += 1
             log.info(f"Level in MultiIndex has no name, defaulting to {index_names[i]}")
     index_tz = []

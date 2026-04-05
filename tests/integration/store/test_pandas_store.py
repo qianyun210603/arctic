@@ -5,13 +5,8 @@ from datetime import datetime as dt, timedelta as dtd
 import numpy as np
 import pandas as pd
 import pytest
-from dateutil.rrule import rrule, DAILY
 from unittest.mock import Mock, patch
 from pandas import DataFrame, Series, DatetimeIndex, MultiIndex, read_csv, date_range, concat
-try:
-    from pandas import Panel
-except ImportError:
-    pass
 from pandas.tseries.offsets import DateOffset
 from pandas.testing import assert_frame_equal, assert_series_equal
 from io import StringIO
@@ -641,44 +636,6 @@ def test_can_write_pandas_df_with_object_columns(library):
     saved_df = library.read('objects').data
 
     assert_frame_equal(saved_df, expected)
-
-
-def panel(i1, i2, i3):
-    return Panel(np.random.randn(i1, i2, i3), range(i1), ['A%d' % i for i in range(i2)],
-                 list(rrule(DAILY, count=i3, dtstart=dt(1970, 1, 1), interval=1)))
-
-
-@pytest.mark.skipif(pd.__version__ >= '0.25.0', reason="Panel has been removed")
-@pytest.mark.xfail(pd.__version__ >= '0.18.0', reason="see issue #115")
-@pytest.mark.parametrize("df_size", list(itertools.combinations_with_replacement([1, 2, 4], r=3)))
-def test_panel_save_read(library, df_size):
-    '''Note - empties are not tested here as they don't work!'''
-    pn = panel(*df_size)
-    library.write('pandas', pn)
-    result = library.read('pandas').data
-    assert np.all(pn.values == result.values), str(pn.values) + "!=" + str(result.values)
-    for i in range(3):
-        assert np.all(pn.axes[i] == result.axes[i])
-        if None not in pn.axes[i].names:
-            assert np.all(pn.axes[i].names == result.axes[i].names), \
-                str(pn.axes[i].names) + "!=" + str(pn.axes[i].names)
-
-
-@pytest.mark.skipif(pd.__version__ >= '0.25.0', reason="Panel has been removed")
-@pytest.mark.xfail(pd.__version__ >= '0.20.0', reason='Panel is deprecated')
-def test_panel_save_read_with_nans(library):
-    '''Ensure that nan rows are not dropped when calling to_frame.'''
-    df1 = DataFrame(data=np.arange(4).reshape((2, 2)), index=['r1', 'r2'], columns=['c1', 'c2'])
-    df2 = DataFrame(data=np.arange(6).reshape((3, 2)), index=['r1', 'r2', 'r3'], columns=['c1', 'c2'])
-    p_in = Panel(data=dict(i1=df1, i2=df2))
-
-    library.write('pandas', p_in)
-    p_out = library.read('pandas').data
-
-    assert p_in.shape == p_out.shape
-    # check_names is False because pandas helpfully names the axes for us.
-    assert_frame_equal(p_in.iloc[0], p_out.iloc[0], check_names=False)
-    assert_frame_equal(p_in.iloc[1], p_out.iloc[1], check_names=False)
 
 
 def test_save_read_ints(library):
