@@ -87,12 +87,12 @@ def test_tickstore_to_bucket_with_image():
     bucket, final_image = TickStore._to_bucket(data, symbol, initial_image)
     assert bucket[COUNT] == 2
     assert bucket[END] == dt(2014, 1, 1, 0, 2, tzinfo=mktz(tz))
-    assert set(bucket[COLUMNS]) == set(('A', 'B', 'D'))
-    assert set(bucket[COLUMNS]['A']) == set((ROWMASK, DTYPE, DATA))
+    assert set(bucket[COLUMNS]) == {'A', 'B', 'D'}
+    assert set(bucket[COLUMNS]['A']) == {ROWMASK, DTYPE, DATA}
     assert get_coldata(bucket[COLUMNS]['A']) == ([124, 125], [1, 1, 0, 0, 0, 0, 0, 0])
     assert get_coldata(bucket[COLUMNS]['B']) == ([27.2], [0, 1, 0, 0, 0, 0, 0, 0])
     assert get_coldata(bucket[COLUMNS]['D']) == ([0], [1, 0, 0, 0, 0, 0, 0, 0])
-    index = [dt.fromtimestamp(int(i/1000)).replace(tzinfo=mktz(tz)) for i in
+    index = [dt.fromtimestamp(int(i/1000), tz=mktz(tz)) for i in
              list(np.cumsum(np.frombuffer(decompress(bucket[INDEX]), dtype='uint64')))]
     assert index == [i['index'] for i in data]
     assert bucket[COLUMNS]['A'][DTYPE] == 'int64'
