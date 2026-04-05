@@ -2,23 +2,20 @@
 import random
 import string
 from datetime import datetime as dt
+from functools import partial
 
 import pytest
 
 import arctic._compression as c
 
-try:
-    from lz4.block import compress as lz4_compress, decompress as lz4_decompress
-    lz4_compressHC = lambda _str: lz4_compress(_str, mode='high_compression')
-except ImportError:
-    from lz4 import compress as lz4_compress, compressHC as lz4_compressHC, decompress as lz4_decompress
+from lz4.block import compress as lz4_compress, decompress as lz4_decompress
 
 
 @pytest.mark.parametrize("compress,decompress", [
     (c.compress, lz4_decompress),
     (c.compressHC, lz4_decompress),
     (lz4_compress, c.decompress),
-    (lz4_compressHC, c.decompress)
+    (partial(lz4_compress, mode='high_compression'), c.decompress)
 ], ids=('arctic/lz4',
         'arcticHC/lz4',
         'lz4/arctic',

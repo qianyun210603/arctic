@@ -70,9 +70,11 @@ def string_to_daterange(str_range, delimiter='-', as_dates=False, interval=CLOSE
         return string_to_daterange(str_range[1:-1], delimiter, as_dates, interval=range_mode)
 
     if as_dates:
-        parse_dt = lambda s: parse(s).date() if s else None
+        def parse_dt(s):
+            return parse(s).date() if s else None
     else:
-        parse_dt = lambda s: parse(s) if s else None
+        def parse_dt(s):
+            return parse(s) if s else None
     if num_dates == 2:
         d = [parse_dt(x) for x in str_range.split(delimiter)]
         oc = interval

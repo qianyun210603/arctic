@@ -1,8 +1,11 @@
 
 
-_resolve_mongodb_hook = lambda env: env
-_log_exception_hook = lambda *args, **kwargs: None
-_get_auth_hook = lambda *args, **kwargs: None
+def _resolve_mongodb_hook(env):
+    return env
+def _log_exception_hook(*args, **kwargs):
+    return None
+def _get_auth_hook(*args, **kwargs):
+    return None
 
 
 def get_mongodb_uri(host):

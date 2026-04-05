@@ -99,10 +99,14 @@ def _resize_with_dtype(arr, dtype):
             new_arr[c] = arr[c]
 
         # missing float columns should default to nan rather than zero
-        _is_float_type = lambda _dtype: _dtype.type in (np.float32, np.float64)
-        _is_void_float_type = lambda _dtype: _dtype.type == np.void and _is_float_type(_dtype.subdtype[0])
-        _is_float_or_void_float_type = lambda _dtype: _is_float_type(_dtype) or _is_void_float_type(_dtype)
-        _is_float = lambda column: _is_float_or_void_float_type(dtype.fields[column][0])
+        def _is_float_type(_dtype):
+            return _dtype.type in (np.float32, np.float64)
+        def _is_void_float_type(_dtype):
+            return _dtype.type == np.void and _is_float_type(_dtype.subdtype[0])
+        def _is_float_or_void_float_type(_dtype):
+            return _is_float_type(_dtype) or _is_void_float_type(_dtype)
+        def _is_float(column):
+            return _is_float_or_void_float_type(dtype.fields[column][0])
         for new_column in filter(_is_float, new_columns - old_columns):
             new_arr[new_column] = np.nan
 

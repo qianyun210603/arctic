@@ -1,11 +1,9 @@
 import logging
 from multiprocessing.pool import ThreadPool
+from functools import partial
 
-try:
-    from lz4.block import compress as lz4_compress, decompress as lz4_decompress
-    lz4_compressHC = lambda _str: lz4_compress(_str, mode='high_compression')
-except ImportError:
-    from lz4 import compress as lz4_compress, compressHC as lz4_compressHC, decompress as lz4_decompress
+from lz4.block import compress as lz4_compress, decompress as lz4_decompress
+
 
 # ENABLE_PARALLEL mutated in global_scope. Do not remove.
 from ._config import ENABLE_PARALLEL, LZ4_HIGH_COMPRESSION, LZ4_WORKERS, LZ4_N_PARALLEL, LZ4_MINSZ_PARALLEL, \
@@ -77,7 +75,7 @@ def compress_array(str_list, withHC=LZ4_HIGH_COMPRESSION):
     if not str_list:
         return str_list
 
-    do_compress = lz4_compressHC if withHC else lz4_compress
+    do_compress = partial(lz4_compress, mode='high_compression') if withHC else lz4_compress
 
     def can_parallelize_strlist(strlist):
         return len(strlist) > LZ4_N_PARALLEL and len(strlist[0]) > LZ4_MINSZ_PARALLEL
@@ -106,7 +104,7 @@ def compressHC(_str):
     """
     HC compression
     """
-    return lz4_compressHC(_str)
+    return lz4_compress(_str, mode='high_compression')
 
 
 def compressHC_array(str_list):
