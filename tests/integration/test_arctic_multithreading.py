@@ -81,11 +81,11 @@ def test_multiprocessing_safety_parent_children_race(mongo_host, library_name):
 
     global MY_ARCTIC
 
-    for i in range(total_iterations):
+    for _i in range(total_iterations):
         processes = list()
 
         MY_ARCTIC = Arctic(mongo_host=mongo_host)
-        for j in range(total_processes):
+        for _j in range(total_processes):
             p = Process(target=f, args=(library_name, total_writes_per_child, False))
             p.start()  # start directly, don't wait to create first all children procs
             processes.append(p)

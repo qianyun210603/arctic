@@ -65,7 +65,7 @@ def bench_compression_comparison(n_chunks, df_length, append_mul, pool_size, poo
 def bench_single(repeats, _strarr, use_HC):
     # Arctic compress single
     measurements = []
-    for i in range(repeats):
+    for _i in range(repeats):
         now = dt.now()
         if use_HC:
             res = [c.compressHC(x) for x in _strarr]
@@ -79,7 +79,7 @@ def bench_single(repeats, _strarr, use_HC):
 
 def bench_multi(repeats, _strarr, use_HC, pool=None):
     measurements = []
-    for j in range(repeats):
+    for _j in range(repeats):
         now = dt.now()
         if pool:
             # Raw LZ4 lib

@@ -362,14 +362,14 @@ class NdarrayStore:
         spec = _spec_fw_pointers_aware(symbol, version, from_index, to_index)
 
         data = bytearray()
-        i = -1
-        for i, x in enumerate(sorted(collection.find(spec), key=itemgetter('segment'))):
+        sorted_findings = sorted(collection.find(spec), key=itemgetter('segment'))
+        for x in sorted_findings:
             data.extend(decompress(x['data']) if x['compressed'] else x['data'])
 
         # Check that the correct number of segments has been returned
-        if segment_count is not None and i + 1 != segment_count:
+        if segment_count is not None and len(sorted_findings) != segment_count:
             raise OperationFailure("Incorrect number of segments returned for {}:{}.  Expected: {}, but got {}. {}".format(
-                                   symbol, version['version'], segment_count, i + 1, collection.database.name + '.' + collection.name))
+                                   symbol, version['version'], segment_count, len(sorted_findings), collection.database.name + '.' + collection.name))
 
         dtype = self._dtype(version['dtype'], version.get('dtype_metadata', {}))
         rtn = np.frombuffer(data, dtype=dtype).reshape(version.get('shape', (-1)))

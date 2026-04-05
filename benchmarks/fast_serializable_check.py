@@ -10,7 +10,7 @@ def _bench(rounds, input_df, fast):
     fast = bool(fast)
     anr.set_fast_check_df_serializable(fast)
     start = time.time()
-    for i in range(rounds):
+    for _i in range(rounds):
         df_serializer.can_convert_to_records_without_objects(input_df, 'symA')
     print(f"Time per iteration (fast={fast}): {(time.time() - start)/rounds}")
 

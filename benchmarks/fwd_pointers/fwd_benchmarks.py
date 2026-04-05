@@ -166,7 +166,7 @@ def main(args):
 
     for fwd_ptr in [FwPointersCfg.ENABLED, FwPointersCfg.DISABLED, FwPointersCfg.HYBRID]:
         for n_rows in data_size:
-            for rounds in range(1, args.rounds + 1):
+            for _rounds in range(1, args.rounds + 1):
                 with FwPointersCtx(fwd_ptr):
                     w_start = dt.now()
                     # Writes data to lib with above config.

@@ -179,7 +179,7 @@ class IncrementalPandasToRecArraySerializer(LazyIncrementalSerializer):
         if self._checksum is None:
             self._lazy_init()
             total_sha = None
-            for chunk_bytes, dtype in self.generator_bytes(from_idx=from_idx, to_idx=to_idx):
+            for chunk_bytes, _dtype in self.generator_bytes(from_idx=from_idx, to_idx=to_idx):
                 # TODO: what about compress_array here in batches?
                 compressed_chunk = compress(chunk_bytes)
                 total_sha = incremental_checksum(compressed_chunk, curr_sha=total_sha)
