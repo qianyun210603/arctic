@@ -67,13 +67,13 @@ LZ4_HIGH_COMPRESSION = bool(os.environ.get('LZ4_HIGH_COMPRESSION'))
 #     arctic/benchmarks/lz4_tuning/README.txt
 # The size of the compression thread pool.
 # Rule of thumb: use 2 for non HC (VersionStore/NDarrayStore/PandasStore, and 8 for HC (TickStore).
-LZ4_WORKERS = os.environ.get('LZ4_WORKERS', 2)
+LZ4_WORKERS = int(os.environ.get('LZ4_WORKERS', '2'))
 
 # The minimum required number of chunks to use parallel compression
-LZ4_N_PARALLEL = os.environ.get('LZ4_N_PARALLEL', 16)
+LZ4_N_PARALLEL = int(os.environ.get('LZ4_N_PARALLEL', '16'))
 
 # Minimum data size to use parallel compression
-LZ4_MINSZ_PARALLEL = os.environ.get('LZ4_MINSZ_PARALLEL', 0.5 * 1024 ** 2)  # 0.5 MB
+LZ4_MINSZ_PARALLEL = int(os.environ.get('LZ4_MINSZ_PARALLEL', '524288'))  # 524288 bytes = 0.5 MB
 
 # Enable this when you run the benchmark_lz4.py
 BENCHMARK_MODE = False
@@ -83,7 +83,7 @@ BENCHMARK_MODE = False
 # Async arctic
 # ---------------------------
 # Configures the size of the workers pools used for async arctic requests
-ARCTIC_ASYNC_NWORKERS = os.environ.get('ARCTIC_ASYNC_NWORKERS', 4)
+ARCTIC_ASYNC_NWORKERS = int(os.environ.get('ARCTIC_ASYNC_NWORKERS', '4'))
 
 
 # -------------------------------
@@ -107,4 +107,4 @@ SKIP_BSON_ENCODE_PICKLE_STORE = bool(os.environ.get('SKIP_BSON_ENCODE_PICKLE_STO
 # Maximum size up to which the input will be bson encoded and stored in the version doc instead of being pickled in
 # the version store. For very large input (> 10 MB) we ignore this option and fall back to using pickle.
 # -------------------------------
-MAX_BSON_ENCODE = os.environ.get('MAX_BSON_ENCODE', 256 * 1024)  # 256 KB
+MAX_BSON_ENCODE = int(os.environ.get('MAX_BSON_ENCODE', '262144'))  # 256 KB
