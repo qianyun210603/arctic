@@ -139,13 +139,7 @@ def test_pandas_timestamp_issue():
 
     ts = pd.Timestamp("2020-11-27 16:00:00-0500", tz="US/Eastern")
 
-    if sys.version_info < (3, 8, 0):
-        assert(ts.utctimetuple().tm_hour == 21)
-        assert(ts.timetuple().tm_hour == 16)
-        assert(ts.to_pydatetime().timetuple().tm_hour == 16)
-    else:
-        assert(ts.to_pydatetime().utctimetuple().tm_hour == 21)
-        assert(ts.timetuple().tm_hour == 16)
-        # fails
-        with pytest.raises(TypeError):
-            ts.utctimetuple()
+    assert(ts.utctimetuple().tm_hour == 21)
+    assert(ts.timetuple().tm_hour == 16)
+    assert(ts.to_pydatetime().timetuple().tm_hour == 16)
+
