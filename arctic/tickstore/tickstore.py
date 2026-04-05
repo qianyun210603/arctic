@@ -394,7 +394,7 @@ class TickStore:
         index = cols[INDEX]
         full_length = len(index)
         for k, v in cols.items():
-            if k != INDEX and k != 'SYMBOL':
+            if k not in (INDEX, 'SYMBOL'):
                 col_len = len(v)
                 if col_len < full_length:
                     v = ([None, ] * (full_length - col_len)) + v

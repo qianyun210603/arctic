@@ -112,7 +112,7 @@ def test_indexes(arctic):
                                                    'v': index_version}}
 
     test_chunk_44 = makeMongo44Index(test_chunk)
-    assert chunk == test_chunk or chunk == test_chunk_44
+    assert chunk in (test_chunk, test_chunk_44)
 
     snapshots = c.arctic.library.snapshots.index_information()
     test_snapshots = {'_id_': {'key': [('_id', 1)],
@@ -124,7 +124,7 @@ def test_indexes(arctic):
                                                  'unique': True,
                                                  'v': index_version}}
     test_snapshots_44 = makeMongo44Index(test_snapshots)
-    assert snapshots == test_snapshots or snapshots == test_snapshots_44
+    assert snapshots in (test_snapshots, test_snapshots_44)
 
     versions = c.arctic.library.versions.index_information()
     test_versions = {'_id_': {'v': index_version, 'key': [('_id', 1)],
@@ -138,7 +138,7 @@ def test_indexes(arctic):
                      'parent_1': {'v': index_version, 'key': [('parent', 1)],
                                             'ns': 'arctic.library.versions', 'background': True}}
     test_versions_44 = makeMongo44Index(test_versions)
-    assert versions == test_versions or versions == test_versions_44
+    assert versions in (test_versions, test_versions_44)
 
     version_nums = c.arctic.library.version_nums.index_information()
     test_version_nums = {'_id_': {'key': [('_id', 1)],
@@ -150,7 +150,7 @@ def test_indexes(arctic):
                                                    'unique': True,
                                                    'v': index_version}}
     test_version_nums_44 = makeMongo44Index(test_version_nums)
-    assert version_nums == test_version_nums or version_nums == test_version_nums_44
+    assert version_nums in (test_version_nums, test_version_nums_44)
 
 
 def test_delete_library(arctic, library, library_name):
