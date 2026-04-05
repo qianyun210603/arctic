@@ -47,12 +47,9 @@ def main():
 
         final_stats = store[lib].stats()
         logger.info('Stats:')
-        logger.info('Sharded:        {}'.format(final_stats['chunks'].get('sharded', False)))
-        logger.info('Symbols:  %10d' % len(store[lib].list_symbols()))
-        logger.info('Versions: %10d   Change(+/-) %6d  (av: %.2fMB)' %
-                    (final_stats['versions']['count'],
-                     final_stats['versions']['count'] - orig_stats['versions']['count'],
-                     final_stats['versions'].get('avgObjSize', 0) / 1024. / 1024.))
+        logger.info(f'Sharded:        {final_stats['chunks'].get('sharded', False)}')
+        logger.info(f'Symbols:  {len(store[lib].list_symbols()):10d}')
+        logger.info(f"Versions: {final_stats['versions']['count']:10d}   Change(+/-) {final_stats['versions']['count'] - orig_stats['versions']['count']:6d}  (av: {final_stats['versions'].get('avgObjSize', 0) / 1024. / 1024.:.2f}MB)")
         logger.info(f"Versions: {final_stats['versions']['size'] / 1024. / 1024.:10.2f}MB Change(+/-) {(final_stats['versions']['size'] - orig_stats['versions']['size']) / 1024. / 1024.:.2f}MB")
         logger.info('Chunk Count: %7d   Change(+/-) %6d  (av: %.2fMB)' %
                     (final_stats['chunks']['count'],
