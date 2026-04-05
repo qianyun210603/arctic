@@ -17,26 +17,25 @@ def test_prune_versions_symbol(mongo_host, library, library_name):
 
 
 def test_prune_versions_full(mongo_host, library, library_name):
-    with patch('arctic.scripts.arctic_prune_versions.do_db_auth', return_value=True):
-        # Write some stuff with snapshots
-        library.snapshot('snap')
-        library.write('symbol', "val1")
-        library.write('symbol', "val2")
-        library.snapshot('snap1')
-        library.write('symbol', "val3")
+    # Write some stuff with snapshots
+    library.snapshot('snap')
+    library.write('symbol', "val1")
+    library.write('symbol', "val2")
+    library.snapshot('snap1')
+    library.write('symbol', "val3")
 
-        # Prune older than 10 mins - nothing deleted
-        run_as_main(mpv.main, '--host', mongo_host, '--library', library_name, '--keep-mins', 10)
-        assert [x['version'] for x in library.list_versions('symbol')] == [3, 2, 1]
-        # Prune older than 0 minutes, v1 deleted
-        run_as_main(mpv.main, '--host', mongo_host, '--library', library_name, '--keep-mins', 0)
-        assert [x['version'] for x in library.list_versions('symbol')] == [3, 2]
+    # Prune older than 10 mins - nothing deleted
+    run_as_main(mpv.main, '--host', mongo_host, '--library', library_name, '--keep-mins', 10)
+    assert [x['version'] for x in library.list_versions('symbol')] == [3, 2, 1]
+    # Prune older than 0 minutes, v1 deleted
+    run_as_main(mpv.main, '--host', mongo_host, '--library', library_name, '--keep-mins', 0)
+    assert [x['version'] for x in library.list_versions('symbol')] == [3, 2]
 
-        # Delete the snapshots
-        library.delete_snapshot('snap')
-        library.delete_snapshot('snap1')
-        run_as_main(mpv.main, '--host', mongo_host, '--library', library_name, '--keep-mins', 0)
-        assert [x['version'] for x in library.list_versions('symbol')] == [3]
+    # Delete the snapshots
+    library.delete_snapshot('snap')
+    library.delete_snapshot('snap1')
+    run_as_main(mpv.main, '--host', mongo_host, '--library', library_name, '--keep-mins', 0)
+    assert [x['version'] for x in library.list_versions('symbol')] == [3]
 
 
 def test_keep_recent_snapshots(library):

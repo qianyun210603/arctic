@@ -13,9 +13,6 @@ def test_main_minimal():
                           'user')
     get_mongodb_uri.assert_called_once_with('some_host')
     MC.assert_called_once_with(get_mongodb_uri.return_value)
-    assert do_db_auth.call_args_list == [call('some_host',
-                                              MC.return_value,
-                                              'admin')]
     assert MC.return_value.__getitem__.call_args_list == [call('arctic_user')]
     db = MC.return_value.__getitem__.return_value
     assert [call('user', ANY, read_only=False)] == db.add_user.call_args_list
@@ -31,9 +28,6 @@ def test_main_with_db():
                     'jblackburn')
     get_mongodb_uri.assert_called_once_with('some_host')
     MC.assert_called_once_with(get_mongodb_uri.return_value)
-    assert do_db_auth.call_args_list == [call('some_host',
-                                              MC.return_value,
-                                              'some_db')]
     assert MC.return_value.__getitem__.call_args_list == [call('some_db')]
     db = MC.return_value.__getitem__.return_value
     assert [call('jblackburn', ANY, read_only=True)] == db.add_user.call_args_list
@@ -48,9 +42,6 @@ def test_main_with_db_write():
                     'jblackburn')
     get_mongodb_uri.assert_called_once_with('some_host')
     MC.assert_called_once_with(get_mongodb_uri.return_value)
-    assert do_db_auth.call_args_list == [call('some_host',
-                                              MC.return_value,
-                                              'some_db')]
     assert MC.return_value.__getitem__.call_args_list == [call('some_db')]
     db = MC.return_value.__getitem__.return_value
     assert [call('jblackburn', ANY, read_only=False)] == db.add_user.call_args_list

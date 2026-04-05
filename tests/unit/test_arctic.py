@@ -83,7 +83,6 @@ def test_arctic_auth():
 
             # Creating the library will have attempted to auth against it
             ga.assert_called_once_with('cluster', 'arctic', 'arctic_jblackburn')
-            store._conn['arctic_jblackburn'].authenticate.assert_called_once_with('user', 'pass')
 
 
 def test_arctic_auth_custom_app_name():
@@ -447,8 +446,7 @@ def test__conn_auth_issue():
             auth_timeout[0] = 1
             raise AutoReconnect()
 
-    with patch('arctic.arctic.authenticate', flaky_auth), \
-    patch('arctic.arctic.get_auth', return_value=sentinel.creds), \
+    with patch('arctic.arctic.get_auth', return_value=sentinel.creds), \
     patch('arctic._cache.Cache.__init__', autospec=True, return_value=None), \
     patch('arctic.decorators._handle_error') as he:
         a._conn

@@ -4,7 +4,7 @@ import optparse
 
 import pymongo
 
-from .utils import do_db_auth, setup_logging
+from .utils import setup_logging
 from ..arctic import Arctic, ArcticLibraryBinding
 from ..hooks import get_mongodb_uri
 
@@ -46,9 +46,6 @@ def main():
     print(f"Keeping all versions <= {opts.keep_mins} mins old")
     c = pymongo.MongoClient(get_mongodb_uri(opts.host))
 
-    if not do_db_auth(opts.host, c, db_name):
-        logger.error('Authentication Failed. Exiting.')
-        return
     lib = Arctic(c)[opts.library]
 
     if opts.symbols:

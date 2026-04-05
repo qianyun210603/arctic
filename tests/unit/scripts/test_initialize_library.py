@@ -11,13 +11,11 @@ def test_init_library():
     with patch('pymongo.MongoClient') as MongoClient, \
          patch('arctic.scripts.arctic_init_library.logger', autospec=True) as logger, \
          patch('arctic.scripts.arctic_init_library.Arctic', spec=ar) as Arctic, \
-         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri, \
-         patch('arctic.scripts.arctic_init_library.do_db_auth', autospec=True) as do_db_auth:
+         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri:
         run_as_main(mil.main, '--host', 'hostname', '--library', 'arctic_user.library', '--type', 'VersionStore')
 
     get_mongodb_uri.assert_called_once_with('hostname')
     MongoClient.assert_called_once_with(get_mongodb_uri.return_value)
-    do_db_auth.assert_called_once_with('hostname', MongoClient.return_value, 'arctic_user')
     Arctic.assert_called_once_with(MongoClient.return_value)
     Arctic.return_value.initialize_library.assert_called_once_with('arctic_user.library', 'VersionStore', hashed=False)
     assert logger.warn.call_count == 0
@@ -28,8 +26,7 @@ def test_init_library_no_admin():
     with patch('pymongo.MongoClient') as MongoClient, \
          patch('arctic.scripts.arctic_init_library.logger', autospec=True), \
          patch('arctic.scripts.arctic_init_library.Arctic', spec=ar) as Arctic, \
-         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri, \
-         patch('arctic.scripts.arctic_init_library.do_db_auth', autospec=True):
+         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri:
         run_as_main(mil.main, '--host', 'hostname', '--library', 'arctic_user.library', '--type', 'VersionStore')
 
     get_mongodb_uri.assert_called_once_with('hostname')
@@ -43,8 +40,7 @@ def test_init_library_hashed():
     with patch('pymongo.MongoClient') as MongoClient, \
          patch('arctic.scripts.arctic_init_library.logger', autospec=True) as logger, \
          patch('arctic.scripts.arctic_init_library.Arctic', spec=ar) as Arctic, \
-         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri, \
-         patch('arctic.scripts.arctic_init_library.do_db_auth', autospec=True) as do_db_auth:
+         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri:
         run_as_main(mil.main, '--host', 'hostname', '--library', 'arctic_user.library', '--type', 'VersionStore', '--hashed')
 
     get_mongodb_uri.assert_called_once_with('hostname')
@@ -59,10 +55,8 @@ def test_init_library_no_admin_no_user_creds():
     with patch('pymongo.MongoClient') as MongoClient, \
          patch('arctic.scripts.arctic_init_library.logger', autospec=True), \
          patch('arctic.scripts.arctic_init_library.Arctic', spec=ar) as Arctic, \
-         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri, \
-         patch('arctic.scripts.arctic_init_library.do_db_auth', return_value=False, autospec=True):
+         patch('arctic.scripts.arctic_init_library.get_mongodb_uri', autospec=True) as get_mongodb_uri:
 
-        MongoClient.return_value['arctic_user'].authenticate.return_value = False
         run_as_main(mil.main, '--host', 'hostname', '--library', 'arctic_user.library', '--type', 'VersionStore')
 
     get_mongodb_uri.assert_called_once_with('hostname')

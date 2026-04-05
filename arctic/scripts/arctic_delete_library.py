@@ -4,7 +4,7 @@ import optparse
 
 import pymongo
 
-from .utils import do_db_auth, setup_logging
+from .utils import setup_logging
 from ..arctic import Arctic
 from ..hooks import get_mongodb_uri
 
@@ -34,7 +34,6 @@ def main():
     c = pymongo.MongoClient(get_mongodb_uri(opts.host))
 
     db_name = opts.library[:opts.library.index('.')] if '.' in opts.library else None
-    do_db_auth(opts.host, c, db_name)
     store = Arctic(c)
     store.delete_library(opts.library)
 
