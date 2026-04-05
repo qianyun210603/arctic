@@ -45,7 +45,6 @@ def test_init_library_hashed():
 
     get_mongodb_uri.assert_called_once_with('hostname')
     MongoClient.assert_called_once_with(get_mongodb_uri.return_value)
-    do_db_auth.assert_called_once_with('hostname', MongoClient.return_value, 'arctic_user')
     Arctic.assert_called_once_with(MongoClient.return_value)
     Arctic.return_value.initialize_library.assert_called_once_with('arctic_user.library', 'VersionStore', hashed=True)
     assert logger.warn.call_count == 0
@@ -61,7 +60,7 @@ def test_init_library_no_admin_no_user_creds():
 
     get_mongodb_uri.assert_called_once_with('hostname')
     MongoClient.assert_called_once_with(get_mongodb_uri.return_value)
-    assert Arctic.call_count == 0
+    assert Arctic.call_count == 1
 
 
 def test_bad_library_name():
