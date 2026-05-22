@@ -17,3 +17,5 @@ junit.xml
 
 *.sw[op]
 /dist/
+
+.claude/*
