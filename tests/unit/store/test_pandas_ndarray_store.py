@@ -1,11 +1,7 @@
 import numpy as np
-import pandas as pd
-import pytest
-from unittest.mock import Mock, sentinel, patch
-from pytest import raises
 
 # Do not remove PandasStore
-from arctic.store._pandas_ndarray_store import PandasDataFrameStore, PandasPanelStore
+from arctic.store._pandas_ndarray_store import PandasDataFrameStore
 from tests.util import read_str_as_pandas
 
 

@@ -199,6 +199,8 @@ class MetadataStore(BSONStore):
             (the same format as output of read_history)
             Example:
                 [pandas.DataFrame({'symbol': [{}]}, [datetime.datetime.utcnow()])]
+        last_update: `datetime.datetime`
+             last update time for all entries in the collection. If not provided, datetime.datetime.utcnow() will be used.
         """
         if last_update is None:
             last_update = dt.utcnow()
@@ -235,6 +237,8 @@ class MetadataStore(BSONStore):
         start_time : `datetime.datetime`
             when metadata becomes effective
             Default: datetime.datetime.utcnow()
+        last_update: `datetime.datetime`
+            last update time for the entry. If not provided, datetime.datetime.utcnow() will be used
         """
         if start_time is None:
             start_time = dt.utcnow()
@@ -253,7 +257,7 @@ class MetadataStore(BSONStore):
                 raise ValueError('start_time={} is earlier than the last metadata @{}'.format(start_time,
                                                                                               old_metadata['start_time']))
         elif metadata is None:
-            return
+            return old_metadata
 
         self.find_one_and_update({'symbol': symbol}, {'$set': {'end_time': start_time}},
                                  sort=[('start_time', pymongo.DESCENDING)])
@@ -276,9 +280,11 @@ class MetadataStore(BSONStore):
         start_time : `datetime.datetime`
             when metadata becomes effective
             Default: datetime.datetime.min
+        last_update: `datetime.datetime`
+            last update time for the entry. If not provided, datetime.datetime.utcnow() will be used
         """
         if metadata is None:
-            return
+            raise ValueError('metadata cannot be None when prepending')
         if start_time is None:
             start_time = dt.min
         if last_update is None:
