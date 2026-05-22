@@ -11,6 +11,7 @@ import pytest
 from .. import arctic as m
 from ..chunkstore.chunkstore import CHUNK_STORE_TYPE
 from ..store.bitemporal_store import BitemporalStore
+from ..store.config_store import CONFIG_STORE_TYPE
 from ..tickstore.tickstore import TICK_STORE_TYPE
 
 logger = logging.getLogger(__name__)
@@ -326,4 +327,10 @@ def chunkstore_lib(arctic, library_name):
 @pytest.fixture(scope="function")
 def ms_lib(arctic, library_name):
     arctic.initialize_library(library_name, m.METADATA_STORE)
+    return arctic.get_library(library_name)
+
+
+@pytest.fixture(scope="function")
+def config_store_lib(arctic, library_name):
+    arctic.initialize_library(library_name, CONFIG_STORE_TYPE)
     return arctic.get_library(library_name)

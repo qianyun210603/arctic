@@ -15,7 +15,7 @@ from .chunkstore import chunkstore
 from .decorators import mongo_retry
 from .exceptions import LibraryNotFoundException, ArcticException, QuotaExceededException
 from .hooks import get_mongodb_uri
-from .store import version_store, bson_store, metadata_store, sequence_store
+from .store import version_store, bson_store, metadata_store, sequence_store, config_store
 from .tickstore import tickstore, toplevel
 
 # just suppress for pymongo
@@ -28,6 +28,7 @@ __all__ = [
     "TICK_STORE",
     "CHUNK_STORE",
     "SEQUENCE_STORE",
+    "CONFIG_STORE",
     "register_library_type",
 ]
 
@@ -42,6 +43,7 @@ METADATA_STORE = metadata_store.METADATA_STORE_TYPE
 TICK_STORE = tickstore.TICK_STORE_TYPE
 CHUNK_STORE = chunkstore.CHUNK_STORE_TYPE
 SEQUENCE_STORE = sequence_store.SEQUENCE_STORE_TYPE
+CONFIG_STORE = config_store.CONFIG_STORE_TYPE
 LIBRARY_TYPES = {
     version_store.VERSION_STORE_TYPE: version_store.VersionStore,
     tickstore.TICK_STORE_TYPE: tickstore.TickStore,
@@ -50,6 +52,7 @@ LIBRARY_TYPES = {
     bson_store.BSON_STORE_TYPE: bson_store.BSONStore,
     metadata_store.METADATA_STORE_TYPE: metadata_store.MetadataStore,
     sequence_store.SEQUENCE_STORE_TYPE: sequence_store.SequenceStore,
+    config_store.CONFIG_STORE_TYPE: config_store.ConfigStore,
 }
 
 
