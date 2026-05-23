@@ -1,5 +1,32 @@
 ## Changelog
 
+### 1.85.0 (2026-05-22)
+ * Release: Prepare release 1.85.0
+ * Bugfix: Fix a number of unit test and mocking issues that caused
+   InvalidSpecError or unexpected eager MongoClient initialization
+   (notably fixes to `test_delete_version_version_not_found`,
+   `test_arctic_auth`, `test_arctic_lazy_init_ssl_true` and
+   `test__conn_auth_issue`). Tests now use mocks/autospec correctly
+   and assert the expected lazy connection and auth behaviour.
+ * Bugfix: Ensure `Arctic(..., ssl=True)` no longer causes an
+   immediate MongoClient connection during object construction; connection
+   initialization is deferred until the client is actually used.
+ * Bugfix: Serialize pandas.arrays.StringArray to bytes for storage and
+   add robust detection for pandas `StringDtype(storage='python', na_value=nan)`
+   when selecting serializers/handlers for string-backed columns.
+ * Lint: Fix exception-chaining lint (B904) by raising exceptions with
+   explicit cause (``raise ... from err`` or ``from None``) in
+   `arctic/store/version_store.py`, `arctic/tickstore/tickstore.py` and
+   relevant tests to make error origins unambiguous.
+ * Test: Improve mocks used in tests to avoid autospecing attributes that
+   have already been replaced by MagicMocks; add clearer assertions for
+   `__getitem__` and connection/auth flows.
+ * Docs: Minor updates to testing notes and compatibility guidance.
+ * Feature: Add `ConfigStore` — a BSON-backed configuration store for
+   per-library symbol-datetime key-value configuration. Implemented in
+   `arctic/store/config_store.py`, registered in `arctic/arctic.py`, and
+   covered by unit tests and a design doc under `docs/superpowers/specs`.
+
 ### 1.84.0 (2026-04-05) 
  * Release: #1022 version 1.84.0
  * Adapt to latest python, pandas and pymongo versions
