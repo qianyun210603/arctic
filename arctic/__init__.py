@@ -3,7 +3,7 @@
 import re
 
 from .arctic import Arctic, register_library_type
-from .arctic import VERSION_STORE, TICK_STORE, CHUNK_STORE, METADATA_STORE, SEQUENCE_STORE
+from .arctic import VERSION_STORE, TICK_STORE, CHUNK_STORE, METADATA_STORE, SEQUENCE_STORE, CONFIG_STORE
 from .store._ndarray_store import NdarrayStore
 from .store._pandas_ndarray_store import PandasDataFrameStore, PandasSeriesStore, PandasPanelStore
 from .store.version_store import register_versioned_storage, register_version
@@ -42,6 +42,7 @@ __all__ = [
     "VERSION_STORE",
     "TICK_STORE",
     "CHUNK_STORE",
+    "CONFIG_STORE",
     "METADATA_STORE",
     "SEQUENCE_STORE",
 
