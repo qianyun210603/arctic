@@ -11,20 +11,8 @@ logger = logging.getLogger(__name__)
 
 NP_OBJECT_DTYPE = np.dtype('O')
 
-# Avoid import-time extra logic
-_use_new_count_api = None
-
-
 def get_fwptr_config(version):
     return FwPointersCfg[version.get(FW_POINTERS_CONFIG_KEY, FwPointersCfg.DISABLED.name)]
-
-
-def _detect_new_count_api():
-    try:
-        mongo_v = [int(v) for v in pymongo.version.split('.')]
-        return mongo_v[0] >= 3 and mongo_v[1] >= 7
-    except Exception:
-        return False
 
 
 def indent(s, num_spaces):
@@ -84,16 +72,9 @@ def mongo_count(collection, filter=None, **kwargs):
     use with care as filters on un-indexed fields will generate COLLSCAN.
     """
     filter = {} if filter is None else filter
-    global _use_new_count_api
-    _use_new_count_api = _detect_new_count_api() if _use_new_count_api is None else _use_new_count_api
-
-    if _use_new_count_api:
-        if filter == {}:
-            # fast. uses collection metadata
-            return collection.estimated_document_count(**kwargs)
-        else:
-            # transactions supported, but slow for non-indexed filters
-            return collection.count_documents(filter=filter, **kwargs)
+    if filter == {}:
+        # fast. uses collection metadata
+        return collection.estimated_document_count(**kwargs)
     else:
-        # pymongo <= 3.6 # faster than count_documents but non-transactional and deprecated
-        return collection.count(filter=filter, **kwargs)
+        # transactions supported, but slow for non-indexed filters
+        return collection.count_documents(filter=filter, **kwargs)
