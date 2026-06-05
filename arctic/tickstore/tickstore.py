@@ -338,11 +338,7 @@ class TickStore:
 
         t = (dt.now() - perf_start).total_seconds()
         logger.info(f"Got data in {t} secs, creating DataFrame...")
-        if pd.__version__.startswith("0.") or pd.__version__.startswith("1.0"):
-            mgr = _arrays_to_mgr(arrays, columns, index, columns, dtype=None)
-        else:
-            # 4th argument removed + new argument typ is mandatory
-            mgr = _arrays_to_mgr(arrays, columns, index, dtype=None, typ="array")
+        mgr = _arrays_to_mgr(arrays, columns, index, dtype=None, typ="array")
 
         rtn = pd.DataFrame(mgr)
         # Present data in the user's default TimeZone
