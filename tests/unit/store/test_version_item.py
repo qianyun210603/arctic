@@ -10,9 +10,17 @@ def test_versioned_item_str():
                          version=1.0,
                          host='myhost',
                          metadata={'metadata': 'foo'})
+    # pandas 3.x moved DataFrame to top-level namespace; pandas 2.x uses pandas.core.DataFrame
+    major = int(pd.__version__.split('.')[0])
+    if major >= 3:
+        data_type = "pandas.DataFrame"
+    else:
+        data_type = "pandas.core.frame.DataFrame"
 
-    expected = "VersionedItem(symbol=sym,library=ONEMINUTE," + \
-               "data=<class 'pandas.DataFrame'>,version=1.0,metadata={'metadata': 'foo'},host=myhost)"
+    expected = (
+        "VersionedItem(symbol=sym,library=ONEMINUTE,"
+        "data=<class '{}'>,version=1.0,metadata={{'metadata': 'foo'}},host=myhost)".format(data_type)
+    )
     assert str(item) == expected
     assert repr(item) == expected
 

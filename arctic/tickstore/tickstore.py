@@ -646,7 +646,7 @@ class TickStore:
             if array.dtype.kind == 'O' and infer_dtype(array) not in ['unicode', 'string', 'bytes']:
                 raise UnhandledDtypeException("Casting object column to string failed")
             try:
-                array = array.astype(np.unicode_)
+                array = array.astype(np.str_)
             except (UnicodeDecodeError, SystemError):
                 array = np.array([s.decode('utf-8') for s in array])
             except Exception:

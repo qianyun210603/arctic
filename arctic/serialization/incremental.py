@@ -43,15 +43,18 @@ class LazyIncrementalSerializer(ABC):
     def __len__(self):
         pass
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def generator(self):
         pass
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def generator_bytes(self):
         pass
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def serialize(self):
         pass
 
@@ -78,9 +81,9 @@ class IncrementalPandasToRecArraySerializer(LazyIncrementalSerializer):
         self._lock = RLock()
 
     def _dtype_convert_to_max_len_string(self, input_ndtype, fname):
-        if input_ndtype.type not in (np.string_, np.unicode_):
+        if input_ndtype.type not in (np.bytes_, np.str_):
             return input_ndtype, False
-        type_sym = 'S' if input_ndtype.type == np.string_ else 'U'
+        type_sym = 'S' if input_ndtype.type == np.bytes_ else 'U'
         max_str_len = len(max(self.input_data[fname].astype(type_sym), key=len))
         str_field_dtype = np.dtype(f'{type_sym}{max_str_len:d}') if max_str_len > 0 else input_ndtype
         return str_field_dtype, True
