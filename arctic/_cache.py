@@ -65,7 +65,11 @@ class Cache:
             cache_settings = self._get_cache_settings()
             expiry_period = cache_settings['cache_expiry'] if cache_settings else DEFAULT_CACHE_EXPIRY
 
-        return datetime.now(tz=UTC) < cached_data['date'] + timedelta(seconds=expiry_period)
+        cache_date = cached_data['date']
+        if getattr(cache_date, 'tzinfo', None) is None:
+            cache_date = cache_date.replace(tzinfo=UTC)
+
+        return datetime.now(tz=UTC) < cache_date + timedelta(seconds=expiry_period)
 
     def get(self, key, newer_than_secs=None):
         """
