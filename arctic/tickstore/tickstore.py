@@ -338,11 +338,7 @@ class TickStore:
 
         t = (dt.now() - perf_start).total_seconds()
         logger.info(f"Got data in {t} secs, creating DataFrame...")
-        if pd.__version__.startswith("0.") or pd.__version__.startswith("1.0"):
-            mgr = _arrays_to_mgr(arrays, columns, index, columns, dtype=None)
-        else:
-            # 4th argument removed + new argument typ is mandatory
-            mgr = _arrays_to_mgr(arrays, columns, index, dtype=None, typ="array")
+        mgr = _arrays_to_mgr(arrays, columns, index, dtype=None, typ="array")
 
         rtn = pd.DataFrame(mgr)
         # Present data in the user's default TimeZone
@@ -648,12 +644,10 @@ class TickStore:
             array = array.astype('<f8')
         elif array.dtype.kind in ('O', 'U', 'S'):
             if array.dtype.kind == 'O' and infer_dtype(array) not in ['unicode', 'string', 'bytes']:
-                # `string` in python2 and `bytes` in python3
                 raise UnhandledDtypeException("Casting object column to string failed")
             try:
-                array = array.astype(np.unicode_)
+                array = array.astype(np.str_)
             except (UnicodeDecodeError, SystemError):
-                # `UnicodeDecodeError` in python2 and `SystemError` in python3
                 array = np.array([s.decode('utf-8') for s in array])
             except Exception:
                 # Make the cause explicit; suppress chaining to avoid confusing traceback

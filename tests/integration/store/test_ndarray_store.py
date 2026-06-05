@@ -1,4 +1,4 @@
-from datetime import datetime as dt, timedelta as dtd
+from datetime import UTC, datetime as dt, timedelta as dtd
 
 import bson
 import numpy as np
@@ -170,7 +170,7 @@ def test_mutable_ndarray(library):
 @pytest.mark.xfail(reason="delete_version not safe with append...")
 def test_delete_version_shouldnt_break_read(library):
     data = np.arange(30)
-    yesterday = dt.utcnow() - dtd(days=1, seconds=1)
+    yesterday = dt.now(tz=UTC) - dtd(days=1, seconds=1)
     _id = bson.ObjectId.from_datetime(yesterday)
     with patch("bson.ObjectId", return_value=_id):
         library.write('symbol', data, prune_previous_version=False)

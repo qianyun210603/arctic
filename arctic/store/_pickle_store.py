@@ -7,7 +7,7 @@ from bson.binary import Binary
 from bson.errors import InvalidDocument
 import pickle
 
-from ._version_store_utils import checksum, pickle_compat_load, version_base_or_id
+from ._version_store_utils import checksum, version_base_or_id
 from .._compression import decompress, compress_array
 from ..exceptions import UnsupportedPickleStoreVersion
 from .._config import SKIP_BSON_ENCODE_PICKLE_STORE, MAX_BSON_ENCODE
@@ -59,13 +59,13 @@ class PickleStore:
 
             try:
                 # The default encoding is ascii.
-                return pickle_compat_load(io.BytesIO(data))
+                return pickle.load(io.BytesIO(data))
             except UnicodeDecodeError:
                 # Using encoding='latin1' is required for unpickling NumPy arrays and instances of datetime, date
                 # and time pickled by Python 2: https://docs.python.org/3/library/pickle.html#pickle.load
                 logger.info("Could not Unpickle with ascii, Using latin1.")
                 encoding = kwargs.get('encoding', 'latin_1')  # Check if someone has manually specified encoding.
-                return pickle_compat_load(io.BytesIO(data), encoding=encoding)
+                return pickle.load(io.BytesIO(data), encoding=encoding)
         return version['data']
 
     @staticmethod
@@ -90,11 +90,7 @@ class PickleStore:
         collection = arctic_lib.get_top_level_collection()
         # Try to pickle it. This is best effort
         version['blob'] = _MAGIC_CHUNKEDV2
-        # Python 3.8 onwards uses protocol 5 which cannot be unpickled in Python versions below that, so limiting
-        # it to use a maximum of protocol 4 in Python which is understood by 3.4 onwards and is still fairly efficient.
-        # pickle version 4 is introduced with  python 3.4 and default with 3.8 onward
-        pickle_protocol = min(pickle.HIGHEST_PROTOCOL, 4)
-        pickled = pickle.dumps(item, protocol=pickle_protocol)
+        pickled = pickle.dumps(item, protocol=pickle.HIGHEST_PROTOCOL)
 
         data = compress_array([pickled[i * _CHUNK_SIZE: (i + 1) * _CHUNK_SIZE] for i in range(int(len(pickled) / _CHUNK_SIZE + 1))])
 

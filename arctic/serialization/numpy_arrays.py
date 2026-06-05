@@ -12,11 +12,6 @@ from ._serializer import Serializer
 from pandas.api.types import infer_dtype
 from pandas._libs.writers import max_len_string_array
 
-if int(pd.__version__.split('.')[1]) > 22:
-    from functools import partial
-    pd.concat = partial(pd.concat, sort=False)
-
-
 DATA = 'd'
 MASK = 'm'
 TYPE = 't'
@@ -25,6 +20,9 @@ COLUMNS = 'c'
 INDEX = 'i'
 METADATA = 'md'
 LENGTHS = 'ln'
+
+
+# string_column_converter = (lambda s: s.values.to_numpy()) if int(pd.__version__.split('.')[0]) >= 3 else (lambda s: s.values)
 
 
 class FrameConverter:
@@ -99,7 +97,7 @@ class FrameConverter:
         for c in df:
             try:
                 columns.append(str(c))
-                column_values_numpy = df[c].values.to_numpy() if is_string_dtype(df[c].dtype) else df[c].values
+                column_values_numpy = df[c].to_numpy() if is_string_dtype(df[c]) else df[c].values
                 arr, mask = self._convert_types(column_values_numpy)
                 dtypes[str(c)] = str(arr.dtype)
                 if mask is not None:

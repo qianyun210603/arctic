@@ -351,11 +351,6 @@ class DataFrameSerializer(PandasSerializer):
             df.columns = MultiIndex.from_arrays(multi_column["values"], names=multi_column["names"])
 
         if force_bytes_to_unicode:
-            # This is needed due to 'str' type in py2 when read back in py3 is 'bytes' which breaks the workflow
-            # of people migrating to py3. # https://github.com/manahl/arctic/issues/598
-            # This should not be used for a normal flow, and you should instead of writing unicode strings
-            # if you want to work with str in py3.,
-
             for c in df.select_dtypes(object):
                 # The conversion is not using astype similar to the index as pandas has a bug where it tries to convert
                 # the data columns to a unicode string, and the object in this case would be bytes, eg. b'abc'

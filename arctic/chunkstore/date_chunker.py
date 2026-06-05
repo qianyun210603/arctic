@@ -46,8 +46,8 @@ class DateChunker(Chunker):
         period_obj_reduced = period_obj.drop_duplicates()
         count = 0
         for _, g in df.groupby(period_obj._data):
-            start = period_obj_reduced[count].start_time.to_pydatetime(warn=False)
-            end = period_obj_reduced[count].end_time.to_pydatetime(warn=False)
+            start = period_obj_reduced[count].start_time.to_pydatetime()
+            end = period_obj_reduced[count].end_time.to_pydatetime()
             count += 1
             if func:
                 yield start, end, chunk_size, func(g)

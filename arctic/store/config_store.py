@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC
 from datetime import datetime as dt
 
 import pymongo
@@ -131,7 +132,7 @@ class ConfigStore(BSONStore):
         config : `dict`
             key-value configuration pairs to persist
         """
-        last_update = dt.utcnow()
+        last_update = dt.now(tz=UTC)
         self.find_one_and_update(
             {'symbol': symbol, 'datetime': datetime},
             {'$set': {

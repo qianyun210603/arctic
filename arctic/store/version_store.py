@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime as dt, timedelta
+from datetime import UTC, datetime as dt, timedelta
 
 import bson
 import pymongo
@@ -823,7 +823,7 @@ class VersionStore:
                  # Not snapshotted
                  '$or': [{'parent': {'$exists': False}}, {'parent': []}],
                  # At least 'keep_mins' old
-                 '_id': {'$lt': bson.ObjectId.from_datetime(dt.utcnow()
+                 '_id': {'$lt': bson.ObjectId.from_datetime(dt.now(tz=UTC)
                                                             # Add one second as the ObjectId
                                                             # str has random fuzz
                                                             + timedelta(seconds=1)

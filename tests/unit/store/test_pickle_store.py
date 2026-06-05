@@ -1,6 +1,3 @@
-import sys
-from os import path
-
 import pandas as pd
 import pytest
 from bson.binary import Binary
@@ -31,13 +28,9 @@ def test_write_object():
     assert version['blob'] == '__chunked__V2'
     coll = arctic_lib.get_top_level_collection.return_value
 
-    # Python 3.8 onwards uses protocol 5 which cannot be unpickled in Python versions below that, so limiting
-    # it to use a maximum of protocol 4 in Python which is understood by 3.4 onwards and is still fairly efficient.
-    # pickle version 4 is introduced with  python 3.4 and default with 3.8 onward
-    pickle_protocol = min(4, pickle.HIGHEST_PROTOCOL)
-    assert coll.update_one.call_args_list == [call({'sha': checksum('sentinel.symbol', {'segment': 0, 'data': Binary(compress(pickle.dumps(sentinel.item, pickle_protocol)))}),
+    assert coll.update_one.call_args_list == [call({'sha': checksum('sentinel.symbol', {'segment': 0, 'data': Binary(compress(pickle.dumps(sentinel.item, pickle.HIGHEST_PROTOCOL)))}),
                                                     'symbol': 'sentinel.symbol'},
-                                                   {'$set': {'segment': 0, 'data': Binary(compress(pickle.dumps(sentinel.item, pickle_protocol)), 0)},
+                                                   {'$set': {'segment': 0, 'data': Binary(compress(pickle.dumps(sentinel.item, pickle.HIGHEST_PROTOCOL)), 0)},
                                                     '$addToSet': {'parent': version['_id']}}, upsert=True)]
 
 
@@ -84,31 +77,6 @@ def test_read_with_base_version_id():
 
     assert isinstance(PickleStore.read(self, arctic_lib, version, sentinel.symbol), object)
     assert coll.find.call_args_list == [call({'symbol': sentinel.symbol, 'parent': sentinel.base_version_id})]
-
-
-@pytest.mark.xfail(sys.version_info >= (3,),
-                   reason="lz4 data written with python2 not compatible with python3")
-def test_read_backward_compatibility():
-    """Test backwards compatibility with a pickled file that's created with Python 2.7.3,
-    Numpy 1.7.1_ahl2 and Pandas 0.14.1
-    """
-    fname = path.join(path.dirname(__file__), "data", "test-data.pkl")
-
-    # On the supported Python 3 test matrix, plain pickle.load is expected to
-    # fail on this legacy Python 2 payload without an explicit encoding.
-    with pytest.raises(UnicodeDecodeError), open(fname) as fh:
-        pickle.load(fh)
-
-    # Verify that PickleStore() uses a backwards compatible unpickler.
-    store = PickleStore()
-
-    with open(fname) as fh:
-        # PickleStore compresses data with lz4
-        version = {'blob': compressHC(fh.read())}
-    df = store.read(sentinel.arctic_lib, version, sentinel.symbol)
-
-    expected = pd.DataFrame(range(4), pd.date_range(start="20150101", periods=4))
-    pd.testing.assert_frame_equal(df, expected)
 
 
 def test_unpickle_highest_protocol():

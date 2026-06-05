@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC
 from datetime import datetime as dt
 
 import bson
@@ -154,7 +155,7 @@ class SequenceStore(BSONStore):
             whether to overwrite existing metadata
         """
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         old_metadata = self.find_one({"symbol": symbol})
         if old_metadata is not None:
             if old_metadata["metadata"] == metadata:
@@ -178,7 +179,7 @@ class SequenceStore(BSONStore):
 
     def append(self, symbol, new_element, last_update=None):
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         if isinstance(new_element, list):
             return self.find_one_and_update(
                 {"symbol": symbol},
@@ -194,7 +195,7 @@ class SequenceStore(BSONStore):
 
     def insert(self, symbol, index, value, last_update=None):
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         return self.find_one_and_update(
             {"symbol": symbol},
             {"$push": {"metadata": {"$each": [value], "$position": index}}, "$set": {"last_update": last_update}},

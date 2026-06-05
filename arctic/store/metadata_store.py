@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC
 from datetime import datetime as dt
 
 import bson
@@ -198,12 +199,12 @@ class MetadataStore(BSONStore):
             with symbol names as headers and timestamps as indices
             (the same format as output of read_history)
             Example:
-                [pandas.DataFrame({'symbol': [{}]}, [datetime.datetime.utcnow()])]
+                [pandas.DataFrame({'symbol': [{}]}, [datetime.datetime.now(tz=UTC)])]
         last_update: `datetime.datetime`
-             last update time for all entries in the collection. If not provided, datetime.datetime.utcnow() will be used.
+             last update time for all entries in the collection. If not provided, datetime.datetime.now(tz=UTC) will be used.
         """
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         documents = []
         for dataframe in collection:
             if len(dataframe.columns) != 1:
@@ -236,14 +237,14 @@ class MetadataStore(BSONStore):
             to be persisted
         start_time : `datetime.datetime`
             when metadata becomes effective
-            Default: datetime.datetime.utcnow()
+            Default: datetime.datetime.now(tz=UTC)
         last_update: `datetime.datetime`
-            last update time for the entry. If not provided, datetime.datetime.utcnow() will be used
+            last update time for the entry. If not provided, datetime.datetime.now(tz=UTC) will be used
         """
         if start_time is None:
-            start_time = dt.utcnow()
+            start_time = dt.now(tz=UTC)
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         old_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.DESCENDING)])
         if old_metadata is not None:
             if old_metadata['metadata'] == metadata:
@@ -281,14 +282,14 @@ class MetadataStore(BSONStore):
             when metadata becomes effective
             Default: datetime.datetime.min
         last_update: `datetime.datetime`
-            last update time for the entry. If not provided, datetime.datetime.utcnow() will be used
+            last update time for the entry. If not provided, datetime.datetime.now(tz=UTC) will be used
         """
         if metadata is None:
             raise ValueError('metadata cannot be None when prepending')
         if start_time is None:
             start_time = dt.min
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         old_metadata = self.find_one({'symbol': symbol}, sort=[('start_time', pymongo.ASCENDING)])
         if old_metadata is not None:
             if old_metadata['start_time'] <= start_time:
@@ -350,7 +351,7 @@ class MetadataStore(BSONStore):
 
     def amend(self, symbol, new_metadata, start_time=None, last_update=None):
         if last_update is None:
-            last_update = dt.utcnow()
+            last_update = dt.now(tz=UTC)
         set_dict = {"metadata": new_metadata, 'last_update': last_update}
         if start_time is not None:
             return self.find_one_and_update({'symbol': symbol, 'start_time': start_time}, {"$set": set_dict})

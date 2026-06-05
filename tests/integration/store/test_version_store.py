@@ -2,7 +2,7 @@ import inspect
 import struct
 import time
 from datetime import datetime
-from datetime import datetime as dt, timedelta as dtd
+from datetime import UTC, datetime as dt, timedelta as dtd
 
 import bson
 import numpy as np
@@ -392,7 +392,7 @@ def test_list_version(library, fw_pointers_cfg):
     with FwPointersCtx(fw_pointers_cfg):
         assert len(list(library.list_versions(symbol))) == 0
         dates = [None, None, None]
-        now = dt.utcnow().replace(tzinfo=mktz('UTC'))
+        now = dt.now(tz=UTC).replace(tzinfo=mktz('UTC'))
         for x in range(len(dates)):
             dates[x] = now - dtd(minutes=130 - x)
             with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(dates[x])):
@@ -432,7 +432,7 @@ def test_list_version_deleted(library):
 def test_list_version_latest_only(library):
     assert len(list(library.list_versions(symbol))) == 0
     dates = [None, None, None]
-    now = dt.utcnow().replace(tzinfo=mktz('UTC'))
+    now = dt.now(tz=UTC).replace(tzinfo=mktz('UTC'))
     for x in range(len(dates)):
         dates[x] = now - dtd(minutes=20 - x)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(dates[x])):
@@ -770,7 +770,7 @@ def test_prunes_multiple_versions(library, fw_pointers_cfg):
         a = [{'a': 'b'}]
         c = [{'c': 'd'}]
         # Create an ObjectId
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=125))):
             library.write(symbol, a, prune_previous_version=False)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=122))):
@@ -796,7 +796,7 @@ def test_prunes_doesnt_prune_snapshots(library, fw_pointers_cfg):
 
         a = [{'a': 'b'}]
         c = [{'c': 'd'}]
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=125))):
             library.write(symbol, a, prune_previous_version=False)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=122))):
@@ -833,7 +833,7 @@ def test_prunes_multiple_versions_ts(library, fw_pointers_cfg):
         a = ts1
         c = ts2
         # Create an ObjectId
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=125))):
             library.write(symbol, a, prune_previous_version=False)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=122))):
@@ -859,7 +859,7 @@ def test_prunes_doesnt_prune_snapshots_ts(library, fw_pointers_cfg):
 
         a = ts1
         c = ts2
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=125))):
             library.write(symbol, a, prune_previous_version=False)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=122))):
@@ -900,7 +900,7 @@ def test_prunes_multiple_versions_fully_different_tss(library, fw_pointers_cfg):
         c.index = [i + dtd(days=365) for i in c.index]
         c.index.name = b.index.name
         # Create an ObjectId
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=125))):
             library.write(symbol, a, prune_previous_version=False)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=124))):
@@ -931,7 +931,7 @@ def test_prunes_doesnt_prune_snapshots_fully_different_tss(library, fw_pointers_
         c = b.copy()
         c.index = [i + dtd(days=365) for i in c.index]
         c.index.name = b.index.name
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=125))):
             library.write(symbol, a, prune_previous_version=False)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=123))):
@@ -982,7 +982,7 @@ def test_prunes_previous_version_append_interaction(library, fw_pointers_cfg):
         ts4 = ts
         ts5 = ts2
         ts6 = ts3
-        now = dt.utcnow()
+        now = dt.now(tz=UTC)
         with patch("bson.ObjectId", return_value=bson.ObjectId.from_datetime(now - dtd(minutes=130)),
                                     from_datetime=bson.ObjectId.from_datetime):
             library.write(symbol, ts, prune_previous_version=False)
