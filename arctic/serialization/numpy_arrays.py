@@ -12,11 +12,6 @@ from ._serializer import Serializer
 from pandas.api.types import infer_dtype
 from pandas._libs.writers import max_len_string_array
 
-if int(pd.__version__.split('.')[1]) > 22:
-    from functools import partial
-    pd.concat = partial(pd.concat, sort=False)
-
-
 DATA = 'd'
 MASK = 'm'
 TYPE = 't'
