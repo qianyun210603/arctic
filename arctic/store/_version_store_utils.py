@@ -1,6 +1,5 @@
 import hashlib
 import logging
-import pickle
 
 import numpy as np
 import pymongo
@@ -132,11 +131,6 @@ def cleanup(arctic_lib, symbol, version_ids, versions_coll, shas_to_delete=None,
 def version_base_or_id(version):
     return version.get('base_version_id', version['_id'])
 
-
-# pandas 3.x removed pandas.compat.pickle_compat; for supported runtimes,
-# the valid unpickler is the stdlib loader. Legacy Python 2 payload handling
-# is provided by callers via pickle.load(..., encoding='latin_1').
-pickle_compat_load = pickle.load
 
 
 def analyze_symbol(instance, sym, from_ver, to_ver, do_reads=False):
